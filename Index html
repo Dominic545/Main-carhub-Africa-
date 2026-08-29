@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CarHub Africa | Find Your Next Car</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #111;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 18px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #f5a623;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 14px;
+    }
+
+    .hero {
+      min-height: 520px;
+      padding: 80px 6%;
+      display: flex;
+      align-items: center;
+      background:
+        linear-gradient(rgba(0,0,0,.68), rgba(0,0,0,.68)),
+        url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1600&q=80")
+        center/cover;
+      color: white;
+    }
+
+    .hero-content {
+      max-width: 650px;
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 8vw, 76px);
+      line-height: .95;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 span {
+      color: #f5a623;
+    }
+
+    .hero p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      color: #ddd;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #f5a623;
+      color: #111;
+      padding: 15px 25px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .btn.dark {
+      background: white;
+    }
+
+    section {
+      padding: 70px 6%;
+    }
+
+    .section-title {
+      margin-bottom: 35px;
+    }
+
+    .section-title h2 {
+      font-size: 38px;
+      margin-bottom: 10px;
+    }
+
+    .section-title p {
+      color: #666;
+    }
+
+    .cars {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+    }
+
+    .car-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    .car-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .car-info {
+      padding: 20px;
+    }
+
+    .car-info h3 {
+      font-size: 21px;
+      margin-bottom: 8px;
+    }
+
+    .price {
+      color: #f5a623;
+      font-size: 20px;
+      font-weight: bold;
+      margin: 12px 0;
+    }
+
+    .details {
+      color: #777;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    .small-btn {
+      display: block;
+      text-align: center;
+      background: #111;
+      color: white;
+      padding: 12px;
+      border-radius: 7px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .about {
+      background: #111;
+      color: white;
+    }
+
+    .about-content {
+      max-width: 800px;
+    }
+
+    .about h2 {
+      font-size: 42px;
+      margin-bottom: 20px;
+    }
+
+    .about p {
+      color: #ccc;
+      line-height: 1.8;
+    }
+
+    .contact {
+      text-align: center;
+      background: #f5a623;
+    }
+
+    .contact h2 {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .contact p {
+      margin-bottom: 25px;
+    }
+
+    footer {
+      background: #111;
+      color: #aaa;
+      text-align: center;
+      padding: 25px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 800px) {
+      nav {
+        display: none;
+      }
+
+      .hero {
+        min-height: 600px;
+        padding: 60px 6%;
+      }
+
+      .cars {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 52px;
+      }
+
+      section {
+        padding: 55px 6%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">CarHub <span>Africa</span></div>
+
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#cars">Cars</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <div class="hero-content">
+    <h1>Drive Your <span>Dream.</span></h1>
+
+    <p>
+      Discover quality cars across Africa.
+      Browse our collection, find the right vehicle
+      and connect with CarHub Africa.
+    </p>
+
+    <a href="#cars" class="btn">Explore Cars</a>
+    <a href="#contact" class="btn dark">Contact Us</a>
+  </div>
+</section>
+
+<section id="cars">
+
+  <div class="section-title">
+    <h2>Featured Cars</h2>
+    <p>Quality vehicles selected for African roads and lifestyles.</p>
+  </div>
+
+  <div class="cars">
+
+    <div class="car-card">
+      <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=900&q=80">
+
+      <div class="car-info">
+        <h3>Luxury Sedan</h3>
+        <div class="price">₦28,500,000</div>
+        <div class="details">Automatic • Petrol • 2022</div>
+        <a class="small-btn" href="#contact">Enquire Now</a>
+      </div>
+    </div>
+
+    <div class="car-card">
+      <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=900&q=80">
+
+      <div class="car-info">
+        <h3>Premium Sports Car</h3>
+        <div class="price">₦45,000,000</div>
+        <div class="details">Automatic • Petrol • 2023</div>
+        <a class="small-btn" href="#contact">Enquire Now</a>
+      </div>
+    </div>
+
+    <div class="car-card">
+      <img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=900&q=80">
+
+      <div class="car-info">
+        <h3>Modern SUV</h3>
+        <div class="price">₦35,000,000</div>
+        <div class="details">Automatic • Petrol • 2023</div>
+        <a class="small-btn" href="#contact">Enquire Now</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="about-content">
+    <h2>Built for Africa.</h2>
+
+    <p>
+      CarHub Africa connects car buyers with quality vehicles
+      and makes discovering your next car simple, modern and reliable.
+      From everyday vehicles to premium automobiles,
+      we're building a better way to buy cars in Africa.
+    </p>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <h2>Ready for your next car?</h2>
+
+  <p>
+    Contact CarHub Africa and let's help you find the right vehicle.
+  </p>
+
+  <a class="btn dark" href="https://wa.me/2340000000000">
+    WhatsApp Us
+  </a>
+</section>
+
+<footer>
+  © 2026 CarHub Africa. All rights reserved.
+</footer>
+
+</body>
+</html>
