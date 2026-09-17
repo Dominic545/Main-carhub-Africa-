@@ -1,578 +1,403 @@
 <!-- =========================================================
-     CARHUB AFRICA — STEP 5
-     ADMIN DASHBOARD
-========================================================= -->
+     CARHUB AFRICA — STEP 6
+     SELLER PROFILE + BUYER PROTECTION
+     ========================================================= -->
 
 <style>
+/* ================= SELLER PROFILE OVERLAY ================= */
 
-/* ADMIN BUTTON */
-
-.adminNavBtn{
+#sellerProfileOverlay{
+  position:fixed;
+  inset:0;
+  z-index:99999;
   display:none;
-  border:1px solid rgba(168,239,209,.28);
-  background:rgba(168,239,209,.09);
-  color:var(--mint);
-  padding:10px 14px;
-  border-radius:14px;
-  font-weight:800;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
 }
 
-.adminNavBtn:hover{
-  background:rgba(168,239,209,.16);
+#sellerProfileOverlay.show{
+  display:flex;
 }
 
-
-/* ADMIN OVERLAY */
-
-#adminOverlay{
-  z-index:180;
-}
-
-.adminModal{
-  width:min(1120px,100%);
-  max-height:94vh;
+.sellerProfileBox{
+  width:min(720px,100%);
+  max-height:90vh;
   overflow:auto;
-  padding:0;
+  border:1px solid rgba(168,239,209,.16);
   background:
     linear-gradient(
       145deg,
-      rgba(12,18,15,.98),
-      rgba(7,10,9,.98)
+      rgba(22,31,28,.94),
+      rgba(7,10,9,.97)
     );
+  border-radius:30px;
+  box-shadow:
+    0 35px 100px rgba(0,0,0,.65),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  padding:24px;
+  animation:sellerProfileIn .28s ease;
 }
 
-
-/* ADMIN HEADER */
-
-.adminHeader{
-  position:sticky;
-  top:0;
-  z-index:5;
-  padding:22px;
-  border-bottom:1px solid var(--line);
-  background:rgba(9,14,12,.94);
-  backdrop-filter:blur(22px);
+@keyframes sellerProfileIn{
+  from{
+    opacity:0;
+    transform:translateY(20px) scale(.97);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
 }
 
-.adminHeaderTop{
+.sellerTopBar{
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  gap:15px;
-}
-
-.adminHeaderInfo{
-  flex:1;
-}
-
-.adminHeaderInfo h2{
-  font-size:28px;
-  letter-spacing:-1.2px;
-}
-
-.adminHeaderInfo p{
-  color:var(--muted);
-  font-size:13px;
-  margin-top:4px;
-}
-
-.adminClose{
-  width:40px;
-  height:40px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.055);
-  color:white;
-  border-radius:13px;
-}
-
-
-/* ADMIN CONTENT */
-
-.adminContent{
-  padding:22px;
-}
-
-
-/* STATS */
-
-.adminStats{
-  display:grid;
-  grid-template-columns:
-    repeat(4,minmax(0,1fr));
-  gap:12px;
   margin-bottom:22px;
 }
 
-.adminStat{
-  padding:18px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.045);
-  border-radius:20px;
+.sellerClose{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
 }
 
-.adminStatLabel{
-  color:var(--muted);
-  font-size:12px;
-}
-
-.adminStatValue{
-  font-size:30px;
-  font-weight:900;
-  margin-top:7px;
-  letter-spacing:-1px;
-}
-
-.adminStatValue.mint{
-  color:var(--mint);
-}
-
-.adminStatValue.gold{
-  color:var(--gold);
-}
-
-.adminStatValue.danger{
-  color:var(--danger);
-}
-
-
-/* ADMIN NAV */
-
-.adminTabs{
+.sellerIdentity{
   display:flex;
-  gap:8px;
-  overflow:auto;
-  margin-bottom:18px;
-}
-
-.adminTab{
-  white-space:nowrap;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.045);
-  color:#aeb8b4;
-  padding:10px 15px;
-  border-radius:14px;
-}
-
-.adminTab.active{
-  color:var(--mint);
-  background:rgba(168,239,209,.1);
-  border-color:rgba(168,239,209,.28);
-}
-
-
-/* ADMIN TOOLBAR */
-
-.adminToolbar{
-  display:flex;
-  gap:9px;
-  margin-bottom:15px;
-}
-
-.adminSearch{
-  flex:1;
-  min-width:0;
-  border:1px solid var(--line);
-  outline:0;
-  background:rgba(255,255,255,.045);
-  color:white;
-  padding:12px 14px;
-  border-radius:14px;
-}
-
-.adminSearch::placeholder{
-  color:#737d79;
-}
-
-
-/* ADMIN TABLE */
-
-.adminList{
-  display:flex;
-  flex-direction:column;
-  gap:9px;
-}
-
-.adminRow{
-  display:grid;
-  grid-template-columns:
-    minmax(180px,1.5fr)
-    minmax(110px,.7fr)
-    minmax(110px,.7fr)
-    auto;
-  gap:14px;
   align-items:center;
-  padding:15px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.04);
-  border-radius:18px;
+  gap:16px;
 }
 
-.adminRow:hover{
-  background:rgba(255,255,255,.065);
-}
-
-.adminMain{
-  min-width:0;
-}
-
-.adminMain strong{
-  display:block;
-  font-size:15px;
-}
-
-.adminMain span{
-  display:block;
-  color:var(--muted);
-  font-size:12px;
-  margin-top:4px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-.adminStatus{
-  display:inline-flex;
+.sellerAvatar{
+  width:72px;
+  height:72px;
+  border-radius:24px;
+  display:flex;
   align-items:center;
   justify-content:center;
-  width:max-content;
-  padding:6px 9px;
-  border-radius:99px;
-  font-size:10px;
-  font-weight:900;
-  text-transform:uppercase;
+  font-size:28px;
+  font-weight:800;
+  color:#07100c;
+  background:linear-gradient(145deg,#a8efd1,#78dab7);
+  box-shadow:0 12px 35px rgba(120,218,183,.18);
 }
 
-.statusVerified,
-.statusActive{
-  color:var(--mint);
-  background:rgba(168,239,209,.1);
-}
-
-.statusPending{
-  color:var(--gold);
-  background:rgba(216,200,167,.1);
-}
-
-.statusSuspended,
-.statusHidden{
-  color:var(--danger);
-  background:rgba(255,125,125,.09);
-}
-
-.adminActions{
-  display:flex;
-  gap:6px;
-  justify-content:flex-end;
-  flex-wrap:wrap;
-}
-
-.adminAction{
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.055);
-  color:white;
-  padding:8px 10px;
-  border-radius:11px;
-  font-size:11px;
+.sellerName{
+  margin:0;
+  color:#fff;
+  font-size:23px;
   font-weight:800;
 }
 
-.adminAction:hover{
-  background:rgba(255,255,255,.1);
+.sellerMeta{
+  margin-top:6px;
+  color:rgba(255,255,255,.58);
+  font-size:14px;
 }
 
-.adminAction.verify{
-  color:var(--mint);
-  border-color:rgba(168,239,209,.22);
+.sellerVerified{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(120,218,183,.1);
+  border:1px solid rgba(120,218,183,.2);
+  color:#a8efd1;
+  font-size:12px;
+  font-weight:700;
 }
 
-.adminAction.danger{
-  color:var(--danger);
+.sellerStats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:20px 0;
 }
 
+.sellerStat{
+  padding:17px;
+  border-radius:18px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+}
 
-/* EMPTY */
+.sellerStat strong{
+  display:block;
+  color:#fff;
+  font-size:20px;
+}
 
-.adminEmpty{
-  text-align:center;
-  padding:50px 20px;
-  border:1px dashed var(--line);
+.sellerStat span{
+  display:block;
+  margin-top:4px;
+  color:rgba(255,255,255,.5);
+  font-size:12px;
+}
+
+.sellerSectionTitle{
+  color:#fff;
+  font-size:16px;
+  font-weight:800;
+  margin:25px 0 12px;
+}
+
+.sellerListings{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.sellerMiniCar{
+  overflow:hidden;
   border-radius:20px;
-  color:var(--muted);
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.035);
+  cursor:pointer;
+  transition:.25s ease;
 }
 
-
-/* DETAIL PANEL */
-
-.adminDetail{
-  margin-top:12px;
-  padding:16px;
-  border:1px solid var(--line);
-  border-radius:17px;
-  background:rgba(0,0,0,.16);
+.sellerMiniCar:hover{
+  transform:translateY(-3px);
+  border-color:rgba(168,239,209,.25);
 }
 
-.adminDetail textarea{
+.sellerMiniCar img{
   width:100%;
-  min-height:80px;
-  resize:vertical;
-  border:1px solid var(--line);
-  outline:0;
-  color:white;
-  background:rgba(255,255,255,.045);
-  border-radius:13px;
+  height:145px;
+  object-fit:cover;
+  display:block;
+}
+
+.sellerMiniInfo{
   padding:12px;
 }
 
+.sellerMiniInfo strong{
+  display:block;
+  color:#fff;
+  font-size:14px;
+}
 
-/* RESPONSIVE */
+.sellerMiniInfo span{
+  display:block;
+  color:#a8efd1;
+  margin-top:5px;
+  font-size:13px;
+  font-weight:700;
+}
 
-@media(max-width:800px){
+.sellerActions{
+  display:flex;
+  gap:10px;
+  margin-top:22px;
+}
 
-  .adminStats{
-    grid-template-columns:1fr 1fr;
+.sellerActionBtn{
+  flex:1;
+  min-height:50px;
+  border-radius:16px;
+  border:1px solid rgba(168,239,209,.18);
+  cursor:pointer;
+  font-weight:800;
+  font-size:14px;
+}
+
+.sellerActionPrimary{
+  color:#06100b;
+  background:linear-gradient(135deg,#a8efd1,#78dab7);
+}
+
+.sellerActionSecondary{
+  color:#fff;
+  background:rgba(255,255,255,.05);
+}
+
+.sellerProtection{
+  margin-top:18px;
+  padding:15px;
+  border-radius:18px;
+  background:rgba(168,239,209,.045);
+  border:1px solid rgba(168,239,209,.1);
+}
+
+.sellerProtectionTitle{
+  color:#a8efd1;
+  font-weight:800;
+  font-size:13px;
+}
+
+.sellerProtectionText{
+  color:rgba(255,255,255,.56);
+  font-size:12px;
+  line-height:1.6;
+  margin-top:5px;
+}
+
+@media(max-width:600px){
+
+  #sellerProfileOverlay{
+    padding:10px;
   }
 
-  .adminRow{
+  .sellerProfileBox{
+    border-radius:25px;
+    padding:18px;
+  }
+
+  .sellerListings{
     grid-template-columns:1fr;
   }
 
-  .adminActions{
-    justify-content:flex-start;
+  .sellerStats{
+    grid-template-columns:1fr 1fr 1fr;
   }
 
-}
-
-@media(max-width:520px){
-
-  .adminStats{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .adminContent{
-    padding:15px;
-  }
-
-  .adminHeader{
-    padding:17px;
-  }
-
-  .adminHeaderInfo h2{
+  .sellerAvatar{
+    width:58px;
+    height:58px;
+    border-radius:19px;
     font-size:22px;
   }
 
-}
+  .sellerName{
+    font-size:19px;
+  }
 
+  .sellerActions{
+    flex-direction:column;
+  }
+}
 </style>
 
 
-<!-- =========================================================
-     ADMIN BUTTON
-========================================================= -->
+<!-- ================= SELLER PROFILE UI ================= -->
 
-<script>
+<div id="sellerProfileOverlay">
 
-(function(){
+  <div class="sellerProfileBox">
 
-  const navRight=document.querySelector(".navright");
+    <div class="sellerTopBar">
 
-  if(!navRight)return;
+      <div style="font-size:13px;color:rgba(255,255,255,.45);font-weight:700;">
+        CARHUB SELLER
+      </div>
 
-  const button=document.createElement("button");
+      <button
+        class="sellerClose"
+        onclick="closeSellerProfile()"
+        aria-label="Close"
+      >
+        ×
+      </button>
 
-  button.id="adminNavButton";
-  button.className="adminNavBtn";
-  button.innerHTML="⚙ Admin";
-  button.onclick=openAdminDashboard;
-
-  const authButton=document.getElementById("authButton");
-
-  if(authButton){
-    navRight.insertBefore(button,authButton);
-  }else{
-    navRight.appendChild(button);
-  }
-
-})();
-
-</script>
+    </div>
 
 
-<!-- =========================================================
-     ADMIN DASHBOARD
-========================================================= -->
+    <div class="sellerIdentity">
 
-<div id="adminOverlay" class="overlay">
+      <div class="sellerAvatar" id="sellerAvatar">
+        C
+      </div>
 
-  <div class="modal adminModal">
+      <div>
 
-    <div class="adminHeader">
+        <h2
+          class="sellerName"
+          id="sellerProfileName"
+        >
+          CarHub Seller
+        </h2>
 
-      <div class="adminHeaderTop">
-
-        <div class="adminHeaderInfo">
-
-          <h2>CarHub Admin</h2>
-
-          <p>
-            Manage sellers, listings and marketplace activity.
-          </p>
-
+        <div
+          class="sellerMeta"
+          id="sellerProfileLocation"
+        >
+          Nigeria
         </div>
 
-        <button
-          class="adminClose"
-          onclick="closeOverlay('adminOverlay')">
-          ×
-        </button>
+        <div
+          class="sellerVerified"
+          id="sellerVerification"
+        >
+          ✓ CarHub Seller
+        </div>
 
       </div>
 
     </div>
 
 
-    <div class="adminContent">
+    <div class="sellerStats">
 
-      <!-- STATS -->
-
-      <div class="adminStats">
-
-        <div class="adminStat">
-
-          <div class="adminStatLabel">
-            Total sellers
-          </div>
-
-          <div
-            id="adminTotalSellers"
-            class="adminStatValue">
-            0
-          </div>
-
-        </div>
-
-
-        <div class="adminStat">
-
-          <div class="adminStatLabel">
-            Verified sellers
-          </div>
-
-          <div
-            id="adminVerifiedSellers"
-            class="adminStatValue mint">
-            0
-          </div>
-
-        </div>
-
-
-        <div class="adminStat">
-
-          <div class="adminStatLabel">
-            Total listings
-          </div>
-
-          <div
-            id="adminTotalListings"
-            class="adminStatValue gold">
-            0
-          </div>
-
-        </div>
-
-
-        <div class="adminStat">
-
-          <div class="adminStatLabel">
-            Pending review
-          </div>
-
-          <div
-            id="adminPendingCount"
-            class="adminStatValue danger">
-            0
-          </div>
-
-        </div>
-
+      <div class="sellerStat">
+        <strong id="sellerListingCount">0</strong>
+        <span>Listings</span>
       </div>
 
-
-      <!-- TABS -->
-
-      <div class="adminTabs">
-
-        <button
-          id="adminTabSellers"
-          class="adminTab active"
-          onclick="switchAdminTab('sellers')">
-          👤 Sellers
-        </button>
-
-        <button
-          id="adminTabListings"
-          class="adminTab"
-          onclick="switchAdminTab('listings')">
-          🚗 Listings
-        </button>
-
+      <div class="sellerStat">
+        <strong id="sellerMemberSince">—</strong>
+        <span>Member</span>
       </div>
 
-
-      <!-- SELLERS -->
-
-      <div id="adminSellersPanel">
-
-        <div class="adminToolbar">
-
-          <input
-            id="adminSellerSearch"
-            class="adminSearch"
-            placeholder="Search sellers by name or email..."
-            oninput="filterAdminSellers()">
-
-          <button
-            class="secondary"
-            onclick="loadAdminData()">
-            ↻
-          </button>
-
-        </div>
-
-        <div
-          id="adminSellerList"
-          class="adminList">
-        </div>
-
+      <div class="sellerStat">
+        <strong>CarHub</strong>
+        <span>Marketplace</span>
       </div>
 
+    </div>
 
-      <!-- LISTINGS -->
 
-      <div
-        id="adminListingsPanel"
-        class="hidden">
+    <div class="sellerSectionTitle">
+      Seller's vehicles
+    </div>
 
-        <div class="adminToolbar">
+    <div
+      id="sellerListings"
+      class="sellerListings"
+    ></div>
 
-          <input
-            id="adminListingSearch"
-            class="adminSearch"
-            placeholder="Search listings..."
-            oninput="filterAdminListings()">
 
-          <button
-            class="secondary"
-            onclick="loadAdminData()">
-            ↻
-          </button>
+    <div class="sellerActions">
 
-        </div>
+      <button
+        class="sellerActionBtn sellerActionPrimary"
+        id="sellerMessageButton"
+        onclick="messageCurrentSeller()"
+      >
+        Message Seller
+      </button>
 
-        <div
-          id="adminListingList"
-          class="adminList">
-        </div>
+      <button
+        class="sellerActionBtn sellerActionSecondary"
+        onclick="closeSellerProfile()"
+      >
+        Back to Vehicle
+      </button>
 
+    </div>
+
+
+    <div class="sellerProtection">
+
+      <div class="sellerProtectionTitle">
+        🛡 Stay protected on CarHub
+      </div>
+
+      <div class="sellerProtectionText">
+        Review the seller profile and vehicle details before continuing.
+        Keep your conversations inside CarHub and never share sensitive
+        account or payment information in chat.
       </div>
 
     </div>
@@ -583,1218 +408,567 @@
 
 
 <script>
-
 /* =========================================================
-   CARHUB AFRICA
-   STEP 5 — ADMIN DASHBOARD LOGIC
-========================================================= */
+   CARHUB AFRICA — SELLER PROFILE ENGINE
+   ========================================================= */
 
-let adminSellers=[];
-let adminListings=[];
-let adminTab="sellers";
+let activeSellerProfile = null;
 
 
-/* =========================================================
-   ADMIN ACCESS
-========================================================= */
+/* ---------- GET SELLER VEHICLES ---------- */
 
-function isCarHubAdmin(){
+function getSellerVehicles(sellerId){
 
-  return !!(
-    currentUser &&
-    profile &&
-    profile.role==="admin"
-  );
+  if(!sellerId) return [];
+
+  return (window.listings || listings || []).filter(car => {
+
+    return String(car.seller_id || "") === String(sellerId);
+
+  });
 
 }
 
 
-function showAdminButton(){
+/* ---------- OPEN SELLER PROFILE ---------- */
 
-  const button=
-    document.getElementById("adminNavButton");
+async function openSellerProfile(sellerId, fallbackCar = null){
 
-  if(!button)return;
+  if(!sellerId){
 
-  if(isCarHubAdmin()){
+    if(fallbackCar){
 
-    button.style.display="block";
+      sellerId =
+        fallbackCar.seller_id ||
+        fallbackCar.sellerId ||
+        null;
 
-  }else{
-
-    button.style.display="none";
+    }
 
   }
 
-}
 
+  if(!sellerId){
 
-/* =========================================================
-   OPEN ADMIN
-========================================================= */
-
-async function openAdminDashboard(){
-
-  if(!currentUser){
-
-    toast(
-      "Sign in required",
-      "Sign in with your CarHub administrator account."
-    );
-
-    openAuth();
+    alert("Seller profile information is not available for this vehicle yet.");
     return;
 
   }
 
 
-  if(!isCarHubAdmin()){
+  const overlay =
+    document.getElementById("sellerProfileOverlay");
 
-    toast(
-      "Admin access required",
-      "This account is not an administrator."
-    );
-
-    return;
-
-  }
+  if(!overlay) return;
 
 
-  document
-    .getElementById("adminOverlay")
-    .classList.add("show");
+  activeSellerProfile = {
+
+    id:String(sellerId),
+
+    car:fallbackCar || null
+
+  };
 
 
-  await loadAdminData();
-
-}
+  let seller = null;
 
 
-/* =========================================================
-   ADMIN TABS
-========================================================= */
+  /* Try Supabase profile */
 
-function switchAdminTab(tab){
+  try{
 
-  adminTab=tab;
-
-
-  const sellersPanel=
-    document.getElementById("adminSellersPanel");
-
-  const listingsPanel=
-    document.getElementById("adminListingsPanel");
-
-
-  const sellersTab=
-    document.getElementById("adminTabSellers");
-
-  const listingsTab=
-    document.getElementById("adminTabListings");
-
-
-  if(tab==="sellers"){
-
-    sellersPanel.classList.remove("hidden");
-    listingsPanel.classList.add("hidden");
-
-    sellersTab.classList.add("active");
-    listingsTab.classList.remove("active");
-
-    filterAdminSellers();
-
-  }else{
-
-    sellersPanel.classList.add("hidden");
-    listingsPanel.classList.remove("hidden");
-
-    sellersTab.classList.remove("active");
-    listingsTab.classList.add("active");
-
-    filterAdminListings();
-
-  }
-
-}
-
-
-/* =========================================================
-   LOAD ADMIN DATA
-========================================================= */
-
-async function loadAdminData(){
-
-  if(!isCarHubAdmin())return;
-
-
-  const [
-    profilesResult,
-    listingsResult
-  ]=await Promise.all([
-
-    db
+    const result = await db
       .from("profiles")
       .select("*")
-      .order("created_at",{ascending:false}),
-
-    db
-      .from("listings")
-      .select("*")
-      .order("created_at",{ascending:false})
-
-  ]);
+      .eq("id",sellerId)
+      .maybeSingle();
 
 
-  if(profilesResult.error){
+    if(!result.error && result.data){
 
-    toast(
-      "Seller loading failed",
-      profilesResult.error.message
-    );
+      seller = result.data;
 
-    return;
+    }
+
+  }catch(error){
+
+    console.log("Seller profile lookup:",error);
 
   }
 
 
-  if(listingsResult.error){
+  /* Fallback to listing information */
 
-    toast(
-      "Listing loading failed",
-      listingsResult.error.message
-    );
-
-    return;
-
-  }
+  const sellerCars =
+    getSellerVehicles(sellerId);
 
 
-  adminSellers=
-    profilesResult.data || [];
-
-  adminListings=
-    listingsResult.data || [];
-
-
-  updateAdminStats();
-
-  filterAdminSellers();
-
-  filterAdminListings();
-
-}
+  const firstCar =
+    sellerCars[0] ||
+    fallbackCar ||
+    {};
 
 
-/* =========================================================
-   ADMIN STATISTICS
-========================================================= */
-
-function updateAdminStats(){
-
-  const totalSellers=
-    adminSellers.length;
-
-  const verifiedSellers=
-    adminSellers.filter(
-      x=>x.verification_status==="verified"
-    ).length;
-
-  const totalListings=
-    adminListings.length;
-
-  const pending=
-    adminSellers.filter(
-      x=>x.verification_status==="pending"
-    ).length;
+  const sellerName =
+    seller?.name ||
+    firstCar.seller_name ||
+    "CarHub Seller";
 
 
-  document
-    .getElementById("adminTotalSellers")
-    .textContent=totalSellers;
+  const sellerLocation =
+    seller?.location ||
+    firstCar.seller_location ||
+    "Nigeria";
 
 
-  document
-    .getElementById("adminVerifiedSellers")
-    .textContent=verifiedSellers;
+  const verified =
+    seller?.verification_status === "verified" ||
+    seller?.verification_status === "approved" ||
+    seller?.role === "verified_seller";
 
 
-  document
-    .getElementById("adminTotalListings")
-    .textContent=totalListings;
-
-
-  document
-    .getElementById("adminPendingCount")
-    .textContent=pending;
-
-}
-
-
-/* =========================================================
-   SELLER SEARCH
-========================================================= */
-
-function filterAdminSellers(){
-
-  const input=
-    document
-      .getElementById("adminSellerSearch")
-      .value
+  const avatarLetter =
+    sellerName
       .trim()
-      .toLowerCase();
+      .charAt(0)
+      .toUpperCase() || "C";
 
 
-  let data=[...adminSellers];
+  document.getElementById("sellerAvatar").textContent =
+    avatarLetter;
 
 
-  if(input){
+  document.getElementById("sellerProfileName").textContent =
+    sellerName;
 
-    data=data.filter(seller=>{
 
-      return (
+  document.getElementById("sellerProfileLocation").textContent =
+    sellerLocation;
 
-        String(seller.name || "")
-          .toLowerCase()
-          .includes(input)
 
-        ||
+  document.getElementById("sellerVerification").innerHTML =
+    verified
+      ? "✓ Verified Seller"
+      : "✓ CarHub Seller";
 
-        String(seller.email || "")
-          .toLowerCase()
-          .includes(input)
 
-        ||
+  document.getElementById("sellerVerification").style.color =
+    verified
+      ? "#a8efd1"
+      : "rgba(255,255,255,.62)";
 
-        String(seller.role || "")
-          .toLowerCase()
-          .includes(input)
 
+  document.getElementById("sellerListingCount").textContent =
+    sellerCars.length;
+
+
+  if(seller?.created_at){
+
+    const date =
+      new Date(seller.created_at);
+
+    document.getElementById("sellerMemberSince").textContent =
+      date.toLocaleDateString(
+        undefined,
+        {
+          month:"short",
+          year:"numeric"
+        }
       );
 
-    });
+  }else{
+
+    document.getElementById("sellerMemberSince").textContent =
+      "CarHub";
 
   }
 
 
-  renderAdminSellers(data);
-
-}
-
-
-/* =========================================================
-   RENDER SELLERS
-========================================================= */
-
-function renderAdminSellers(data){
-
-  const box=
-    document.getElementById("adminSellerList");
+  const listingsBox =
+    document.getElementById("sellerListings");
 
 
-  if(!data.length){
+  if(!sellerCars.length){
 
-    box.innerHTML=`
-      <div class="adminEmpty">
-        No sellers found.
+    listingsBox.innerHTML = `
+      <div style="
+        grid-column:1/-1;
+        padding:25px;
+        border-radius:18px;
+        background:rgba(255,255,255,.035);
+        color:rgba(255,255,255,.5);
+        text-align:center;
+        font-size:13px;
+      ">
+        No other active vehicles from this seller.
       </div>
     `;
 
-    return;
+  }else{
+
+    listingsBox.innerHTML =
+      sellerCars.map(car => {
+
+        const image =
+          Array.isArray(car.images)
+            ? car.images[0]
+            : (
+                car.image ||
+                car.images ||
+                "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=900&q=80"
+              );
+
+
+        const title =
+          `${car.make || ""} ${car.model || ""} ${car.year || ""}`
+            .trim();
+
+
+        const price =
+          car.price
+            ? (
+                typeof car.price === "number"
+                  ? "₦" + Number(car.price).toLocaleString()
+                  : car.price
+              )
+            : "Price on request";
+
+
+        return `
+
+          <div
+            class="sellerMiniCar"
+            onclick="openSellerVehicle('${String(car.id).replace(/'/g,"\\'")}')"
+          >
+
+            <img
+              src="${image}"
+              alt="${title}"
+              onerror="this.src='https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=900&q=80'"
+            >
+
+            <div class="sellerMiniInfo">
+
+              <strong>
+                ${title || "Vehicle"}
+              </strong>
+
+              <span>
+                ${price}
+              </span>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }).join("");
 
   }
 
 
-  box.innerHTML=data.map(seller=>{
+  overlay.classList.add("show");
 
-    const status=
-      seller.verification_status ||
-      "pending";
+  document.body.style.overflow = "hidden";
 
-
-    let statusClass=
-      "statusPending";
+}
 
 
-    if(status==="verified"){
-      statusClass="statusVerified";
+/* ---------- CLOSE SELLER PROFILE ---------- */
+
+function closeSellerProfile(){
+
+  const overlay =
+    document.getElementById("sellerProfileOverlay");
+
+  if(!overlay) return;
+
+  overlay.classList.remove("show");
+
+  document.body.style.overflow = "";
+
+  activeSellerProfile = null;
+
+}
+
+
+/* ---------- OPEN VEHICLE FROM SELLER PROFILE ---------- */
+
+function openSellerVehicle(id){
+
+  closeSellerProfile();
+
+
+  setTimeout(()=>{
+
+    if(typeof window.viewCar === "function"){
+
+      window.viewCar(id);
+
+    }else if(typeof viewCar === "function"){
+
+      viewCar(id);
+
     }
 
-
-    if(status==="suspended"){
-      statusClass="statusSuspended";
-    }
-
-
-    const isCurrent=
-      seller.id===currentUser.id;
-
-
-    return `
-
-      <div class="adminRow">
-
-        <div class="adminMain">
-
-          <strong>
-            ${escapeHtml(
-              seller.name ||
-              seller.email ||
-              "CarHub User"
-            )}
-          </strong>
-
-          <span>
-            ${escapeHtml(
-              seller.email || "No email"
-            )}
-          </span>
-
-          <span>
-            Role:
-            ${escapeHtml(
-              seller.role || "user"
-            )}
-          </span>
-
-        </div>
-
-
-        <div>
-
-          <span class="adminStatus ${statusClass}">
-            ${escapeHtml(status)}
-          </span>
-
-        </div>
-
-
-        <div>
-
-          <span class="adminStatus ${
-            seller.role==="admin"
-            ?"statusVerified"
-            :"statusPending"
-          }">
-
-            ${seller.role==="admin"
-              ?"ADMIN"
-              :"SELLER"}
-
-          </span>
-
-        </div>
-
-
-        <div class="adminActions">
-
-          ${
-            status!=="verified"
-            ?
-
-            `<button
-              class="adminAction verify"
-              onclick="verifySeller('${escapeHtml(seller.id)}')">
-              ✓ Verify
-            </button>`
-
-            :
-
-            `<button
-              class="adminAction"
-              onclick="setSellerPending('${escapeHtml(seller.id)}')">
-              Pending
-            </button>`
-          }
-
-
-          ${
-            status!=="suspended"
-            ?
-
-            `<button
-              class="adminAction danger"
-              onclick="suspendSeller('${escapeHtml(seller.id)}')">
-              Suspend
-            </button>`
-
-            :
-
-            `<button
-              class="adminAction verify"
-              onclick="restoreSeller('${escapeHtml(seller.id)}')">
-              Restore
-            </button>`
-          }
-
-
-          ${
-            !isCurrent
-            ?
-
-            `<button
-              class="adminAction"
-              onclick="viewSeller('${escapeHtml(seller.id)}')">
-              View
-            </button>`
-
-            :
-
-            `<button
-              class="adminAction"
-              onclick="viewSeller('${escapeHtml(seller.id)}')">
-              You
-            </button>`
-          }
-
-        </div>
-
-      </div>
-
-    `;
-
-  }).join("");
+  },150);
 
 }
 
 
-/* =========================================================
-   VERIFY SELLER
-========================================================= */
+/* ---------- MESSAGE SELLER ---------- */
 
-async function verifySeller(id){
+function messageCurrentSeller(){
 
-  if(!isCarHubAdmin())return;
-
-
-  const {error}=await db
-    .from("profiles")
-    .update({
-
-      verification_status:"verified",
-
-      verification_note:
-        "Verified by CarHub administrator.",
-
-      verified_at:
-        new Date().toISOString()
-
-    })
-    .eq("id",id);
-
-
-  if(error){
-
-    toast(
-      "Verification failed",
-      error.message
-    );
+  if(!activeSellerProfile){
 
     return;
 
   }
 
 
-  toast(
-    "Seller verified",
-    "The seller has been marked as verified."
-  );
+  const sellerId =
+    activeSellerProfile.id;
 
 
-  await loadAdminData();
+  closeSellerProfile();
 
-  await loadListings();
 
-}
+  setTimeout(()=>{
 
+    try{
 
-/* =========================================================
-   SET PENDING
-========================================================= */
+      /* Existing CarHub messaging system */
 
-async function setSellerPending(id){
+      if(typeof openChat === "function"){
 
-  if(!isCarHubAdmin())return;
+        openChat(sellerId);
 
+        return;
 
-  const {error}=await db
-    .from("profiles")
-    .update({
+      }
 
-      verification_status:"pending",
 
-      verification_note:
-        "Verification pending.",
+      if(typeof openConversation === "function"){
 
-      verified_at:null
+        openConversation(sellerId);
 
-    })
-    .eq("id",id);
+        return;
 
+      }
 
-  if(error){
 
-    toast(
-      "Update failed",
-      error.message
-    );
+      if(typeof openMessages === "function"){
 
-    return;
+        openMessages();
 
-  }
+        return;
 
+      }
 
-  toast(
-    "Seller moved to pending",
-    "The seller is awaiting verification."
-  );
 
+      /* Fallback */
 
-  await loadAdminData();
+      const messagesButton =
+        document.querySelector(
+          '[onclick*="Messages"], #messagesButton'
+        );
 
-}
 
+      if(messagesButton){
 
-/* =========================================================
-   SUSPEND SELLER
-========================================================= */
+        messagesButton.click();
 
-async function suspendSeller(id){
+        return;
 
-  if(!isCarHubAdmin())return;
+      }
 
 
-  if(id===currentUser.id){
-
-    toast(
-      "Action blocked",
-      "You cannot suspend your own administrator account."
-    );
-
-    return;
-
-  }
-
-
-  const confirmed=
-    confirm(
-      "Suspend this seller? Their account will be marked as suspended."
-    );
-
-
-  if(!confirmed)return;
-
-
-  const {error}=await db
-    .from("profiles")
-    .update({
-
-      verification_status:"suspended",
-
-      verification_note:
-        "Account suspended by CarHub administrator."
-
-    })
-    .eq("id",id);
-
-
-  if(error){
-
-    toast(
-      "Suspension failed",
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  toast(
-    "Seller suspended",
-    "The seller has been suspended."
-  );
-
-
-  await loadAdminData();
-
-}
-
-
-/* =========================================================
-   RESTORE SELLER
-========================================================= */
-
-async function restoreSeller(id){
-
-  if(!isCarHubAdmin())return;
-
-
-  const {error}=await db
-    .from("profiles")
-    .update({
-
-      verification_status:"pending",
-
-      verification_note:
-        "Seller restored and awaiting verification."
-
-    })
-    .eq("id",id);
-
-
-  if(error){
-
-    toast(
-      "Restore failed",
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  toast(
-    "Seller restored",
-    "The seller is now pending verification."
-  );
-
-
-  await loadAdminData();
-
-}
-
-
-/* =========================================================
-   VIEW SELLER
-========================================================= */
-
-function viewSeller(id){
-
-  const seller=
-    adminSellers.find(
-      x=>String(x.id)===String(id)
-    );
-
-
-  if(!seller)return;
-
-
-  const sellerListings=
-    adminListings.filter(
-      x=>String(x.seller_id)===String(id)
-    );
-
-
-  const listingText=
-    sellerListings.length
-    ? sellerListings
-        .map(
-          x=>`${x.make || ""} ${x.model || ""}`
-        )
-        .join(", ")
-    : "No listings";
-
-
-  alert(
-
-`CarHub Seller
-
-Name: ${seller.name || "Not provided"}
-
-Email: ${seller.email || "Not provided"}
-
-Role: ${seller.role || "user"}
-
-Verification: ${seller.verification_status || "pending"}
-
-Listings: ${listingText}`
-
-  );
-
-}
-
-
-/* =========================================================
-   LISTING SEARCH
-========================================================= */
-
-function filterAdminListings(){
-
-  const input=
-    document
-      .getElementById("adminListingSearch")
-      .value
-      .trim()
-      .toLowerCase();
-
-
-  let data=[...adminListings];
-
-
-  if(input){
-
-    data=data.filter(listing=>{
-
-      return (
-
-        `${listing.make || ""} ${listing.model || ""} ${listing.year || ""}`
-          .toLowerCase()
-          .includes(input)
-
-        ||
-
-        String(listing.seller_name || "")
-          .toLowerCase()
-          .includes(input)
-
-        ||
-
-        String(listing.seller_location || "")
-          .toLowerCase()
-          .includes(input)
-
+      alert(
+        "Open Messages to start a conversation with this seller."
       );
 
-    });
+    }catch(error){
 
-  }
+      console.log("Message seller:",error);
 
+    }
 
-  renderAdminListings(data);
+  },180);
 
 }
 
 
 /* =========================================================
-   RENDER LISTINGS
-========================================================= */
+   ADD "VIEW SELLER" BUTTON TO VEHICLE CARDS
+   ========================================================= */
 
-function renderAdminListings(data){
+function addSellerButtons(){
 
-  const box=
-    document.getElementById("adminListingList");
-
-
-  if(!data.length){
-
-    box.innerHTML=`
-      <div class="adminEmpty">
-        No listings found.
-      </div>
-    `;
-
-    return;
-
-  }
+  const cards =
+    document.querySelectorAll(
+      ".car-card, .vehicle-card, .listing-card"
+    );
 
 
-  box.innerHTML=data.map(listing=>{
+  cards.forEach(card => {
 
-    const status=
-      listing.listing_status ||
-      "active";
+    if(card.dataset.sellerButtonAdded === "true"){
 
+      return;
 
-    let statusClass=
-      "statusActive";
-
-
-    if(status==="hidden"){
-      statusClass="statusHidden";
     }
 
 
-    if(status==="pending"){
-      statusClass="statusPending";
-    }
+    const onclick =
+      card.getAttribute("onclick") || "";
 
 
-    return `
-
-      <div class="adminRow">
-
-        <div class="adminMain">
-
-          <strong>
-            ${escapeHtml(
-              listing.make || ""
-            )}
-            ${escapeHtml(
-              listing.model || ""
-            )}
-            ${listing.year
-              ? " · "+escapeHtml(listing.year)
-              : ""}
-          </strong>
-
-          <span>
-            Seller:
-            ${escapeHtml(
-              listing.seller_name ||
-              "Unknown seller"
-            )}
-          </span>
-
-          <span>
-            ${money(listing.price)}
-            ·
-            ${escapeHtml(
-              listing.seller_location ||
-              "Nigeria"
-            )}
-          </span>
-
-        </div>
-
-
-        <div>
-
-          <span class="adminStatus ${statusClass}">
-            ${escapeHtml(status)}
-          </span>
-
-        </div>
-
-
-        <div>
-
-          ${
-            listing.condition
-            ?
-
-            `<span class="adminStatus statusPending">
-              ${escapeHtml(listing.condition)}
-            </span>`
-
-            :
-
-            ""
-          }
-
-        </div>
-
-
-        <div class="adminActions">
-
-          ${
-            status!=="active"
-
-            ?
-
-            `<button
-              class="adminAction verify"
-              onclick="activateListing('${escapeHtml(listing.id)}')">
-              ✓ Activate
-            </button>`
-
-            :
-
-            `<button
-              class="adminAction"
-              onclick="hideListing('${escapeHtml(listing.id)}')">
-              Hide
-            </button>`
-          }
-
-
-          <button
-            class="adminAction"
-            onclick="viewAdminListing('${escapeHtml(listing.id)}')">
-            View
-          </button>
-
-
-          <button
-            class="adminAction danger"
-            onclick="deleteAdminListing('${escapeHtml(listing.id)}')">
-            Delete
-          </button>
-
-        </div>
-
-      </div>
-
-    `;
-
-  }).join("");
-
-}
-
-
-/* =========================================================
-   ACTIVATE LISTING
-========================================================= */
-
-async function activateListing(id){
-
-  if(!isCarHubAdmin())return;
-
-
-  const {error}=await db
-    .from("listings")
-    .update({
-      listing_status:"active"
-    })
-    .eq("id",id);
-
-
-  if(error){
-
-    toast(
-      "Activation failed",
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  toast(
-    "Listing activated",
-    "The vehicle is now active."
-  );
-
-
-  await loadAdminData();
-
-  await loadListings();
-
-}
-
-
-/* =========================================================
-   HIDE LISTING
-========================================================= */
-
-async function hideListing(id){
-
-  if(!isCarHubAdmin())return;
-
-
-  const {error}=await db
-    .from("listings")
-    .update({
-      listing_status:"hidden"
-    })
-    .eq("id",id);
-
-
-  if(error){
-
-    toast(
-      "Could not hide listing",
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  toast(
-    "Listing hidden",
-    "The vehicle has been removed from active marketplace results."
-  );
-
-
-  await loadAdminData();
-
-  await loadListings();
-
-}
-
-
-/* =========================================================
-   DELETE LISTING
-========================================================= */
-
-async function deleteAdminListing(id){
-
-  if(!isCarHubAdmin())return;
-
-
-  const confirmed=
-    confirm(
-      "Delete this vehicle listing permanently?"
-    );
-
-
-  if(!confirmed)return;
-
-
-  const {error}=await db
-    .from("listings")
-    .delete()
-    .eq("id",id);
-
-
-  if(error){
-
-    toast(
-      "Delete failed",
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  toast(
-    "Listing deleted",
-    "The vehicle has been removed."
-  );
-
-
-  await loadAdminData();
-
-  await loadListings();
-
-}
-
-
-/* =========================================================
-   VIEW ADMIN LISTING
-========================================================= */
-
-function viewAdminListing(id){
-
-  const listing=
-    adminListings.find(
-      x=>String(x.id)===String(id)
-    );
-
-
-  if(!listing)return;
-
-
-  const image=
-    listing.images?.[0] || "";
-
-
-  const note=
-    prompt(
-      "Admin note for this listing:",
-      listing.admin_note || ""
-    );
-
-
-  if(note!==null){
-
-    saveAdminNote(
-      id,
-      note
-    );
-
-  }
-
-
-  if(image){
-
-    const opened=
-      window.open(
-        image,
-        "_blank"
+    const match =
+      onclick.match(
+        /viewCar\(['"]([^'"]+)['"]\)/
       );
 
-  }
+
+    if(!match){
+
+      return;
+
+    }
+
+
+    const carId =
+      match[1];
+
+
+    const allCars =
+      window.listings || listings || [];
+
+
+    const car =
+      allCars.find(
+        x => String(x.id) === String(carId)
+      );
+
+
+    if(!car || !car.seller_id){
+
+      return;
+
+    }
+
+
+    const button =
+      document.createElement("button");
+
+
+    button.type = "button";
+
+    button.textContent =
+      "View Seller";
+
+
+    button.style.cssText = `
+      width:100%;
+      margin-top:8px;
+      min-height:40px;
+      border-radius:13px;
+      border:1px solid rgba(168,239,209,.14);
+      background:rgba(168,239,209,.055);
+      color:#a8efd1;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+    `;
+
+
+    button.onclick = function(event){
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      openSellerProfile(
+        car.seller_id,
+        car
+      );
+
+    };
+
+
+    card.appendChild(button);
+
+
+    card.dataset.sellerButtonAdded =
+      "true";
+
+  });
 
 }
 
 
 /* =========================================================
-   SAVE ADMIN NOTE
-========================================================= */
+   WATCH FOR NEW CATALOGUE CARDS
+   ========================================================= */
 
-async function saveAdminNote(id,note){
+const sellerCardObserver =
+  new MutationObserver(()=>{
 
-  if(!isCarHubAdmin())return;
+    addSellerButtons();
 
-
-  const {error}=await db
-    .from("listings")
-    .update({
-      admin_note:note
-    })
-    .eq("id",id);
+  });
 
 
-  if(error){
-
-    toast(
-      "Note failed",
-      error.message
-    );
-
-    return;
-
+sellerCardObserver.observe(
+  document.body,
+  {
+    childList:true,
+    subtree:true
   }
+);
 
 
-  toast(
-    "Admin note saved",
-    "The listing note has been updated."
-  );
+/* Initial attempt */
 
-
-  await loadAdminData();
-
-}
+setTimeout(
+  addSellerButtons,
+  1200
+);
 
 
 /* =========================================================
-   ADMIN REFRESH WHEN PROFILE LOADS
-========================================================= */
+   CLOSE WITH ESC
+   ========================================================= */
 
-const originalUpdateAuthButton=
-  window.updateAuthButton;
+document.addEventListener(
+  "keydown",
+  function(event){
 
+    if(event.key === "Escape"){
 
-window.updateAuthButton=function(){
+      closeSellerProfile();
 
-  if(typeof originalUpdateAuthButton==="function"){
-    originalUpdateAuthButton();
+    }
+
   }
-
-  showAdminButton();
-
-};
+);
 
 
 /* =========================================================
-   ALSO CHECK AFTER PROFILE LOAD
-========================================================= */
-
-const originalLoadProfile=
-  window.loadProfile;
-
-
-window.loadProfile=async function(){
-
-  if(typeof originalLoadProfile==="function"){
-    await originalLoadProfile();
-  }
-
-  showAdminButton();
-
-};
-
-
-/* =========================================================
-   PROTECT ADMIN OVERLAY
-========================================================= */
+   CLOSE WHEN CLICKING BACKDROP
+   ========================================================= */
 
 document
-  .getElementById("adminOverlay")
+  .getElementById("sellerProfileOverlay")
   ?.addEventListener(
     "click",
-    event=>{
+    function(event){
 
-      if(event.target.id==="adminOverlay"){
+      if(event.target === this){
 
-        closeOverlay("adminOverlay");
+        closeSellerProfile();
 
       }
 
