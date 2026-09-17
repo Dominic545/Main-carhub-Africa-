@@ -2993,3 +2993,2709 @@ console.log(
 }
 
 </style>
+<!-- =========================================================
+     CARHUB AFRICA — MESSAGING + INSPECTIONS ENGINE
+     CODE 3 OF 4
+     ========================================================= -->
+
+<script>
+
+/* =========================================================
+   CARHUB COMMUNICATION ENGINE
+   ========================================================= */
+
+const CH_MESSAGES_KEY =
+  "carhub_messages_v2";
+
+const CH_INSPECTIONS_KEY =
+  "carhub_inspections_v2";
+
+const CH_ALERTS_KEY =
+  "carhub_transaction_alerts_v2";
+
+
+/* =========================================================
+   GENERIC STORAGE
+   ========================================================= */
+
+function chRead(key, fallback=[]){
+
+  try{
+
+    const value =
+      JSON.parse(
+        localStorage.getItem(key)
+      );
+
+    return value ?? fallback;
+
+  }catch(error){
+
+    return fallback;
+
+  }
+
+}
+
+
+function chWrite(key,value){
+
+  localStorage.setItem(
+    key,
+    JSON.stringify(value)
+  );
+
+}
+
+
+/* =========================================================
+   CURRENT USER
+   ========================================================= */
+
+function chCurrentUser(){
+
+  if(
+    typeof getCurrentSeller ===
+    "function"
+  ){
+
+    return getCurrentSeller();
+
+  }
+
+  if(
+    typeof getSession ===
+    "function"
+  ){
+
+    const session =
+      getSession();
+
+    if(session){
+
+      return {
+
+        id:session.id,
+
+        name:
+          session.name ||
+          "CarHub User",
+
+        email:
+          session.email ||
+          "",
+
+        phone:
+          session.phone ||
+          "",
+
+        location:
+          session.location ||
+          "Nigeria"
+
+      };
+
+    }
+
+  }
+
+  return null;
+
+}
+
+
+/* =========================================================
+   CONVERSATION ID
+   ========================================================= */
+
+function chConversationId(
+  listingId,
+  buyerId,
+  sellerId
+){
+
+  return [
+
+    String(listingId || ""),
+    String(buyerId || ""),
+    String(sellerId || "")
+
+  ].join("_");
+
+}
+
+
+/* =========================================================
+   FIND LISTING
+   ========================================================= */
+
+function chFindListing(id){
+
+  if(
+    typeof getListing ===
+    "function"
+  ){
+
+    return getListing(id);
+
+  }
+
+  try{
+
+    const data =
+      JSON.parse(
+        localStorage.getItem(
+          "carhub_shared_listings"
+        )
+      ) || [];
+
+    return data.find(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+  }catch(error){
+
+    return null;
+
+  }
+
+}
+
+
+/* =========================================================
+   OPEN MESSAGE
+   ========================================================= */
+
+function openMessage(
+  listingId
+){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    if(
+      typeof openLogin ===
+      "function"
+    ){
+
+      openLogin();
+
+    }
+
+    return;
+
+  }
+
+
+  const listing =
+    chFindListing(
+      listingId
+    );
+
+  if(!listing){
+
+    toast(
+      "Vehicle listing not found."
+    );
+
+    return;
+
+  }
+
+
+  if(
+    String(listing.sellerId) ===
+    String(user.id)
+  ){
+
+    toast(
+      "This is your own listing."
+    );
+
+    return;
+
+  }
+
+
+  const sellerId =
+    listing.sellerId;
+
+
+  const conversation =
+    chConversationId(
+      listing.id,
+      user.id,
+      sellerId
+    );
+
+
+  chOpenConversation(
+    listing,
+    conversation,
+    sellerId
+  );
+
+}
+
+
+/* =========================================================
+   OPEN CONVERSATION
+   ========================================================= */
+
+function chOpenConversation(
+  listing,
+  conversationId,
+  sellerId
+){
+
+  const user =
+    chCurrentUser();
+
+
+  const messages =
+    chRead(
+      CH_MESSAGES_KEY,
+      []
+    );
+
+
+  const conversationMessages =
+    messages.filter(
+      message =>
+        message.conversationId ===
+        conversationId
+    );
+
+
+  const seller =
+    (
+      typeof UserDB !==
+      "undefined" &&
+      UserDB.findById
+    )
+    ?UserDB.findById(
+      sellerId
+    )
+    :null;
+
+
+  const sellerName =
+    seller?.name ||
+    listing.sellerName ||
+    "CarHub Seller";
+
+
+  const firstMessage =
+    conversationMessages.length ===
+    0;
+
+
+  openModal(
+    `Message ${sellerName}`,
+    `
+
+      <div
+        class="ch-chat"
+      >
+
+        <div
+          class="ch-chat-header"
+        >
+
+          <div
+            class="seller-avatar"
+          >
+
+            ${initials(
+              sellerName
+            )}
+
+          </div>
+
+          <div>
+
+            <strong>
+              ${esc(sellerName)}
+            </strong>
+
+            <div
+              class="seller-location"
+            >
+
+              ${esc(
+                listing.location ||
+                listing.sellerLocation ||
+                "Nigeria"
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="ch-vehicle-reference"
+        >
+
+          <div
+            class="ch-reference-image"
+          >
+
+            <img
+              src="${esc(
+                listing.images?.[0] ||
+                ""
+              )}"
+              alt=""
+            >
+
+          </div>
+
+          <div>
+
+            <strong>
+              ${esc(
+                listing.year
+              )}
+              ${esc(
+                listing.make
+              )}
+              ${esc(
+                listing.model
+              )}
+            </strong>
+
+            <div>
+              ${money(
+                listing.price
+              )}
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="chMessages-${conversationId}"
+          class="ch-messages"
+        >
+
+          ${
+            firstMessage
+            ?`
+
+              <div
+                class="ch-empty-chat"
+              >
+
+                Start a conversation
+                with the seller.
+
+              </div>
+
+            `
+            :
+            conversationMessages
+              .map(
+                chRenderMessage
+              )
+              .join("")
+          }
+
+        </div>
+
+
+        <div
+          class="ch-quick-actions"
+        >
+
+          <button
+            class="btn small"
+            onclick="
+              chQuickMessage(
+                '${conversationId}',
+                '${listing.id}',
+                'Is this vehicle still available?'
+              )
+            "
+          >
+            Available?
+          </button>
+
+          <button
+            class="btn small"
+            onclick="
+              chQuickMessage(
+                '${conversationId}',
+                '${listing.id}',
+                'Can I book an inspection?'
+              )
+            "
+          >
+            Inspection
+          </button>
+
+          <button
+            class="btn small"
+            onclick="
+              openInspection(
+                '${listing.id}'
+              )
+            "
+          >
+            Book inspection
+          </button>
+
+        </div>
+
+
+        <div
+          class="ch-compose"
+        >
+
+          <textarea
+            id="chInput-${conversationId}"
+            class="textarea"
+            rows="2"
+            placeholder="Write a message..."
+          ></textarea>
+
+
+          <button
+            class="btn primary full"
+            onclick="
+              chSendMessage(
+                '${listing.id}',
+                '${conversationId}',
+                '${sellerId}'
+              )
+            "
+          >
+
+            Send message
+
+          </button>
+
+        </div>
+
+      </div>
+
+    `
+  );
+
+
+  chMarkConversationRead(
+    conversationId
+  );
+
+}
+
+
+/* =========================================================
+   RENDER MESSAGE
+   ========================================================= */
+
+function chRenderMessage(
+  message
+){
+
+  const user =
+    chCurrentUser();
+
+
+  const mine =
+    String(
+      message.senderId
+    ) ===
+    String(
+      user?.id
+    );
+
+
+  return `
+
+    <div
+      class="
+        ch-message-row
+        ${mine?"mine":"theirs"}
+      "
+    >
+
+      <div
+        class="ch-message-bubble"
+      >
+
+        <div>
+          ${esc(
+            message.text
+          )}
+        </div>
+
+        <small>
+          ${chFormatTime(
+            message.createdAt
+          )}
+        </small>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   SEND MESSAGE
+   ========================================================= */
+
+function chSendMessage(
+  listingId,
+  conversationId,
+  sellerId
+){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    return;
+
+  }
+
+
+  const input =
+    document.getElementById(
+      "chInput-"+conversationId
+    );
+
+  if(!input){
+
+    return;
+
+  }
+
+
+  const text =
+    input.value.trim();
+
+
+  if(!text){
+
+    return;
+
+  }
+
+
+  const listing =
+    chFindListing(
+      listingId
+    );
+
+
+  const messages =
+    chRead(
+      CH_MESSAGES_KEY,
+      []
+    );
+
+
+  const message={
+
+    id:
+      "msg_"+Date.now()+
+      "_"+
+      Math.random()
+        .toString(36)
+        .slice(2,7),
+
+    conversationId,
+
+    listingId,
+
+    senderId:
+      user.id,
+
+    senderName:
+      user.name ||
+      "CarHub User",
+
+    receiverId:
+      sellerId,
+
+    receiverName:
+      listing?.sellerName ||
+      "CarHub Seller",
+
+    text,
+
+    read:false,
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+
+  messages.push(
+    message
+  );
+
+
+  chWrite(
+    CH_MESSAGES_KEY,
+    messages
+  );
+
+
+  chCheckTransactionStage(
+    message,
+    listing
+  );
+
+
+  input.value="";
+
+
+  chRefreshOpenConversation(
+    listingId,
+    conversationId,
+    sellerId
+  );
+
+
+  if(
+    typeof addActivity ===
+    "function"
+  ){
+
+    addActivity(
+      "Message sent",
+      `Your message to ${
+        listing?.sellerName ||
+        "the seller"
+      } was sent.`
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   QUICK MESSAGE
+   ========================================================= */
+
+function chQuickMessage(
+  conversationId,
+  listingId,
+  text
+){
+
+  const listing =
+    chFindListing(
+      listingId
+    );
+
+  if(!listing){
+
+    return;
+
+  }
+
+
+  chSendMessage(
+    listingId,
+    conversationId,
+    listing.sellerId
+  );
+
+
+  /*
+    If the compose box exists,
+    send the supplied quick text.
+  */
+
+  const input =
+    document.getElementById(
+      "chInput-"+conversationId
+    );
+
+  if(input){
+
+    input.value =
+      text;
+
+    chSendMessage(
+      listingId,
+      conversationId,
+      listing.sellerId
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   REFRESH CONVERSATION
+   ========================================================= */
+
+function chRefreshOpenConversation(
+  listingId,
+  conversationId,
+  sellerId
+){
+
+  const box =
+    document.getElementById(
+      "chMessages-"+conversationId
+    );
+
+  if(!box){
+
+    return;
+
+  }
+
+
+  const messages =
+    chRead(
+      CH_MESSAGES_KEY,
+      []
+    );
+
+
+  const conversationMessages =
+    messages.filter(
+      message =>
+        message.conversationId ===
+        conversationId
+    );
+
+
+  box.innerHTML =
+    conversationMessages
+      .map(
+        chRenderMessage
+      )
+      .join("");
+
+
+  box.scrollTop =
+    box.scrollHeight;
+
+}
+
+
+/* =========================================================
+   MARK READ
+   ========================================================= */
+
+function chMarkConversationRead(
+  conversationId
+){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    return;
+
+  }
+
+
+  const messages =
+    chRead(
+      CH_MESSAGES_KEY,
+      []
+    );
+
+
+  let changed=false;
+
+
+  messages.forEach(
+    message=>{
+
+      if(
+        message.conversationId ===
+        conversationId &&
+
+        String(
+          message.receiverId
+        ) ===
+        String(user.id) &&
+
+        !message.read
+      ){
+
+        message.read=true;
+
+        changed=true;
+
+      }
+
+    }
+  );
+
+
+  if(changed){
+
+    chWrite(
+      CH_MESSAGES_KEY,
+      messages
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   MESSAGE LIST
+   ========================================================= */
+
+function chGetMyMessages(){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    return [];
+
+  }
+
+
+  const messages =
+    chRead(
+      CH_MESSAGES_KEY,
+      []
+    );
+
+
+  return messages.filter(
+    message =>
+      String(
+        message.senderId
+      ) ===
+      String(user.id)
+      ||
+      String(
+        message.receiverId
+      ) ===
+      String(user.id)
+  );
+
+}
+
+
+/* =========================================================
+   CONVERSATIONS
+   ========================================================= */
+
+function chGetConversations(){
+
+  const messages =
+    chGetMyMessages();
+
+
+  const map={};
+
+
+  messages.forEach(
+    message=>{
+
+      if(
+        !map[
+          message.conversationId
+        ]
+      ){
+
+        map[
+          message.conversationId
+        ]=[];
+
+      }
+
+      map[
+        message.conversationId
+      ].push(
+        message
+      );
+
+    }
+  );
+
+
+  return Object.keys(
+    map
+  ).map(
+    id=>{
+
+      const items =
+        map[id]
+          .sort(
+            (a,b)=>
+              new Date(
+                a.createdAt
+              ) -
+              new Date(
+                b.createdAt
+              )
+          );
+
+
+      const last =
+        items[
+          items.length-1
+        ];
+
+
+      return {
+
+        id,
+
+        messages:
+          items,
+
+        lastMessage:
+          last,
+
+        unread:
+          items.filter(
+            message=>
+              !message.read &&
+              String(
+                message.receiverId
+              ) ===
+              String(
+                chCurrentUser()?.id
+              )
+          ).length
+
+      };
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   UNREAD COUNT
+   ========================================================= */
+
+function chUnreadCount(){
+
+  return chGetMyMessages()
+    .filter(
+      message =>{
+
+        const user =
+          chCurrentUser();
+
+        return (
+          !message.read &&
+          String(
+            message.receiverId
+          ) ===
+          String(
+            user?.id
+          )
+        );
+
+      }
+    )
+    .length;
+
+}
+
+
+/* =========================================================
+   TRANSACTION STAGE DETECTION
+   ========================================================= */
+
+const CH_TRANSACTION_TERMS=[
+
+  "payment",
+  "pay",
+  "paid",
+  "deposit",
+  "transfer",
+  "bank",
+  "account",
+  "money",
+  "send money",
+  "price",
+  "deal",
+  "buy",
+  "purchase",
+  "sold",
+  "sale",
+  "receipt",
+  "invoice",
+  "balance",
+  "advance"
+
+];
+
+
+function chCheckTransactionStage(
+  message,
+  listing
+){
+
+  const text =
+    String(
+      message.text || ""
+    )
+    .toLowerCase();
+
+
+  const matched =
+    CH_TRANSACTION_TERMS
+      .filter(
+        term =>
+          text.includes(term)
+      );
+
+
+  if(
+    matched.length <
+    1
+  ){
+
+    return null;
+
+  }
+
+
+  const alerts =
+    chRead(
+      CH_ALERTS_KEY,
+      []
+    );
+
+
+  const alert={
+
+    id:
+      "alert_"+Date.now()+
+      "_"+
+      Math.random()
+        .toString(36)
+        .slice(2,7),
+
+    conversationId:
+      message.conversationId,
+
+    messageId:
+      message.id,
+
+    listingId:
+      message.listingId,
+
+    sellerId:
+      listing?.sellerId,
+
+    buyerId:
+      message.senderId,
+
+    terms:
+      matched,
+
+    text:
+      message.text,
+
+    status:
+      "new",
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+
+  alerts.unshift(
+    alert
+  );
+
+
+  /*
+    Prevent duplicate alerts for
+    the exact same message.
+  */
+
+  const unique =
+    alerts.filter(
+      (item,index,array)=>
+        array.findIndex(
+          other =>
+            other.messageId ===
+            item.messageId
+        ) === index
+    );
+
+
+  chWrite(
+    CH_ALERTS_KEY,
+    unique
+  );
+
+
+  /*
+    Notify the seller when a buyer's
+    conversation reaches transaction
+    language.
+  */
+
+  if(
+    listing &&
+    String(
+      listing.sellerId
+    ) !==
+    String(
+      message.senderId
+    )
+  ){
+
+    if(
+      typeof notify ===
+      "function"
+    ){
+
+      notify(
+        "Conversation needs attention",
+        `A buyer's message about ${
+          listing.year || ""
+        } ${
+          listing.make || ""
+        } ${
+          listing.model || ""
+        } contains transaction-related language.`
+      );
+
+    }
+
+  }
+
+
+  return alert;
+
+}
+
+
+/* =========================================================
+   ALERTS
+   ========================================================= */
+
+function chGetMyAlerts(){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    return [];
+
+  }
+
+
+  const alerts =
+    chRead(
+      CH_ALERTS_KEY,
+      []
+    );
+
+
+  return alerts.filter(
+    alert =>
+      String(
+        alert.sellerId
+      ) ===
+      String(user.id)
+      ||
+      String(
+        alert.buyerId
+      ) ===
+      String(user.id)
+  );
+
+}
+
+
+function chMarkAlertRead(
+  id
+){
+
+  const alerts =
+    chRead(
+      CH_ALERTS_KEY,
+      []
+    );
+
+
+  const index =
+    alerts.findIndex(
+      alert =>
+        String(
+          alert.id
+        ) ===
+        String(id)
+    );
+
+
+  if(index<0){
+
+    return;
+
+  }
+
+
+  alerts[index].status=
+    "read";
+
+
+  chWrite(
+    CH_ALERTS_KEY,
+    alerts
+  );
+
+}
+
+
+/* =========================================================
+   INSPECTION BOOKING
+   ========================================================= */
+
+function openInspection(
+  listingId
+){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    if(
+      typeof openLogin ===
+      "function"
+    ){
+
+      openLogin();
+
+    }
+
+    return;
+
+  }
+
+
+  const listing =
+    chFindListing(
+      listingId
+    );
+
+  if(!listing){
+
+    toast(
+      "Vehicle listing not found."
+    );
+
+    return;
+
+  }
+
+
+  const today =
+    new Date();
+
+
+  const minDate =
+    today.toISOString()
+      .split("T")[0];
+
+
+  openModal(
+    "Book vehicle inspection",
+    `
+
+      <div
+        class="ch-inspection"
+      >
+
+        <div
+          class="ch-inspection-car"
+        >
+
+          <div
+            class="ch-inspection-image"
+          >
+
+            <img
+              src="${esc(
+                listing.images?.[0] ||
+                ""
+              )}"
+              alt=""
+            >
+
+          </div>
+
+          <div>
+
+            <strong>
+
+              ${esc(
+                listing.year
+              )}
+              ${esc(
+                listing.make
+              )}
+              ${esc(
+                listing.model
+              )}
+
+            </strong>
+
+            <div
+              class="seller-location"
+            >
+
+              ${money(
+                listing.price
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Inspection date
+          </label>
+
+          <input
+            class="input"
+            id="inspectionDate"
+            type="date"
+            min="${minDate}"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Preferred time
+          </label>
+
+          <select
+            class="select"
+            id="inspectionTime"
+          >
+
+            <option value="">
+              Select a time
+            </option>
+
+            <option value="09:00">
+              9:00 AM
+            </option>
+
+            <option value="10:00">
+              10:00 AM
+            </option>
+
+            <option value="11:00">
+              11:00 AM
+            </option>
+
+            <option value="12:00">
+              12:00 PM
+            </option>
+
+            <option value="13:00">
+              1:00 PM
+            </option>
+
+            <option value="14:00">
+              2:00 PM
+            </option>
+
+            <option value="15:00">
+              3:00 PM
+            </option>
+
+            <option value="16:00">
+              4:00 PM
+            </option>
+
+            <option value="17:00">
+              5:00 PM
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Note for seller
+          </label>
+
+          <textarea
+            class="textarea"
+            id="inspectionNote"
+            rows="3"
+            placeholder="Anything the seller should know?"
+          ></textarea>
+
+        </div>
+
+
+        <button
+          class="btn primary full"
+          onclick="
+            submitCarHubInspection(
+              '${listing.id}'
+            )
+          "
+        >
+
+          Request inspection
+
+        </button>
+
+      </div>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   SUBMIT INSPECTION
+   ========================================================= */
+
+function submitCarHubInspection(
+  listingId
+){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    return;
+
+  }
+
+
+  const listing =
+    chFindListing(
+      listingId
+    );
+
+  if(!listing){
+
+    return;
+
+  }
+
+
+  const date =
+    document
+      .getElementById(
+        "inspectionDate"
+      )
+      ?.value;
+
+
+  const time =
+    document
+      .getElementById(
+        "inspectionTime"
+      )
+      ?.value;
+
+
+  const note =
+    document
+      .getElementById(
+        "inspectionNote"
+      )
+      ?.value
+      ?.trim() || "";
+
+
+  if(!date || !time){
+
+    toast(
+      "Choose an inspection date and time."
+    );
+
+    return;
+
+  }
+
+
+  const selected =
+    new Date(
+      `${date}T${time}:00`
+    );
+
+
+  if(
+    selected <
+    new Date()
+  ){
+
+    toast(
+      "Please choose a future inspection time."
+    );
+
+    return;
+
+  }
+
+
+  const inspections =
+    chRead(
+      CH_INSPECTIONS_KEY,
+      []
+    );
+
+
+  const inspection={
+
+    id:
+      "inspection_"+Date.now()+
+      "_"+
+      Math.random()
+        .toString(36)
+        .slice(2,7),
+
+    listingId,
+
+    buyerId:
+      user.id,
+
+    buyerName:
+      user.name ||
+      "CarHub Buyer",
+
+    buyerPhone:
+      user.phone ||
+      "",
+
+    sellerId:
+      listing.sellerId,
+
+    sellerName:
+      listing.sellerName ||
+      "CarHub Seller",
+
+    date,
+
+    time,
+
+    note,
+
+    status:
+      "requested",
+
+    createdAt:
+      new Date().toISOString(),
+
+    updatedAt:
+      new Date().toISOString()
+
+  };
+
+
+  inspections.unshift(
+    inspection
+  );
+
+
+  chWrite(
+    CH_INSPECTIONS_KEY,
+    inspections
+  );
+
+
+  if(
+    typeof notify ===
+    "function"
+  ){
+
+    notify(
+      "Inspection requested",
+      `Inspection requested for ${
+        listing.year
+      } ${
+        listing.make
+      } ${
+        listing.model
+      }.`
+    );
+
+  }
+
+
+  if(
+    typeof addActivity ===
+    "function"
+  ){
+
+    addActivity(
+      "Inspection requested",
+      `Your inspection request is scheduled for ${date} at ${time}.`
+    );
+
+  }
+
+
+  closeModal();
+
+
+  toast(
+    "Inspection request sent."
+  );
+
+}
+
+
+/* =========================================================
+   INSPECTIONS FOR CURRENT USER
+   ========================================================= */
+
+function chMyInspections(){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    return [];
+
+  }
+
+
+  const inspections =
+    chRead(
+      CH_INSPECTIONS_KEY,
+      []
+    );
+
+
+  return inspections.filter(
+    item =>
+      String(
+        item.buyerId
+      ) ===
+      String(user.id)
+      ||
+      String(
+        item.sellerId
+      ) ===
+      String(user.id)
+  );
+
+}
+
+
+/* =========================================================
+   UPDATE INSPECTION
+   ========================================================= */
+
+function updateCarHubInspection(
+  inspectionId,
+  status
+){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    return;
+
+  }
+
+
+  const inspections =
+    chRead(
+      CH_INSPECTIONS_KEY,
+      []
+    );
+
+
+  const index =
+    inspections.findIndex(
+      item =>
+        String(
+          item.id
+        ) ===
+        String(
+          inspectionId
+        )
+    );
+
+
+  if(index<0){
+
+    return;
+
+  }
+
+
+  const item =
+    inspections[index];
+
+
+  const isBuyer =
+    String(
+      item.buyerId
+    ) ===
+    String(user.id);
+
+
+  const isSeller =
+    String(
+      item.sellerId
+    ) ===
+    String(user.id);
+
+
+  if(
+    !isBuyer &&
+    !isSeller
+  ){
+
+    toast(
+      "You cannot change this inspection."
+    );
+
+    return;
+
+  }
+
+
+  item.status =
+    status;
+
+  item.updatedAt =
+    new Date().toISOString();
+
+
+  chWrite(
+    CH_INSPECTIONS_KEY,
+    inspections
+  );
+
+
+  if(
+    typeof notify ===
+    "function"
+  ){
+
+    notify(
+      "Inspection updated",
+      `Inspection status: ${status}.`
+    );
+
+  }
+
+
+  renderCarHubInspections();
+
+}
+
+
+/* =========================================================
+   INSPECTION RENDER
+   ========================================================= */
+
+function renderCarHubInspections(){
+
+  const container =
+    document.getElementById(
+      "inspections"
+    ) ||
+    document.getElementById(
+      "myInspections"
+    );
+
+
+  if(!container){
+
+    return;
+
+  }
+
+
+  const inspections =
+    chMyInspections();
+
+
+  if(!inspections.length){
+
+    container.innerHTML=`
+
+      <div class="empty">
+
+        <strong>
+          No inspections yet.
+        </strong>
+
+        <p>
+          Inspection bookings for vehicles
+          you're buying or selling will
+          appear here.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    inspections
+      .map(
+        inspection=>{
+
+          const listing =
+            chFindListing(
+              inspection.listingId
+            );
+
+
+          const title =
+            listing
+            ?`${listing.year || ""} ${
+                listing.make || ""
+              } ${
+                listing.model || ""
+              }`
+            :"Vehicle";
+
+
+          return `
+
+            <div
+              class="
+                glass-panel
+                ch-inspection-card
+              "
+            >
+
+              <div
+                class="ch-inspection-top"
+              >
+
+                <div>
+
+                  <span
+                    class="ch-status ${esc(
+                      inspection.status
+                    )}"
+                  >
+
+                    ${esc(
+                      inspection.status
+                    )}
+
+                  </span>
+
+                  <h3>
+
+                    ${esc(title)}
+
+                  </h3>
+
+                </div>
+
+                ${
+                  listing?.images?.[0]
+                  ?`
+
+                    <img
+                      src="${esc(
+                        listing.images[0]
+                      )}"
+                      alt=""
+                    >
+
+                  `
+                  :""
+                }
+
+              </div>
+
+
+              <div
+                class="ch-inspection-details"
+              >
+
+                <div>
+
+                  <span>
+                    Date
+                  </span>
+
+                  <strong>
+                    ${esc(
+                      inspection.date
+                    )}
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Time
+                  </span>
+
+                  <strong>
+                    ${esc(
+                      inspection.time
+                    )}
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    ${
+                      String(
+                        inspection.buyerId
+                      ) ===
+                      String(
+                        chCurrentUser()?.id
+                      )
+                      ?"Seller"
+                      :"Buyer"
+                    }
+                  </span>
+
+                  <strong>
+
+                    ${
+                      String(
+                        inspection.buyerId
+                      ) ===
+                      String(
+                        chCurrentUser()?.id
+                      )
+                      ?esc(
+                        inspection.sellerName
+                      )
+                      :esc(
+                        inspection.buyerName
+                      )
+                    }
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              ${
+                inspection.note
+                ?`
+
+                  <p
+                    class="ch-inspection-note"
+                  >
+
+                    ${esc(
+                      inspection.note
+                    )}
+
+                  </p>
+
+                `
+                :""
+              }
+
+
+              <div
+                class="listing-actions"
+              >
+
+                ${
+                  String(
+                    inspection.sellerId
+                  ) ===
+                  String(
+                    chCurrentUser()?.id
+                  )
+                  &&
+                  inspection.status ===
+                  "requested"
+                  ?`
+
+                    <button
+                      class="btn small"
+                      onclick="
+                        updateCarHubInspection(
+                          '${inspection.id}',
+                          'confirmed'
+                        )
+                      "
+                    >
+                      Confirm
+                    </button>
+
+                    <button
+                      class="
+                        btn
+                        small
+                        danger
+                      "
+                      onclick="
+                        updateCarHubInspection(
+                          '${inspection.id}',
+                          'declined'
+                        )
+                      "
+                    >
+                      Decline
+                    </button>
+
+                  `
+                  :""
+                }
+
+
+                ${
+                  inspection.status ===
+                  "confirmed"
+                  ?`
+
+                    <button
+                      class="btn small"
+                      onclick="
+                        updateCarHubInspection(
+                          '${inspection.id}',
+                          'completed'
+                        )
+                      "
+                    >
+                      Mark completed
+                    </button>
+
+                  `
+                  :""
+                }
+
+              </div>
+
+            </div>
+
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   MESSAGE CENTER
+   ========================================================= */
+
+function renderCarHubMessages(){
+
+  const container =
+    document.getElementById(
+      "messageCenter"
+    );
+
+
+  if(!container){
+
+    return;
+
+  }
+
+
+  const conversations =
+    chGetConversations();
+
+
+  if(!conversations.length){
+
+    container.innerHTML=`
+
+      <div class="empty">
+
+        <strong>
+          No conversations yet.
+        </strong>
+
+        <p>
+          Messages with buyers and sellers
+          will appear here.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    conversations
+      .map(
+        conversation=>{
+
+          const last =
+            conversation.lastMessage;
+
+
+          const listing =
+            chFindListing(
+              last?.listingId
+            );
+
+
+          const user =
+            chCurrentUser();
+
+
+          const otherName =
+            String(
+              last?.senderId
+            ) ===
+            String(
+              user?.id
+            )
+            ?last?.receiverName
+            :last?.senderName;
+
+
+          return `
+
+            <button
+              class="
+                ch-conversation-row
+                ${conversation.unread
+                  ?"unread"
+                  :""}
+              "
+              onclick="
+                ${
+                  listing
+                  ?`
+                    chOpenConversation(
+                      ${JSON.stringify(
+                        listing
+                      )},
+                      '${conversation.id}',
+                      '${listing.sellerId}'
+                    )
+                  `
+                  :""
+                }
+              "
+            >
+
+              <span
+                class="seller-avatar"
+              >
+
+                ${initials(
+                  otherName ||
+                  "User"
+                )}
+
+              </span>
+
+
+              <span
+                class="ch-conversation-main"
+              >
+
+                <strong>
+
+                  ${esc(
+                    otherName ||
+                    "CarHub User"
+                  )}
+
+                </strong>
+
+                <small>
+
+                  ${esc(
+                    last?.text ||
+                    ""
+                  )}
+
+                </small>
+
+              </span>
+
+
+              ${
+                conversation.unread
+                ?`
+
+                  <span
+                    class="ch-unread-dot"
+                  ></span>
+
+                `
+                :""
+              }
+
+            </button>
+
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   REMINDER ENGINE
+   ========================================================= */
+
+function chInspectionReminder(){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    return;
+
+  }
+
+
+  const inspections =
+    chMyInspections();
+
+
+  const now =
+    new Date();
+
+
+  inspections.forEach(
+    inspection=>{
+
+      if(
+        inspection.status !==
+        "confirmed"
+      ){
+
+        return;
+
+      }
+
+
+      const date =
+        new Date(
+          `${inspection.date}T${inspection.time}:00`
+        );
+
+
+      const diff =
+        date.getTime() -
+        now.getTime();
+
+
+      const hours =
+        diff /
+        1000 /
+        60 /
+        60;
+
+
+      if(
+        hours>0 &&
+        hours<=24
+      ){
+
+        const key =
+          "ch_reminder_"+inspection.id;
+
+
+        if(
+          !localStorage.getItem(
+            key
+          )
+        ){
+
+          if(
+            typeof notify ===
+            "function"
+          ){
+
+            notify(
+              "Inspection reminder",
+              `Your vehicle inspection is tomorrow at ${inspection.time}.`
+            );
+
+          }
+
+
+          localStorage.setItem(
+            key,
+            "1"
+          );
+
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   DATE/TIME FORMAT
+   ========================================================= */
+
+function chFormatTime(
+  iso
+){
+
+  if(!iso){
+
+    return "";
+
+  }
+
+
+  const date =
+    new Date(
+      iso
+    );
+
+
+  return date.toLocaleString(
+    "en-NG",
+    {
+
+      day:"numeric",
+      month:"short",
+      hour:"numeric",
+      minute:"2-digit"
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function chEscapeText(
+  value
+){
+
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+
+if(
+  typeof esc ===
+  "undefined"
+){
+
+  window.esc =
+    chEscapeText;
+
+}
+
+
+/* =========================================================
+   NOTIFICATION BADGE
+   ========================================================= */
+
+function updateCarHubMessageBadge(){
+
+  const count =
+    chUnreadCount();
+
+
+  document
+    .querySelectorAll(
+      "[data-message-badge]"
+    )
+    .forEach(
+      badge=>{
+
+        badge.textContent =
+          count>99
+          ?"99+"
+          :count;
+
+
+        badge.style.display =
+          count
+          ?"inline-flex"
+          :"none";
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   INSPECTION BADGE
+   ========================================================= */
+
+function updateCarHubInspectionBadge(){
+
+  const user =
+    chCurrentUser();
+
+  if(!user){
+
+    return;
+
+  }
+
+
+  const count =
+    chMyInspections()
+      .filter(
+        item =>
+          item.status ===
+          "requested"
+      )
+      .length;
+
+
+  document
+    .querySelectorAll(
+      "[data-inspection-badge]"
+    )
+    .forEach(
+      badge=>{
+
+        badge.textContent =
+          count;
+
+        badge.style.display =
+          count
+          ?"inline-flex"
+          :"none";
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   AUTO REFRESH
+   ========================================================= */
+
+function initializeCarHubCommunication(){
+
+  renderCarHubMessages();
+
+  renderCarHubInspections();
+
+  updateCarHubMessageBadge();
+
+  updateCarHubInspectionBadge();
+
+  chInspectionReminder();
+
+
+  /*
+    Keep the local prototype responsive
+    when another CarHub action changes data.
+  */
+
+  setInterval(
+    ()=>{
+
+      updateCarHubMessageBadge();
+
+      updateCarHubInspectionBadge();
+
+      chInspectionReminder();
+
+    },
+    15000
+  );
+
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializeCarHubCommunication
+);
+
+
+/* =========================================================
+   PUBLIC COMMUNICATION API
+   ========================================================= */
+
+window.CarHubCommunication={
+
+  messages:{
+
+    open:
+      openMessage,
+
+    send:
+      chSendMessage,
+
+    conversations:
+      chGetConversations,
+
+    unread:
+      chUnreadCount
+
+  },
+
+
+  inspections:{
+
+    open:
+      openInspection,
+
+    all:
+      chMyInspections,
+
+    update:
+      updateCarHubInspection
+
+  },
+
+
+  alerts:{
+
+    all:
+      chGetMyAlerts,
+
+    read:
+      chMarkAlertRead
+
+  }
+
+};
+
+
+console.log(
+  "CarHub Africa communication engine loaded."
+);
+
+</script>
+
+
+<style>
+
+/* =========================================================
+   CARHUB CHAT
+   ========================================================= */
+
+.ch-chat{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.ch-chat-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding-bottom:4px;
+}
+
+.ch-vehicle-reference{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:16px;
+  background:rgba(255,255,255,.04);
+}
+
+.ch-reference-image{
+  width:58px;
+  height:46px;
+  border-radius:11px;
+  overflow:hidden;
+  flex:none;
+}
+
+.ch-reference-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover
