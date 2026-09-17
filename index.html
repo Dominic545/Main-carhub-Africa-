@@ -3,1179 +3,2424 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#070a09">
-<meta name="description" content="CarHub Africa — Buy. Sell. Drive.">
+<meta name="theme-color" content="#070A09">
 <title>CarHub Africa — Buy. Sell. Drive.</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--bg:#070a09;--bg2:#0b1210;--panel:rgba(18,28,24,.74);--line:rgba(190,255,224,.13);--line2:rgba(190,255,224,.25);--mint:#a8efd1;--mint2:#78dab7;--white:#f4f8f5;--muted:#91a39b;--gold:#d8c8a7;--danger:#ff817c;--shadow:0 25px 80px rgba(0,0,0,.45);--radius:28px}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--white);font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:radial-gradient(circle at 10% 5%,rgba(120,218,183,.09),transparent 28%),radial-gradient(circle at 90% 15%,rgba(216,200,167,.06),transparent 25%),linear-gradient(145deg,#050706,#09110d 45%,#050706)}
-button,input,select,textarea{font:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}.app{min-height:100vh}
-.header{position:sticky;top:0;z-index:100;padding:14px 22px;background:rgba(5,9,7,.68);backdrop-filter:blur(24px);border-bottom:1px solid var(--line)}
-.header-inner{max-width:1400px;margin:auto;height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px}.logo{font-size:22px;font-weight:900;letter-spacing:-1px;white-space:nowrap}.logo span{color:var(--mint)}.logo small{display:block;color:var(--muted);font-size:8px;letter-spacing:3px;font-weight:700;margin-top:1px}
-.nav{display:flex;gap:5px}.nav button,.icon-btn,.profile-btn{border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--white);border-radius:14px}.nav button{border:0;background:transparent;color:var(--muted);padding:11px 14px;font-weight:700}.nav button.active,.nav button:hover{color:var(--white);background:rgba(168,239,209,.08)}
-.header-actions{display:flex;align-items:center;gap:9px}.icon-btn{width:43px;height:43px}.profile-btn{height:43px;padding:0 14px;display:flex;align-items:center;gap:8px}.avatar{width:27px;height:27px;border-radius:50%;background:linear-gradient(135deg,var(--mint),#547f6d);color:#06100b;display:grid;place-items:center;font-size:11px;font-weight:900}.menu-btn{display:none}
-main{max-width:1400px;margin:auto;padding:28px 22px 100px}.screen{display:none;animation:in .3s ease}.screen.active{display:block}@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.hero{min-height:420px;display:grid;grid-template-columns:1.05fr .95fr;gap:25px;align-items:center}.eyebrow{color:var(--mint);font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:900}.hero h1{font-size:clamp(52px,7vw,94px);line-height:.91;letter-spacing:-6px;margin:17px 0}.hero h1 span{color:transparent;-webkit-text-stroke:1px rgba(168,239,209,.7)}.hero p{color:var(--muted);font-size:17px;max-width:570px;line-height:1.7}.hero-actions{display:flex;gap:10px;margin-top:25px;flex-wrap:wrap}
-.btn{border:1px solid var(--line);border-radius:15px;padding:13px 18px;background:rgba(255,255,255,.045);color:var(--white);font-weight:800;transition:.2s}.btn:hover{transform:translateY(-2px);border-color:var(--line2)}.btn.primary{background:var(--mint);color:#07100c;border-color:var(--mint)}.btn.gold{background:rgba(216,200,167,.1);border-color:rgba(216,200,167,.3);color:#e7dcc5}.btn.danger{background:rgba(255,100,100,.08);color:#ff9b96;border-color:rgba(255,100,100,.2)}.btn.small{padding:9px 12px;border-radius:12px;font-size:12px}.btn.full{width:100%}
-.hero-showcase{position:relative;min-height:360px;border:1px solid var(--line);border-radius:38px;overflow:hidden;background:#0d1512;box-shadow:var(--shadow)}.hero-showcase img{width:100%;height:100%;min-height:360px;object-fit:cover;display:block;opacity:.88;transition:transform 1s ease}.hero-showcase:hover img{transform:scale(1.035)}.hero-glass{position:absolute;left:18px;right:18px;bottom:18px;padding:17px;border:1px solid rgba(255,255,255,.12);border-radius:22px;background:rgba(5,10,8,.62);backdrop-filter:blur(18px)}
-.glass-panel{border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(22px);border-radius:var(--radius);box-shadow:var(--shadow)}
-.search-panel{padding:16px;margin:10px 0 35px}.search-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px}.input,.select,.textarea{width:100%;border:1px solid var(--line);background:rgba(0,0,0,.2);color:var(--white);border-radius:14px;padding:13px 14px;outline:none}.input:focus,.select:focus,.textarea:focus{border-color:var(--mint2)}.select option{background:#101713}.textarea{min-height:120px;resize:vertical}
-.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin:35px 0 17px}.section-head h2{margin:0;font-size:30px;letter-spacing:-1.5px}.section-head p{margin:5px 0 0;color:var(--muted);font-size:13px}.count{color:var(--mint);font-weight:800;font-size:13px}
-.catalogue{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.car-card{overflow:hidden;border:1px solid var(--line);background:rgba(15,23,19,.75);border-radius:26px;transition:.3s}.car-card:hover{transform:translateY(-5px);border-color:rgba(168,239,209,.25);box-shadow:0 25px 60px rgba(0,0,0,.35)}.car-photo{position:relative;height:300px;overflow:hidden;background:#101613}.car-photo img{width:100%;height:100%;object-fit:cover;transition:transform .7s ease}.car-card:hover .car-photo img{transform:scale(1.045)}.car-badge{position:absolute;top:14px;left:14px;background:rgba(4,9,7,.72);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);color:var(--mint);padding:7px 10px;border-radius:999px;font-size:10px;font-weight:900;text-transform:uppercase}.save{position:absolute;top:13px;right:13px;width:39px;height:39px;border-radius:50%;border:1px solid rgba(255,255,255,.13);background:rgba(4,9,7,.68);color:white;font-size:17px}.save.saved{color:var(--mint)}.car-body{padding:18px}.car-title-row{display:flex;justify-content:space-between;gap:15px}.car-title{font-size:21px;font-weight:900;letter-spacing:-.7px}.car-price{color:var(--mint);font-size:18px;font-weight:900;white-space:nowrap}.car-meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 15px}.tag{padding:6px 9px;border-radius:9px;background:rgba(255,255,255,.045);color:var(--muted);font-size:11px}.seller-mini{display:flex;align-items:center;gap:9px;padding:10px 0;border-top:1px solid var(--line)}.seller-mini .avatar{width:32px;height:32px}.verified{color:var(--mint);font-size:10px;font-weight:900}.card-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.feature{padding:22px;min-height:180px}.feature-icon{width:42px;height:42px;border-radius:13px;background:rgba(168,239,209,.08);border:1px solid var(--line);display:grid;place-items:center;color:var(--mint);font-size:18px}.feature h3{margin:17px 0 8px}.feature p{color:var(--muted);line-height:1.6;font-size:13px}
-.page-title{padding:20px 0 25px}.page-title h1{margin:0;font-size:46px;letter-spacing:-2.5px}.page-title p{color:var(--muted);margin:8px 0 0}.dashboard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.stat{padding:20px}.stat span{color:var(--muted);font-size:12px}.stat strong{display:block;font-size:32px;margin-top:8px}.stat small{color:var(--mint);font-size:11px}.two-col{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}.panel-pad{padding:22px}.list-row{display:flex;align-items:center;gap:13px;padding:14px 0;border-bottom:1px solid var(--line)}.row-img{width:75px;height:55px;border-radius:12px;object-fit:cover}.row-main{flex:1;min-width:0}.row-main strong{display:block;font-size:14px}.row-main span{color:var(--muted);font-size:11px;display:block;margin-top:4px}.row-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.status{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:900;background:rgba(168,239,209,.08);color:var(--mint)}.status.gold{color:var(--gold);background:rgba(216,200,167,.08)}.empty{text-align:center;padding:50px 20px;color:var(--muted)}.empty strong{display:block;color:var(--white);font-size:18px;margin-bottom:7px}
-.detail{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.detail-image{height:530px;border-radius:30px;object-fit:cover;width:100%;border:1px solid var(--line)}.detail-side{padding:25px}.detail-side h1{margin:0;font-size:40px;letter-spacing:-2px}.big-price{color:var(--mint);font-size:28px;font-weight:900;margin:12px 0}.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0}.spec{padding:13px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line)}.spec span{display:block;color:var(--muted);font-size:10px}.spec strong{display:block;margin-top:4px;font-size:13px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{margin-bottom:14px}.field label{display:block;font-size:11px;color:var(--muted);font-weight:800;margin-bottom:7px}.field.full{grid-column:1/-1}.upload{border:1px dashed rgba(168,239,209,.28);border-radius:18px;padding:25px;text-align:center;background:rgba(168,239,209,.025)}.upload input{display:none}.upload label{display:inline-block;cursor:pointer;color:var(--mint);font-weight:900}.preview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.preview{position:relative}.preview img{width:100%;height:100px;object-fit:cover;border-radius:12px}.preview button{position:absolute;right:5px;top:5px;border:0;background:rgba(0,0,0,.7);color:#fff;width:25px;height:25px;border-radius:50%}
-.profile-cover{padding:28px;display:flex;align-items:center;gap:18px}.profile-avatar{width:75px;height:75px;border-radius:24px;background:linear-gradient(135deg,var(--mint),#3b5f50);display:grid;place-items:center;color:#07100c;font-size:27px;font-weight:900}
-.message-layout{display:grid;grid-template-columns:320px 1fr;min-height:570px}.conversations{border-right:1px solid var(--line);padding:15px}.conversation{padding:13px;border-radius:15px;cursor:pointer;margin-bottom:5px}.conversation:hover{background:rgba(168,239,209,.07)}.chat{display:flex;flex-direction:column;min-height:570px}.chat-head{padding:18px;border-bottom:1px solid var(--line)}.chat-body{flex:1;padding:20px;overflow:auto}.bubble{max-width:70%;padding:11px 14px;border-radius:16px;margin-bottom:10px;background:rgba(255,255,255,.06);font-size:13px;line-height:1.5}.bubble.me{margin-left:auto;background:rgba(168,239,209,.13)}.chat-input{padding:13px;border-top:1px solid var(--line);display:flex;gap:8px}
-.alert{padding:13px 15px;border-radius:14px;border:1px solid var(--line);background:rgba(168,239,209,.05);color:#cde9dc;font-size:12px;line-height:1.6;margin-bottom:12px}.alert.gold{background:rgba(216,200,167,.06);color:#e0d5bd}.ai-box{padding:25px}.ai-output{margin-top:15px;min-height:160px;white-space:pre-wrap;padding:18px;color:#dceae3;line-height:1.7;font-size:13px}.timeline-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}.timeline-dot{width:11px;height:11px;border-radius:50%;background:var(--mint);margin-top:4px;box-shadow:0 0 0 5px rgba(168,239,209,.08)}
-.footer{border-top:1px solid var(--line);padding:25px 22px;color:var(--muted);text-align:center;font-size:11px}.bubble-menu{position:fixed;right:20px;bottom:20px;z-index:120}.bubble-main{width:58px;height:58px;border-radius:50%;border:1px solid rgba(168,239,209,.3);background:rgba(168,239,209,.12);backdrop-filter:blur(20px);color:var(--mint);font-size:20px;box-shadow:0 15px 45px rgba(0,0,0,.4)}.bubble-items{position:absolute;right:0;bottom:68px;display:none;flex-direction:column;gap:8px}.bubble-menu.open .bubble-items{display:flex}.bubble-item{border:1px solid var(--line);background:rgba(8,15,11,.9);color:var(--white);padding:10px 13px;border-radius:14px;white-space:nowrap;font-size:11px}
-.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:500;padding:13px 17px;border-radius:14px;border:1px solid var(--line2);background:rgba(8,15,11,.94);backdrop-filter:blur(20px);color:var(--white);font-size:12px;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}
-.modal{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.modal-box{width:min(700px,100%);max-height:90vh;overflow:auto;border:1px solid var(--line2);border-radius:28px;background:#0b1310;box-shadow:0 30px 100px rgba(0,0,0,.6)}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid var(--line)}.modal-close{width:35px;height:35px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--white)}.modal-body{padding:20px}.mobile-drawer{display:none;position:fixed;inset:0;z-index:200;background:rgba(3,7,5,.97);padding:90px 25px}.mobile-drawer.open{display:block}.mobile-drawer button{display:block;width:100%;padding:17px 0;border:0;border-bottom:1px solid var(--line);background:none;color:var(--white);text-align:left;font-size:20px;font-weight:800}
-@media(max-width:1050px){.search-row{grid-template-columns:1fr 1fr}.search-row .input{grid-column:1/-1}.hero{grid-template-columns:1fr}.hero-showcase{min-height:300px}.dashboard-grid{grid-template-columns:1fr 1fr}.detail{grid-template-columns:1fr}.features{grid-template-columns:1fr 1fr}}
-@media(max-width:760px){.header{padding:10px 14px}.header-inner{height:54px}.nav,.header-actions .profile-btn{display:none}.menu-btn{display:block}main{padding:20px 14px 90px}.hero{min-height:auto;padding:20px 0}.hero h1{font-size:56px;letter-spacing:-4px}.hero-showcase,.hero-showcase img{min-height:280px}.catalogue{grid-template-columns:1fr}.car-photo{height:250px}.features{grid-template-columns:1fr}.dashboard-grid{grid-template-columns:1fr 1fr}.two-col{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.preview-grid{grid-template-columns:repeat(2,1fr)}.message-layout{grid-template-columns:1fr}.conversations{border-right:0;border-bottom:1px solid var(--line);max-height:220px;overflow:auto}.detail-image{height:330px}.detail-side h1{font-size:32px}.page-title h1{font-size:38px}}
-@media(max-width:480px){.search-row{grid-template-columns:1fr}.search-row .input{grid-column:auto}.dashboard-grid{grid-template-columns:1fr}.car-title-row{display:block}.car-price{display:block;margin-top:7px}.card-actions{grid-template-columns:1fr}}
+:root{
+  --bg:#070A09;
+  --panel:#0d1311;
+  --panel2:#111916;
+  --glass:rgba(255,255,255,.065);
+  --glass2:rgba(255,255,255,.095);
+  --line:rgba(255,255,255,.11);
+  --text:#f3f7f5;
+  --muted:#9ba9a3;
+  --mint:#A8EFD1;
+  --mint2:#78DAB7;
+  --gold:#D8C8A7;
+  --danger:#ff7d7d;
+  --shadow:0 25px 80px rgba(0,0,0,.4);
+  --radius:25px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 15% 0%,rgba(120,218,183,.09),transparent 30%),
+    radial-gradient(circle at 85% 10%,rgba(216,200,167,.06),transparent 25%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+  min-height:100vh;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  padding:15px 5%;
+  backdrop-filter:blur(22px);
+  background:rgba(7,10,9,.76);
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.nav{
+  max-width:1400px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.logo{
+  font-size:25px;
+  font-weight:850;
+  letter-spacing:-1.3px;
+}
+.logo span{color:var(--mint)}
+.navlinks{
+  display:flex;
+  gap:28px;
+  color:#c4cec9;
+  font-size:14px;
+}
+.navlinks a:hover{color:var(--mint)}
+.navright{display:flex;gap:10px;align-items:center}
+
+.btn{
+  border:0;
+  border-radius:999px;
+  padding:12px 19px;
+  font-weight:750;
+  transition:.25s ease;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{
+  color:#06100b;
+  background:var(--mint);
+  box-shadow:0 8px 30px rgba(168,239,209,.12);
+}
+.btn-dark{
+  color:var(--text);
+  background:var(--glass);
+  border:1px solid var(--line);
+}
+.btn-danger{
+  background:rgba(255,100,100,.1);
+  color:#ff9b9b;
+  border:1px solid rgba(255,100,100,.15);
+}
+
+.hero{
+  max-width:1400px;
+  margin:auto;
+  padding:80px 5% 35px;
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:50px;
+  align-items:center;
+}
+.eyebrow{
+  display:inline-flex;
+  padding:8px 13px;
+  border:1px solid rgba(168,239,209,.15);
+  border-radius:999px;
+  color:var(--mint);
+  background:rgba(168,239,209,.055);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.8px;
+}
+.hero h1{
+  margin:20px 0 15px;
+  font-size:clamp(55px,8vw,108px);
+  line-height:.87;
+  letter-spacing:-6px;
+}
+.hero h1 span{
+  color:var(--mint);
+}
+.hero p{
+  max-width:650px;
+  color:var(--muted);
+  line-height:1.7;
+  font-size:17px;
+}
+.hero-actions{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+
+.hero-card{
+  min-height:380px;
+  border-radius:35px;
+  border:1px solid var(--line);
+  background:
+    radial-gradient(circle at 50% 20%,rgba(168,239,209,.11),transparent 35%),
+    linear-gradient(145deg,#101814,#080b0a);
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:flex-end;
+}
+.hero-card:after{
+  content:"";
+  position:absolute;
+  width:330px;
+  height:330px;
+  border-radius:50%;
+  background:rgba(168,239,209,.06);
+  top:-100px;
+  right:-80px;
+  filter:blur(20px);
+}
+.hero-car{
+  width:100%;
+  height:270px;
+  object-fit:cover;
+  opacity:.9;
+  mask-image:linear-gradient(to bottom,transparent 0%,black 30%);
+}
+.hero-caption{
+  position:absolute;
+  left:25px;
+  bottom:23px;
+  z-index:2;
+}
+.hero-caption small{color:var(--muted)}
+.hero-caption strong{display:block;font-size:22px;margin-top:5px}
+
+.section{
+  max-width:1400px;
+  margin:auto;
+  padding:45px 5%;
+}
+.section-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:22px;
+}
+.section-head h2{
+  margin:0;
+  font-size:34px;
+  letter-spacing:-1.5px;
+}
+.section-head p{color:var(--muted);margin:5px 0 0}
+
+.searchbox{
+  display:grid;
+  grid-template-columns:1fr 180px 180px auto;
+  gap:10px;
+  padding:10px;
+  background:var(--glass);
+  border:1px solid var(--line);
+  border-radius:22px;
+  backdrop-filter:blur(25px);
+  margin-bottom:30px;
+}
+.field,.select,.textarea{
+  width:100%;
+  background:rgba(255,255,255,.055);
+  color:var(--text);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:15px;
+  padding:14px 15px;
+  outline:none;
+}
+.field:focus,.select:focus,.textarea:focus{
+  border-color:rgba(168,239,209,.45);
+}
+.select option{background:#101513}
+
+.catalogue{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+.car-card{
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:27px;
+  background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));
+  box-shadow:0 15px 50px rgba(0,0,0,.2);
+  transition:.35s ease;
+}
+.car-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(168,239,209,.2);
+}
+.car-photo{
+  height:290px;
+  position:relative;
+  background:#101412;
+  overflow:hidden;
+}
+.car-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .7s ease;
+}
+.car-card:hover .car-photo img{transform:scale(1.045)}
+.badges{
+  position:absolute;
+  top:14px;
+  left:14px;
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+.badge{
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(5,8,7,.72);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.12);
+  font-size:11px;
+  font-weight:800;
+}
+.badge.mint{color:var(--mint)}
+.card-body{padding:20px}
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+}
+.card-title{
+  font-size:23px;
+  font-weight:800;
+  letter-spacing:-.7px;
+}
+.price{
+  color:var(--mint);
+  font-weight:850;
+  font-size:18px;
+  white-space:nowrap;
+}
+.meta{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:13px 0;
+}
+.meta span{
+  padding:7px 10px;
+  background:rgba(255,255,255,.045);
+  border-radius:10px;
+  color:#b5c0bb;
+  font-size:12px;
+}
+.location{
+  color:var(--muted);
+  font-size:13px;
+}
+.card-actions{
+  display:flex;
+  gap:8px;
+  margin-top:17px;
+}
+.card-actions .btn{flex:1}
+
+.features{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+.feature{
+  padding:25px;
+  min-height:180px;
+  border-radius:24px;
+  border:1px solid var(--line);
+  background:var(--glass);
+}
+.feature-icon{
+  font-size:25px;
+  margin-bottom:22px;
+}
+.feature h3{margin:0 0 8px}
+.feature p{color:var(--muted);line-height:1.6;font-size:14px}
+
+.footer{
+  border-top:1px solid var(--line);
+  margin-top:50px;
+  padding:30px 5%;
+  color:var(--muted);
+  text-align:center;
+}
+
+/* MODALS */
+.overlay{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(14px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+.overlay.show{display:flex}
+.modal{
+  width:min(760px,100%);
+  max-height:92vh;
+  overflow:auto;
+  background:#0c1210;
+  border:1px solid var(--line);
+  border-radius:28px;
+  box-shadow:0 35px 100px rgba(0,0,0,.65);
+  padding:25px;
+}
+.modal.large{width:min(1050px,100%)}
+.modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:20px;
+}
+.modal-head h2{margin:0;font-size:26px}
+.close{
+  width:38px;
+  height:38px;
+  border:1px solid var(--line);
+  border-radius:50%;
+  background:var(--glass);
+  color:white;
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+.form-full{grid-column:1/-1}
+.form-label{
+  display:block;
+  color:#aebbb5;
+  font-size:12px;
+  margin:0 0 7px 3px;
+}
+.form-group{margin-bottom:2px}
+.modal-footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:9px;
+  margin-top:20px;
+}
+.upload{
+  border:1px dashed rgba(168,239,209,.3);
+  border-radius:18px;
+  padding:18px;
+  text-align:center;
+  background:rgba(168,239,209,.025);
+}
+.preview-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:12px;
+}
+.preview-grid img{
+  width:100%;
+  height:85px;
+  object-fit:cover;
+  border-radius:12px;
+}
+.auth-tabs{
+  display:flex;
+  gap:5px;
+  padding:5px;
+  background:rgba(255,255,255,.04);
+  border-radius:14px;
+  margin-bottom:18px;
+}
+.auth-tab{
+  flex:1;
+  border:0;
+  padding:11px;
+  border-radius:10px;
+  background:transparent;
+  color:#a9b5af;
+}
+.auth-tab.active{
+  background:rgba(255,255,255,.08);
+  color:white;
+}
+.notice{
+  padding:12px 14px;
+  border-radius:13px;
+  margin-bottom:14px;
+  background:rgba(168,239,209,.06);
+  border:1px solid rgba(168,239,209,.12);
+  color:#c7d8d1;
+  font-size:13px;
+}
+.notice.error{
+  color:#ffabab;
+  background:rgba(255,100,100,.06);
+  border-color:rgba(255,100,100,.15);
+}
+
+/* CHAT */
+.chat-layout{
+  display:grid;
+  grid-template-columns:310px 1fr;
+  min-height:580px;
+  border:1px solid var(--line);
+  border-radius:22px;
+  overflow:hidden;
+}
+.chat-list{
+  border-right:1px solid var(--line);
+  background:rgba(255,255,255,.025);
+  overflow:auto;
+}
+.chat-list-head{
+  padding:18px;
+  border-bottom:1px solid var(--line);
+  font-weight:800;
+}
+.conversation{
+  padding:15px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  cursor:pointer;
+  transition:.2s;
+}
+.conversation:hover,.conversation.active{
+  background:rgba(168,239,209,.06);
+}
+.conv-name{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-weight:750;
+}
+.conv-preview{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.unread{
+  min-width:19px;
+  height:19px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:var(--mint);
+  color:#06100b;
+  font-size:10px;
+  font-weight:900;
+}
+.chat-main{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+.chat-top{
+  padding:17px 20px;
+  border-bottom:1px solid var(--line);
+}
+.chat-top strong{font-size:16px}
+.chat-top small{display:block;color:var(--muted);margin-top:3px}
+.online{
+  display:inline-block;
+  width:7px;
+  height:7px;
+  background:#75e0a8;
+  border-radius:50%;
+  margin-right:5px;
+}
+.messages{
+  flex:1;
+  padding:20px;
+  overflow:auto;
+  min-height:350px;
+  max-height:470px;
+}
+.msg{
+  max-width:75%;
+  margin:8px 0;
+  display:flex;
+  flex-direction:column;
+}
+.msg.mine{margin-left:auto;align-items:flex-end}
+.msg-bubble{
+  padding:11px 14px;
+  border-radius:17px;
+  background:rgba(255,255,255,.075);
+  border:1px solid rgba(255,255,255,.06);
+  line-height:1.45;
+  font-size:14px;
+}
+.msg.mine .msg-bubble{
+  background:var(--mint);
+  color:#07100c;
+  border:0;
+}
+.msg-time{
+  color:#697670;
+  font-size:10px;
+  margin-top:4px;
+}
+.chat-input{
+  padding:13px;
+  border-top:1px solid var(--line);
+  display:flex;
+  gap:8px;
+}
+.chat-input input{flex:1}
+
+.profile-box{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:15px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(255,255,255,.03);
+}
+.avatar{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:rgba(168,239,209,.1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--mint);
+  font-weight:900;
+}
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+.stat{
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:19px;
+  background:var(--glass);
+}
+.stat small{color:var(--muted)}
+.stat strong{
+  display:block;
+  font-size:28px;
+  margin-top:8px;
+}
+.list-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:13px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.list-row img{
+  width:75px;
+  height:55px;
+  border-radius:11px;
+  object-fit:cover;
+}
+.list-row-main{flex:1}
+.list-row-main strong{display:block}
+.list-row-main small{color:var(--muted)}
+
+.toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:1000;
+  min-width:260px;
+  max-width:380px;
+  padding:14px 17px;
+  border-radius:17px;
+  background:#101815;
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  transform:translateY(120px);
+  opacity:0;
+  transition:.3s;
+}
+.toast.show{
+  transform:translateY(0);
+  opacity:1;
+}
+.toast strong{display:block;margin-bottom:3px}
+.toast small{color:var(--muted)}
+
+.floating{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  z-index:200;
+  width:57px;
+  height:57px;
+  border-radius:50%;
+  border:1px solid rgba(168,239,209,.25);
+  background:rgba(15,25,21,.8);
+  backdrop-filter:blur(20px);
+  color:var(--mint);
+  font-size:22px;
+  box-shadow:0 15px 40px rgba(0,0,0,.35);
+}
+.floating:after{
+  content:"";
+  position:absolute;
+  inset:-7px;
+  border-radius:50%;
+  border:1px solid rgba(168,239,209,.08);
+  animation:pulse 2.5s infinite;
+}
+@keyframes pulse{
+  0%,100%{transform:scale(.96);opacity:.3}
+  50%{transform:scale(1.08);opacity:.8}
+}
+
+.empty{
+  padding:50px 20px;
+  text-align:center;
+  color:var(--muted);
+  border:1px dashed var(--line);
+  border-radius:20px;
+  grid-column:1/-1;
+}
+.loading{
+  padding:40px;
+  text-align:center;
+  color:var(--muted);
+  grid-column:1/-1;
+}
+
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-card{min-height:280px}
+  .features{grid-template-columns:1fr}
+  .searchbox{grid-template-columns:1fr 1fr}
+  .searchbox .btn{grid-column:1/-1}
+  .chat-layout{grid-template-columns:1fr}
+  .chat-list{max-height:220px;border-right:0;border-bottom:1px solid var(--line)}
+}
+
+@media(max-width:650px){
+  .navlinks{display:none}
+  .navright .btn-dark{display:none}
+  .hero{padding-top:55px}
+  .hero h1{font-size:64px;letter-spacing:-4px}
+  .catalogue{grid-template-columns:1fr}
+  .car-photo{height:250px}
+  .form-grid{grid-template-columns:1fr}
+  .form-full{grid-column:auto}
+  .dashboard-grid{grid-template-columns:1fr}
+  .searchbox{grid-template-columns:1fr}
+  .searchbox .btn{grid-column:auto}
+  .modal{padding:18px}
+  .preview-grid{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
+
 <body>
-<div class="app">
 
 <header class="header">
-<div class="header-inner">
-<button class="menu-btn icon-btn" onclick="toggleDrawer()">☰</button>
-<button class="logo" onclick="go('home')" style="background:none;border:0;color:white;text-align:left">
-CarHub <span>Africa</span><small>BUY · SELL · DRIVE</small>
-</button>
+  <nav class="nav">
+    <a href="#" class="logo">CarHub <span>Africa</span></a>
 
-<nav class="nav">
-<button data-route="home" onclick="go('home')">Home</button>
-<button data-route="cars" onclick="go('cars')">Cars</button>
-<button data-route="messages" onclick="go('messages')">Messages</button>
-<button data-route="inspections" onclick="go('inspections')">Inspections</button>
-<button data-route="dashboard" onclick="go('dashboard')">Dashboard</button>
-</nav>
+    <div class="navlinks">
+      <a href="#cars">Cars</a>
+      <a href="#features">Features</a>
+      <a href="#sell">Sell</a>
+    </div>
 
-<div class="header-actions">
-<button class="icon-btn" onclick="go('saved')">♡</button>
-<button class="icon-btn" onclick="go('notifications')">◔</button>
-<button class="profile-btn" onclick="go('account')">
-<span class="avatar" id="headerAvatar">CH</span>
-<span id="accountButtonText">Account</span>
-</button>
-</div>
-</div>
+    <div class="navright">
+      <button class="btn btn-dark" id="accountBtn">Sign in</button>
+      <button class="btn btn-primary" onclick="openSell()">Sell a car</button>
+    </div>
+  </nav>
 </header>
-
-<div class="mobile-drawer" id="mobileDrawer">
-<button onclick="closeDrawer();go('home')">Home</button>
-<button onclick="closeDrawer();go('cars')">Cars</button>
-<button onclick="closeDrawer();go('saved')">Saved Cars</button>
-<button onclick="closeDrawer();go('messages')">Messages</button>
-<button onclick="closeDrawer();go('inspections')">Inspections</button>
-<button onclick="closeDrawer();go('sell')">Sell a Car</button>
-<button onclick="closeDrawer();go('ai')">AI Advert Studio</button>
-<button onclick="closeDrawer();go('dashboard')">Dashboard</button>
-<button onclick="closeDrawer();go('account')">My Account</button>
-</div>
 
 <main>
 
-<section class="screen" id="screen-home">
-<div class="hero">
-<div>
-<div class="eyebrow">Africa's automotive marketplace</div>
-<h1>Buy.<br><span>Sell.</span><br>Drive.</h1>
-<p>A cleaner way to discover vehicles, connect with sellers, book inspections and manage your car journey — all inside CarHub Africa.</p>
-<div class="hero-actions">
-<button class="btn primary" onclick="go('cars')">Explore cars</button>
-<button class="btn" onclick="go('sell')">Sell a car</button>
-</div>
-</div>
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow">AFRICA'S MODERN CAR MARKETPLACE</span>
+      <h1>Buy.<br><span>Sell.</span><br>Drive.</h1>
+      <p>
+        Discover quality vehicles, connect with sellers and manage your
+        buying journey inside CarHub Africa.
+      </p>
 
-<div class="hero-showcase">
-<img id="heroImage" src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=85">
-<div class="hero-glass">
-<strong>Drive something you love.</strong>
-<span>Real marketplace listings · Nigeria</span>
-</div>
-</div>
-</div>
+      <div class="hero-actions">
+        <a href="#cars" class="btn btn-primary">Explore cars</a>
+        <button class="btn btn-dark" onclick="openSell()">List your car</button>
+      </div>
+    </div>
 
-<div class="search-panel glass-panel">
-<div class="search-row">
-<input class="input" id="homeSearch" placeholder="Search Toyota, Lexus, Mercedes..." oninput="liveSearch(this.value)">
-<select class="select" id="homeMake" onchange="liveFilter()"><option value="">All makes</option></select>
-<select class="select" id="homeType" onchange="liveFilter()">
-<option value="">All types</option>
-<option>SUV</option><option>Saloon</option><option>Coupe</option><option>Truck</option><option>Electric</option>
-</select>
-<select class="select" id="homePrice" onchange="liveFilter()">
-<option value="">Any price</option>
-<option value="30000000">Under ₦30m</option>
-<option value="60000000">Under ₦60m</option>
-<option value="100000000">Under ₦100m</option>
-</select>
-<button class="btn primary" onclick="go('cars')">Search</button>
-</div>
-</div>
-
-<div class="section-head">
-<div><h2>Featured cars</h2><p>Real seller listings appear here automatically.</p></div>
-<button class="btn small" onclick="go('cars')">View all</button>
-</div>
-<div class="catalogue" id="homeCatalogue"></div>
-
-<div class="section-head">
-<div><h2>Built around trust</h2><p>Important parts of the buying journey stay connected.</p></div>
-</div>
-
-<div class="features">
-<div class="feature glass-panel">
-<div class="feature-icon">✓</div>
-<h3>Seller profiles</h3>
-<p>View seller information and their other listings before moving forward.</p>
-</div>
-<div class="feature glass-panel">
-<div class="feature-icon">◷</div>
-<h3>Inspections</h3>
-<p>Choose a date and time and keep the inspection connected to the vehicle.</p>
-</div>
-<div class="feature glass-panel">
-<div class="feature-icon">⌁</div>
-<h3>Inside CarHub</h3>
-<p>Messages, saved vehicles and enquiries stay in one place.</p>
-</div>
-</div>
+    <div class="hero-card">
+      <img
+        class="hero-car"
+        src="https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=1200&q=85"
+        alt="Car"
+      >
+      <div class="hero-caption">
+        <small>CARHUB AFRICA</small>
+        <strong>A smarter way to move.</strong>
+      </div>
+    </div>
+  </div>
 </section>
 
-<section class="screen" id="screen-cars">
-<div class="page-title"><h1>Car Catalogue</h1><p>Search the CarHub Africa marketplace.</p></div>
-<div class="search-panel glass-panel">
-<div class="search-row">
-<input class="input" id="carSearch" placeholder="Search make, model, year..." oninput="renderCars()">
-<select class="select" id="carMake" onchange="renderCars()"><option value="">All makes</option></select>
-<select class="select" id="carType" onchange="renderCars()">
-<option value="">All types</option><option>SUV</option><option>Saloon</option><option>Coupe</option><option>Truck</option><option>Electric</option>
-</select>
-<select class="select" id="carPrice" onchange="renderCars()">
-<option value="">Any price</option>
-<option value="30000000">Under ₦30m</option>
-<option value="60000000">Under ₦60m</option>
-<option value="100000000">Under ₦100m</option>
-</select>
-<button class="btn" onclick="resetFilters()">Reset</button>
-</div>
-</div>
-<div class="section-head">
-<div><h2>Available vehicles</h2><p>New seller listings appear here automatically.</p></div>
-<span class="count" id="carCount"></span>
-</div>
-<div class="catalogue" id="carsCatalogue"></div>
+<section class="section" id="cars">
+  <div class="section-head">
+    <div>
+      <h2>Explore vehicles</h2>
+      <p>Real marketplace listings appear here automatically.</p>
+    </div>
+  </div>
+
+  <div class="searchbox">
+    <input class="field" id="searchInput" placeholder="Search make, model or keyword...">
+
+    <select class="select" id="typeFilter">
+      <option value="">All types</option>
+      <option>SUV</option>
+      <option>Sedan</option>
+      <option>Coupe</option>
+      <option>Truck</option>
+      <option>Hatchback</option>
+      <option>Van</option>
+      <option>Electric</option>
+    </select>
+
+    <select class="select" id="conditionFilter">
+      <option value="">All conditions</option>
+      <option>New</option>
+      <option>Foreign Used</option>
+      <option>Nigerian Used</option>
+    </select>
+
+    <button class="btn btn-primary" onclick="loadListings()">Search</button>
+  </div>
+
+  <div class="catalogue" id="catalogue">
+    <div class="loading">Loading CarHub marketplace...</div>
+  </div>
 </section>
 
-<section class="screen" id="screen-saved">
-<div class="page-title"><h1>Saved Cars</h1><p>Your favourite vehicles.</p></div>
-<div class="catalogue" id="savedCatalogue"></div>
+<section class="section" id="features">
+  <div class="section-head">
+    <div>
+      <h2>Built around the buyer</h2>
+      <p>Everything stays inside your CarHub journey.</p>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">⌕</div>
+      <h3>Discover</h3>
+      <p>Search and browse vehicles with useful information before contacting a seller.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">◉</div>
+      <h3>Seller profiles</h3>
+      <p>View seller information before continuing with a vehicle conversation.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">◌</div>
+      <h3>Live messaging</h3>
+      <p>Chat directly through CarHub with real-time messages and unread notifications.</p>
+    </div>
+  </div>
 </section>
 
-<section class="screen" id="screen-sell">
-<div class="page-title"><h1>Sell a Car</h1><p>Publish a real listing with photos stored securely in CarHub cloud storage.</p></div>
-
-<div class="glass-panel panel-pad">
-<div class="alert">
-<strong>Cloud photo upload:</strong> select up to 6 real vehicle photos. They are uploaded to the CarHub Africa <strong>car-images</strong> storage bucket.
-</div>
-
-<form id="sellForm" onsubmit="createListing(event)">
-<div class="form-grid">
-
-<div class="field"><label>Make</label><input class="input" id="sellMake" required placeholder="Toyota"></div>
-<div class="field"><label>Model</label><input class="input" id="sellModel" required placeholder="Land Cruiser"></div>
-
-<div class="field"><label>Year</label><input class="input" id="sellYear" required type="number" min="1980" max="2030" placeholder="2024"></div>
-<div class="field"><label>Price (₦)</label><input class="input" id="sellPrice" required type="number" placeholder="85000000"></div>
-
-<div class="field"><label>Vehicle type</label>
-<select class="select" id="sellType" required>
-<option value="">Select</option><option>SUV</option><option>Saloon</option><option>Coupe</option><option>Truck</option><option>Electric</option>
-</select>
-</div>
-
-<div class="field"><label>Condition</label>
-<select class="select" id="sellCondition">
-<option>Foreign Used</option><option>Nigerian Used</option><option>Brand New</option>
-</select>
-</div>
-
-<div class="field"><label>Mileage (km)</label><input class="input" id="sellMileage" type="number" placeholder="42000"></div>
-<div class="field"><label>Transmission</label>
-<select class="select" id="sellTransmission"><option>Automatic</option><option>Manual</option><option>CVT</option></select>
-</div>
-
-<div class="field"><label>VIN / Chassis number</label><input class="input" id="sellVin" placeholder="Enter VIN or chassis"></div>
-<div class="field"><label>Registration / tracking number</label><input class="input" id="sellRegistration" placeholder="Registration details"></div>
-
-<div class="field full">
-<label>Description</label>
-<textarea class="textarea" id="sellDescription" placeholder="Tell buyers about the vehicle..."></textarea>
-</div>
-
-<div class="field full">
-<label>Vehicle photos</label>
-<div class="upload">
-<input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple onchange="previewPhotos(event)">
-<label for="photoInput">＋ Select real vehicle photos</label>
-<div style="color:var(--muted);font-size:11px;margin-top:7px">Up to 6 photos · maximum 8 MB each</div>
-<div class="preview-grid" id="photoPreview"></div>
-</div>
-</div>
-
-<div class="field full">
-<button class="btn primary full" type="submit" id="publishBtn">Publish listing</button>
-</div>
-
-</div>
-</form>
-</div>
+<section class="section" id="sell">
+  <div class="feature" style="text-align:center">
+    <h2>Have a car to sell?</h2>
+    <p>Create your listing and upload multiple vehicle photos to CarHub Africa.</p>
+    <button class="btn btn-primary" onclick="openSell()">Start selling</button>
+  </div>
 </section>
-
-<section class="screen" id="screen-dashboard">
-<div class="page-title"><h1>Dashboard</h1><p>Manage your CarHub activity and listings.</p></div>
-<div class="dashboard-grid" id="dashboardStats"></div>
-<div style="height:18px"></div>
-
-<div class="two-col">
-<div class="glass-panel panel-pad">
-<div class="section-head" style="margin:0 0 10px">
-<div><h2>My Listings</h2><p>Vehicles you've published.</p></div>
-<button class="btn small primary" onclick="go('sell')">＋ Add</button>
-</div>
-<div id="myListings"></div>
-</div>
-
-<div class="glass-panel panel-pad">
-<div class="section-head" style="margin:0 0 10px">
-<div><h2>Recent activity</h2><p>Latest marketplace events.</p></div>
-</div>
-<div id="dashboardActivity"></div>
-</div>
-</div>
-</section>
-
-<section class="screen" id="screen-messages">
-<div class="page-title"><h1>Messages</h1><p>Keep vehicle enquiries inside CarHub Africa.</p></div>
-<div class="glass-panel message-layout">
-<div class="conversations" id="conversationList"></div>
-<div class="chat">
-<div class="chat-head" id="chatHead"><strong>Select a conversation</strong><span>Your conversations will appear here.</span></div>
-<div class="chat-body" id="chatBody">
-<div class="empty"><strong>No conversation selected</strong>Open a vehicle and message the seller.</div>
-</div>
-<div class="chat-input">
-<input class="input" id="messageInput" placeholder="Write a message..." onkeydown="if(event.key==='Enter')sendMessage()">
-<button class="btn primary" onclick="sendMessage()">Send</button>
-</div>
-</div>
-</div>
-</section>
-
-<section class="screen" id="screen-inspections">
-<div class="page-title"><h1>Inspections</h1><p>Book and track vehicle inspections.</p></div>
-<div class="two-col">
-<div class="glass-panel panel-pad"><h2 style="margin-top:0">My inspections</h2><div id="inspectionList"></div></div>
-<div class="glass-panel panel-pad">
-<h2 style="margin-top:0">How it works</h2>
-<div class="timeline-item"><div class="timeline-dot"></div><div><strong>Select a vehicle</strong><span>Open any listing and choose Book inspection.</span></div></div>
-<div class="timeline-item"><div class="timeline-dot"></div><div><strong>Choose date & time</strong><span>Pick a convenient inspection slot.</span></div></div>
-<div class="timeline-item"><div class="timeline-dot"></div><div><strong>Track status</strong><span>Your booking stays attached to the vehicle.</span></div></div>
-</div>
-</div>
-</section>
-
-<section class="screen" id="screen-ai">
-<div class="page-title"><h1>AI Advert Studio</h1><p>Turn vehicle information into a clean marketplace advert.</p></div>
-<div class="glass-panel ai-box">
-<div class="form-grid">
-<div class="field"><label>Vehicle</label><input class="input" id="aiVehicle" placeholder="2024 Toyota Land Cruiser"></div>
-<div class="field"><label>Price</label><input class="input" id="aiPrice" placeholder="₦85,000,000"></div>
-<div class="field full"><label>Details</label><textarea class="textarea" id="aiDetails" placeholder="Mileage, condition, features, colour, location..."></textarea></div>
-</div>
-<button class="btn primary" onclick="generateAdvert()">Generate advert</button>
-<div class="ai-output glass-panel" id="aiOutput">Your generated advert will appear here.</div>
-</div>
-</section>
-
-<section class="screen" id="screen-notifications">
-<div class="page-title"><h1>Notifications</h1><p>Important marketplace activity.</p></div>
-<div class="glass-panel panel-pad" id="notificationsList"></div>
-</section>
-
-<section class="screen" id="screen-account">
-<div class="page-title"><h1>My Account</h1><p>Your CarHub identity and marketplace profile.</p></div>
-
-<div class="glass-panel profile-cover">
-<div class="profile-avatar" id="accountAvatar">CH</div>
-<div>
-<h2 id="accountName">CarHub User</h2>
-<p id="accountEmail">Not signed in</p>
-<div class="status" id="accountStatus">GUEST</div>
-</div>
-</div>
-
-<div style="height:18px"></div>
-
-<div class="two-col">
-<div class="glass-panel panel-pad">
-<h2 style="margin-top:0">Profile details</h2>
-
-<div class="field"><label>Full name</label><input class="input" id="profileName"></div>
-<div class="field"><label>Email</label><input class="input" id="profileEmail" readonly></div>
-<div class="field"><label>Phone</label><input class="input" id="profilePhone"></div>
-<div class="field"><label>Location</label><input class="input" id="profileLocation"></div>
-
-<div class="field"><label>Account type</label>
-<select class="select" id="profileType">
-<option>Buyer</option><option>Seller</option><option>Buyer & Seller</option>
-</select>
-</div>
-
-<button class="btn primary" onclick="saveProfile()">Save profile</button>
-<button class="btn" style="margin-left:7px" onclick="signOut()">Sign out</button>
-</div>
-
-<div class="glass-panel panel-pad">
-<h2 style="margin-top:0">Cloud marketplace</h2>
-<div class="alert">
-<strong>Account-linked listings.</strong><br>
-Your listings are connected to your Supabase account and stored centrally, so they can appear to other CarHub visitors.
-</div>
-
-<div class="list-row">
-<div class="feature-icon">☁</div>
-<div class="row-main"><strong>Cloud photos</strong><span>Stored in Supabase Storage.</span></div>
-<span class="status">READY</span>
-</div>
-
-<div class="list-row">
-<div class="feature-icon">✓</div>
-<div class="row-main"><strong>Seller ownership</strong><span>Only your account can edit or delete your listings.</span></div>
-<span class="status">READY</span>
-</div>
-</div>
-</div>
-</section>
-
-<section class="screen" id="screen-vehicle"><div id="vehicleDetail"></div></section>
-<section class="screen" id="screen-seller"><div id="sellerDetail"></div></section>
 
 </main>
 
-<footer class="footer"><strong>CarHub Africa</strong> · Buy. Sell. Drive.</footer>
+<footer class="footer">
+  <strong>CarHub Africa</strong><br>
+  <span>Buy. Sell. Drive.</span>
+</footer>
 
-<div class="bubble-menu" id="bubbleMenu">
-<div class="bubble-items">
-<button class="bubble-item" onclick="go('sell');toggleBubble()">＋ Sell a car</button>
-<button class="bubble-item" onclick="go('ai');toggleBubble()">✦ AI Advert</button>
-<button class="bubble-item" onclick="go('inspections');toggleBubble()">◷ Inspection</button>
-<button class="bubble-item" onclick="go('messages');toggleBubble()">⌁ Messages</button>
-</div>
-<button class="bubble-main" onclick="toggleBubble()">✦</button>
+<button class="floating" onclick="openDashboard()" title="CarHub dashboard">◉</button>
+
+<!-- AUTH -->
+<div class="overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="authTitle">Welcome back</h2>
+      <button class="close" onclick="closeModal('authModal')">×</button>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="loginTab" onclick="setAuthMode('login')">Sign in</button>
+      <button class="auth-tab" id="signupTab" onclick="setAuthMode('signup')">Create account</button>
+    </div>
+
+    <div id="authMessage"></div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="field" id="authEmail" type="email" placeholder="you@example.com">
+    </div>
+
+    <div class="form-group" style="margin-top:10px">
+      <label class="form-label">Password</label>
+      <input class="field" id="authPassword" type="password" placeholder="••••••••">
+    </div>
+
+    <div id="signupFields" style="display:none;margin-top:10px">
+      <div class="form-group">
+        <label class="form-label">Your name</label>
+        <input class="field" id="authName" placeholder="Full name">
+      </div>
+
+      <div class="form-group" style="margin-top:10px">
+        <label class="form-label">Phone</label>
+        <input class="field" id="authPhone" placeholder="+234...">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="submitAuth()" id="authSubmit">
+        Sign in
+      </button>
+    </div>
+  </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- SELL -->
+<div class="overlay" id="sellModal">
+  <div class="modal large">
+    <div class="modal-head">
+      <h2>Sell a car</h2>
+      <button class="close" onclick="closeModal('sellModal')">×</button>
+    </div>
 
-<div class="modal" id="modal">
-<div class="modal-box">
-<div class="modal-head">
-<h3 id="modalTitle">CarHub Africa</h3>
-<button class="modal-close" onclick="closeModal()">×</button>
+    <div id="sellMessage"></div>
+
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label class="form-label">Make</label>
+        <input class="field" id="make" placeholder="Toyota">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Model</label>
+        <input class="field" id="model" placeholder="Land Cruiser">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Year</label>
+        <input class="field" id="year" type="number" placeholder="2024">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Price (₦)</label>
+        <input class="field" id="price" type="number" placeholder="85000000">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Vehicle type</label>
+        <select class="select" id="vehicleType">
+          <option>SUV</option>
+          <option>Sedan</option>
+          <option>Coupe</option>
+          <option>Truck</option>
+          <option>Hatchback</option>
+          <option>Van</option>
+          <option>Electric</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Condition</label>
+        <select class="select" id="condition">
+          <option>Foreign Used</option>
+          <option>Nigerian Used</option>
+          <option>New</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Mileage</label>
+        <input class="field" id="mileage" placeholder="35,000 km">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Transmission</label>
+        <select class="select" id="transmission">
+          <option>Automatic</option>
+          <option>Manual</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <input class="field" id="location" placeholder="Abuja, Nigeria">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">VIN</label>
+        <input class="field" id="vin" placeholder="Optional">
+      </div>
+
+      <div class="form-group form-full">
+        <label class="form-label">Registration</label>
+        <input class="field" id="registration" placeholder="Optional">
+      </div>
+
+      <div class="form-group form-full">
+        <label class="form-label">Description</label>
+        <textarea class="textarea" id="description" rows="4"
+          placeholder="Tell buyers about the vehicle..."></textarea>
+      </div>
+
+      <div class="form-group form-full">
+        <label class="form-label">Vehicle photos</label>
+
+        <div class="upload">
+          <input
+            id="photos"
+            type="file"
+            accept="image/*"
+            multiple
+            onchange="previewPhotos(event)"
+          >
+          <p style="color:var(--muted);font-size:13px">
+            Select multiple photos. They will be stored securely in CarHub cloud storage.
+          </p>
+
+          <div class="preview-grid" id="photoPreview"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-dark" onclick="closeModal('sellModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="publishListing()" id="publishBtn">
+        Publish listing
+      </button>
+    </div>
+  </div>
 </div>
-<div class="modal-body" id="modalBody"></div>
+
+<!-- CAR DETAILS -->
+<div class="overlay" id="carModal">
+  <div class="modal large">
+    <div class="modal-head">
+      <h2 id="carModalTitle">Vehicle</h2>
+      <button class="close" onclick="closeModal('carModal')">×</button>
+    </div>
+
+    <div id="carDetails"></div>
+  </div>
 </div>
+
+<!-- CHAT -->
+<div class="overlay" id="chatModal">
+  <div class="modal large">
+    <div class="modal-head">
+      <h2>Messages</h2>
+      <button class="close" onclick="closeModal('chatModal')">×</button>
+    </div>
+
+    <div class="chat-layout">
+      <aside class="chat-list">
+        <div class="chat-list-head">Conversations</div>
+        <div id="conversationList">
+          <div class="loading">Loading...</div>
+        </div>
+      </aside>
+
+      <section class="chat-main">
+        <div class="chat-top" id="chatTop">
+          <strong>Select a conversation</strong>
+          <small>Your CarHub messages appear here.</small>
+        </div>
+
+        <div class="messages" id="messages">
+          <div class="empty" style="border:0">
+            Select a conversation to start messaging.
+          </div>
+        </div>
+
+        <div class="chat-input">
+          <input
+            class="field"
+            id="messageInput"
+            placeholder="Write a message..."
+            onkeydown="if(event.key==='Enter')sendMessage()"
+          >
+          <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="overlay" id="dashboardModal">
+  <div class="modal large">
+    <div class="modal-head">
+      <h2>Your CarHub</h2>
+      <button class="close" onclick="closeModal('dashboardModal')">×</button>
+    </div>
+
+    <div id="dashboardContent">
+      <div class="loading">Loading dashboard...</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <strong id="toastTitle">CarHub Africa</strong>
+  <small id="toastText"></small>
 </div>
 
 <script>
-const SUPABASE_URL="https://lmhdzwzblztlvunbykot.supabase.co";
-const SUPABASE_KEY="sb_publishable_nJCzpTFugWcCZWLSkpy0ag_TofoGWBS";
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const BUCKET="car-images";
+/* =========================================================
+   CARHUB AFRICA
+   STEP 3 — REAL-TIME MESSAGING + NOTIFICATIONS
+   ========================================================= */
 
-const DEMO=[
-{id:"demo-1",make:"Toyota",model:"Land Cruiser",year:2024,price:85000000,type:"SUV",condition:"Foreign Used",mileage:18000,transmission:"Automatic",images:["https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=85"],sellerId:"demo",sellerName:"CarHub Motors",sellerLocation:"Abuja, Nigeria",verified:true,views:184},
-{id:"demo-2",make:"Lexus",model:"RX 350",year:2023,price:62000000,type:"SUV",condition:"Foreign Used",mileage:22000,transmission:"Automatic",images:["https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=85"],sellerId:"demo",sellerName:"CarHub Motors",sellerLocation:"Lagos, Nigeria",verified:true,views:143},
-{id:"demo-3",make:"Mercedes-Benz",model:"C300",year:2024,price:58000000,type:"Saloon",condition:"Foreign Used",mileage:12000,transmission:"Automatic",images:["https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=85"],sellerId:"demo",sellerName:"CarHub Motors",sellerLocation:"Lagos, Nigeria",verified:true,views:201},
-{id:"demo-4",make:"BMW",model:"X5",year:2023,price:72000000,type:"SUV",condition:"Foreign Used",mileage:19000,transmission:"Automatic",images:["https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=1200&q=85"],sellerId:"demo",sellerName:"CarHub Motors",sellerLocation:"Abuja, Nigeria",verified:true,views:117}
+const SUPABASE_URL = "https://lmhdzwzblztlvunbykot.supabase.co";
+const SUPABASE_KEY = "sb_publishable_nJCzpTFugWcCZWLSkpy0ag_TofoGWBS";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let currentUser = null;
+let currentProfile = null;
+let authMode = "login";
+let selectedConversation = null;
+let messageChannel = null;
+let conversationChannel = null;
+let listingsChannel = null;
+let allListings = [];
+let selectedPhotos = [];
+
+const demoListings = [
+  {
+    id:"demo-1",
+    seller_id:null,
+    seller_name:"CarHub Showcase",
+    seller_location:"Abuja, Nigeria",
+    make:"Toyota",
+    model:"Land Cruiser",
+    year:2024,
+    price:95000000,
+    type:"SUV",
+    condition:"Foreign Used",
+    mileage:"12,000 km",
+    transmission:"Automatic",
+    description:"Premium Land Cruiser showcase vehicle.",
+    images:["https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1200&q=85"],
+    verified:true
+  },
+  {
+    id:"demo-2",
+    seller_id:null,
+    seller_name:"CarHub Showcase",
+    seller_location:"Lagos, Nigeria",
+    make:"Lexus",
+    model:"RX 350",
+    year:2023,
+    price:68000000,
+    type:"SUV",
+    condition:"Foreign Used",
+    mileage:"22,000 km",
+    transmission:"Automatic",
+    description:"Clean luxury SUV showcase vehicle.",
+    images:["https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=85"],
+    verified:true
+  },
+  {
+    id:"demo-3",
+    seller_id:null,
+    seller_name:"CarHub Showcase",
+    seller_location:"Abuja, Nigeria",
+    make:"Mercedes-Benz",
+    model:"C300",
+    year:2023,
+    price:72000000,
+    type:"Sedan",
+    condition:"Foreign Used",
+    mileage:"18,000 km",
+    transmission:"Automatic",
+    description:"Premium Mercedes-Benz showcase vehicle.",
+    images:["https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=85"],
+    verified:true
+  },
+  {
+    id:"demo-4",
+    seller_id:null,
+    seller_name:"CarHub Showcase",
+    seller_location:"Lagos, Nigeria",
+    make:"BMW",
+    model:"X5",
+    year:2022,
+    price:75000000,
+    type:"SUV",
+    condition:"Foreign Used",
+    mileage:"28,000 km",
+    transmission:"Automatic",
+    description:"BMW X5 showcase vehicle.",
+    images:["https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=85"],
+    verified:true
+  }
 ];
 
-let listings=[],currentUser=null,profile={id:null,name:"CarHub User",email:"",phone:"",location:"Nigeria",type:"Buyer & Seller"};
-let saved=JSON.parse(localStorage.getItem("carhub_saved_v5")||"[]"),selectedPhotos=[],editingId=null,currentConversation=null;
-let messages=JSON.parse(localStorage.getItem("carhub_messages_v5")||"[]"),inspections=JSON.parse(localStorage.getItem("carhub_inspections_v5")||"[]"),notifications=JSON.parse(localStorage.getItem("carhub_notifications_v5")||"[]"),activity=JSON.parse(localStorage.getItem("carhub_activity_v5")||"[]");
+function $(id){
+  return document.getElementById(id);
+}
 
-function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
-function money(n){return "₦"+Number(n||0).toLocaleString("en-NG")}
-function initials(n){return String(n||"User").split(" ").map(x=>x[0]).join("").slice(0,2).toUpperCase()}
-function uid(){return crypto.randomUUID?crypto.randomUUID():"car-"+Date.now()+"-"+Math.random().toString(36).slice(2)}
-function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>e.classList.remove("show"),2800)}
-function saveLocal(){localStorage.setItem("carhub_saved_v5",JSON.stringify(saved));localStorage.setItem("carhub_messages_v5",JSON.stringify(messages));localStorage.setItem("carhub_inspections_v5",JSON.stringify(inspections));localStorage.setItem("carhub_notifications_v5",JSON.stringify(notifications));localStorage.setItem("carhub_activity_v5",JSON.stringify(activity))}
-function notify(title,text,type="normal"){notifications.unshift({id:uid(),title,text,type,time:new Date().toLocaleString()});notifications=notifications.slice(0,30);saveLocal()}
-function activityAdd(title,text){activity.unshift({id:uid(),title,text,time:new Date().toLocaleString()});activity=activity.slice(0,30);saveLocal()}
+function uid(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "id-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+}
+
+function escapeHTML(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function money(value){
+  const n = Number(value || 0);
+  return "₦" + n.toLocaleString("en-NG");
+}
+
+function closeModal(id){
+  $(id).classList.remove("show");
+}
+
+function openModal(id){
+  $(id).classList.add("show");
+}
+
+function toast(title,text){
+  $("toastTitle").textContent = title;
+  $("toastText").textContent = text;
+  $("toast").classList.add("show");
+
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>{
+    $("toast").classList.remove("show");
+  },4000);
+}
+
+function showMessage(target,text,error=false){
+  $(target).innerHTML =
+    '<div class="notice '+(error?"error":"")+'">'+escapeHTML(text)+'</div>';
+}
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+
+async function init(){
+  try{
+    const {data,error} = await db.auth.getSession();
+
+    if(error) throw error;
+
+    currentUser = data.session?.user || null;
+
+    if(currentUser){
+      await loadProfile();
+      updateAccountButton();
+    }
+
+    await loadListings();
+    setupRealtime();
+
+    db.auth.onAuthStateChange(async (_event,session)=>{
+      currentUser = session?.user || null;
+
+      if(currentUser){
+        await loadProfile();
+      }else{
+        currentProfile = null;
+      }
+
+      updateAccountButton();
+    });
+
+  }catch(error){
+    console.error("CarHub initialization error:",error);
+
+    $("catalogue").innerHTML =
+      '<div class="empty">'+
+      '<strong>CarHub is ready</strong><br>'+
+      '<span style="display:block;margin-top:8px">Refresh the page if the marketplace does not load.</span>'+
+      '</div>';
+  }
+}
+
+function updateAccountButton(){
+  const btn = $("accountBtn");
+
+  if(currentUser){
+    btn.textContent = "Account";
+    btn.onclick = openDashboard;
+  }else{
+    btn.textContent = "Sign in";
+    btn.onclick = ()=>openAuth("login");
+  }
+}
+
+function openAuth(mode="login"){
+  setAuthMode(mode);
+  openModal("authModal");
+}
+
+function setAuthMode(mode){
+  authMode = mode;
+
+  $("loginTab").classList.toggle("active",mode==="login");
+  $("signupTab").classList.toggle("active",mode==="signup");
+
+  $("signupFields").style.display =
+    mode==="signup" ? "block" : "none";
+
+  $("authTitle").textContent =
+    mode==="signup" ? "Create your CarHub account" : "Welcome back";
+
+  $("authSubmit").textContent =
+    mode==="signup" ? "Create account" : "Sign in";
+
+  $("authMessage").innerHTML = "";
+}
+
+async function submitAuth(){
+  const email = $("authEmail").value.trim();
+  const password = $("authPassword").value;
+
+  if(!email || !password){
+    showMessage("authMessage","Enter your email and password.",true);
+    return;
+  }
+
+  try{
+    $("authSubmit").disabled = true;
+
+    if(authMode==="login"){
+
+      const {data,error} = await db.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if(error) throw error;
+
+      currentUser = data.user;
+
+      await loadProfile();
+
+      closeModal("authModal");
+
+      toast("Welcome back","You are signed in to CarHub Africa.");
+
+    }else{
+
+      const name = $("authName").value.trim();
+      const phone = $("authPhone").value.trim();
+
+      const {data,error} = await db.auth.signUp({
+        email,
+        password
+      });
+
+      if(error) throw error;
+
+      if(data.user){
+        await db.from("profiles").upsert({
+          id:data.user.id,
+          name:name || email.split("@")[0],
+          email,
+          phone:phone || null,
+          type:"individual"
+        });
+
+        currentUser = data.user;
+        await loadProfile();
+      }
+
+      if(!data.session){
+        showMessage(
+          "authMessage",
+          "Account created. Check your email if confirmation is required before signing in."
+        );
+      }else{
+        closeModal("authModal");
+        toast("Account created","Welcome to CarHub Africa.");
+      }
+    }
+
+    updateAccountButton();
+
+  }catch(error){
+    console.error(error);
+    showMessage("authMessage",error.message || "Authentication failed.",true);
+  }finally{
+    $("authSubmit").disabled = false;
+  }
+}
 
 async function loadProfile(){
-const {data:{user}}=await db.auth.getUser();currentUser=user;
-if(!user){profile={id:null,name:"CarHub User",email:"",phone:"",location:"Nigeria",type:"Buyer & Seller"};updateHeader();return}
-const {data}=await db.from("profiles").select("*").eq("id",user.id).maybeSingle();
-profile={id:user.id,name:data?.name||user.user_metadata?.name||"CarHub User",email:user.email||"",phone:data?.phone||"",location:data?.location||"Nigeria",type:data?.type||"Buyer & Seller"};
-updateHeader();
+  if(!currentUser) return;
+
+  const {data,error} = await db
+    .from("profiles")
+    .select("*")
+    .eq("id",currentUser.id)
+    .maybeSingle();
+
+  if(error){
+    console.error("Profile error:",error);
+    return;
+  }
+
+  currentProfile = data;
+
+  if(!data){
+    const profile = {
+      id:currentUser.id,
+      name:currentUser.email?.split("@")[0] || "CarHub User",
+      email:currentUser.email,
+      type:"individual"
+    };
+
+    const result = await db.from("profiles").insert(profile);
+
+    if(!result.error) currentProfile = profile;
+  }
 }
+
+/* =========================================================
+   LISTINGS
+   ========================================================= */
 
 async function loadListings(){
-const {data,error}=await db.from("listings").select("*").order("created_at",{ascending:false});
-if(error){console.error(error);toast("Could not load cloud listings.");listings=[...DEMO];return}
-listings=(data||[]).map(normalizeListing);
+  const search = $("searchInput").value.trim().toLowerCase();
+  const type = $("typeFilter").value;
+  const condition = $("conditionFilter").value;
+
+  try{
+    let query = db
+      .from("listings")
+      .select("*")
+      .order("created_at",{ascending:false});
+
+    if(type){
+      query = query.eq("type",type);
+    }
+
+    if(condition){
+      query = query.eq("condition",condition);
+    }
+
+    const {data,error} = await query;
+
+    if(error) throw error;
+
+    allListings = data || [];
+
+    if(allListings.length===0){
+      allListings = demoListings;
+    }
+
+    if(search){
+      allListings = allListings.filter(car=>{
+        const text = [
+          car.make,
+          car.model,
+          car.year,
+          car.type,
+          car.condition,
+          car.seller_location,
+          car.description
+        ].join(" ").toLowerCase();
+
+        return text.includes(search);
+      });
+    }
+
+    renderListings(allListings);
+
+  }catch(error){
+    console.error("Listings error:",error);
+
+    let fallback = demoListings;
+
+    if(search){
+      fallback = fallback.filter(car=>
+        [car.make,car.model,car.type,car.condition]
+          .join(" ")
+          .toLowerCase()
+          .includes(search)
+      );
+    }
+
+    allListings = fallback;
+    renderListings(fallback);
+  }
 }
 
-function normalizeListing(x){return {...x,sellerId:x.seller_id,sellerName:x.seller_name||"CarHub Seller",sellerLocation:x.seller_location||"Nigeria",images:Array.isArray(x.images)?x.images:[],verified:!!x.verified,ownerListing:!!currentUser&&x.seller_id===currentUser.id}}
-async function refresh(){await loadProfile();await loadListings();renderRoute()}
-function updateHeader(){document.getElementById("headerAvatar").textContent=initials(profile.name);document.getElementById("accountButtonText").textContent=currentUser?profile.name:"Sign in"}
+function renderListings(listings){
+  const box = $("catalogue");
 
-function populateMakes(){
-const makes=[...new Set(listings.map(x=>x.make).filter(Boolean))].sort();
-["carMake","homeMake"].forEach(id=>{
-const e=document.getElementById(id);if(!e)return;
-const v=e.value;
-e.innerHTML='<option value="">All makes</option>'+makes.map(m=>`<option>${esc(m)}</option>`).join("");
-e.value=v
-})
+  if(!listings.length){
+    box.innerHTML =
+      '<div class="empty">'+
+      '<strong>No vehicles found</strong><br>'+
+      '<span style="display:block;margin-top:7px">Try another search.</span>'+
+      '</div>';
+    return;
+  }
+
+  box.innerHTML = listings.map(car=>{
+    const image =
+      car.images && car.images.length
+        ? car.images[0]
+        : "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80";
+
+    return `
+      <article class="car-card">
+        <div class="car-photo">
+          <img src="${escapeHTML(image)}"
+               alt="${escapeHTML(car.make)} ${escapeHTML(car.model)}"
+               loading="lazy"
+               onerror="this.src='https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80'">
+
+          <div class="badges">
+            ${car.verified ? '<span class="badge mint">✓ VERIFIED</span>' : ""}
+            ${String(car.id).startsWith("demo-") ? '<span class="badge">SHOWCASE</span>' : ""}
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="card-top">
+            <div>
+              <div class="card-title">
+                ${escapeHTML(car.make)} ${escapeHTML(car.model)}
+              </div>
+              <div class="location">
+                ${escapeHTML(car.seller_location || car.location || "Nigeria")}
+              </div>
+            </div>
+
+            <div class="price">${money(car.price)}</div>
+          </div>
+
+          <div class="meta">
+            <span>${escapeHTML(car.year || "")}</span>
+            <span>${escapeHTML(car.type || "Car")}</span>
+            <span>${escapeHTML(car.condition || "")}</span>
+            ${car.mileage ? `<span>${escapeHTML(car.mileage)}</span>` : ""}
+          </div>
+
+          <div class="card-actions">
+            <button class="btn btn-dark" onclick="openCar('${escapeHTML(car.id)}')">
+              View car
+            </button>
+
+            <button class="btn btn-primary" onclick="messageSeller('${escapeHTML(car.id)}')">
+              Message seller
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
-function filtered(){
-const q=(document.getElementById("carSearch")?.value||"").toLowerCase().trim();
-const make=document.getElementById("carMake")?.value||"";
-const type=document.getElementById("carType")?.value||"";
-const price=Number(document.getElementById("carPrice")?.value||0);
-return listings.filter(c=>{
-const hay=`${c.make} ${c.model} ${c.year} ${c.type} ${c.condition}`.toLowerCase();
-return(!q||hay.includes(q))&&(!make||c.make===make)&&(!type||c.type===type)&&(!price||Number(c.price)<=price)
-})
+/* =========================================================
+   CAR DETAILS
+   ========================================================= */
+
+async function openCar(id){
+  const car = allListings.find(x=>String(x.id)===String(id));
+
+  if(!car) return;
+
+  $("carModalTitle").textContent =
+    `${car.make || ""} ${car.model || ""}`;
+
+  const images = car.images || [];
+
+  $("carDetails").innerHTML = `
+    <div style="display:grid;grid-template-columns:1.15fr .85fr;gap:20px">
+
+      <div>
+        <div style="height:390px;border-radius:22px;overflow:hidden;background:#101412">
+          <img
+            src="${escapeHTML(images[0] || "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80")}"
+            style="width:100%;height:100%;object-fit:cover"
+            id="detailMainImage"
+          >
+        </div>
+
+        ${
+          images.length>1
+          ? `<div style="display:flex;gap:8px;margin-top:10px;overflow:auto">
+              ${images.map(img=>`
+                <img src="${escapeHTML(img)}"
+                  onclick="document.getElementById('detailMainImage').src='${escapeHTML(img)}'"
+                  style="width:80px;height:60px;object-fit:cover;border-radius:10px;cursor:pointer">
+              `).join("")}
+             </div>`
+          : ""
+        }
+      </div>
+
+      <div>
+        <div class="price" style="font-size:28px;margin-bottom:15px">
+          ${money(car.price)}
+        </div>
+
+        <div class="meta">
+          <span>${escapeHTML(car.year || "")}</span>
+          <span>${escapeHTML(car.type || "")}</span>
+          <span>${escapeHTML(car.condition || "")}</span>
+          <span>${escapeHTML(car.transmission || "")}</span>
+        </div>
+
+        <p style="color:var(--muted);line-height:1.7">
+          ${escapeHTML(car.description || "No description provided.")}
+        </p>
+
+        <div class="profile-box" style="margin-top:20px">
+          <div class="avatar">
+            ${escapeHTML((car.seller_name || "S").charAt(0).toUpperCase())}
+          </div>
+          <div>
+            <strong>${escapeHTML(car.seller_name || "Seller")}</strong>
+            <small style="display:block;color:var(--muted);margin-top:3px">
+              ${escapeHTML(car.seller_location || "Nigeria")}
+            </small>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:15px">
+          <button class="btn btn-primary" style="flex:1"
+            onclick="messageSeller('${escapeHTML(car.id)}')">
+            Message seller
+          </button>
+
+          <button class="btn btn-dark"
+            onclick="bookInspection('${escapeHTML(car.id)}')">
+            Inspection
+          </button>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  openModal("carModal");
+
+  if(!String(id).startsWith("demo-")){
+    try{
+      await db.from("listings")
+        .update({views:(car.views || 0)+1})
+        .eq("id",id);
+    }catch(e){}
+  }
 }
 
-function renderCatalogue(id,data){
-const e=document.getElementById(id);if(!e)return;
-if(!data.length){
-e.innerHTML='<div class="glass-panel empty" style="grid-column:1/-1"><strong>No vehicles found</strong>Try another search or sell a car.<br><br><button class="btn primary" onclick="go(\'sell\')">Sell a car</button></div>';
-return
-}
-e.innerHTML=data.map(carCard).join("")
-}
+/* =========================================================
+   SELLING / STORAGE
+   ========================================================= */
 
-function carCard(c){
-const s=saved.includes(c.id),img=c.images?.[0]||DEMO[0].images[0];
-return `<article class="car-card">
-<div class="car-photo">
-<img src="${esc(img)}" loading="lazy" alt="${esc(c.make+" "+c.model)}">
-<span class="car-badge">${esc(c.condition||"Available")}</span>
-<button class="save ${s?"saved":""}" onclick="event.stopPropagation();toggleSave('${esc(c.id)}')">${s?"♥":"♡"}</button>
-</div>
-<div class="car-body">
-<div class="car-title-row">
-<div class="car-title">${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</div>
-<div class="car-price">${money(c.price)}</div>
-</div>
-<div class="car-meta">
-<span class="tag">${esc(c.type||"Vehicle")}</span>
-<span class="tag">${Number(c.mileage||0).toLocaleString()} km</span>
-<span class="tag">${esc(c.transmission||"Automatic")}</span>
-</div>
-<div class="seller-mini">
-<span class="avatar">${initials(c.sellerName)}</span>
-<div>
-<strong>${esc(c.sellerName)}</strong>${c.verified?'<span class="verified"> ✓ VERIFIED-READY</span>':""}
-<div style="color:var(--muted)">${esc(c.sellerLocation)}</div>
-</div>
-</div>
-<div class="card-actions">
-<button class="btn primary small" onclick="go('vehicle','${esc(c.id)}')">View vehicle</button>
-<button class="btn small" onclick="go('seller','${esc(c.sellerId)}')">View seller</button>
-</div>
-${c.ownerListing?'<div style="margin-top:8px;color:var(--mint);font-size:10px;font-weight:800">YOUR LISTING</div>':""}
-</div>
-</article>`
+function openSell(){
+  if(!currentUser){
+    openAuth("login");
+    toast("Sign in required","Create an account before listing a car.");
+    return;
+  }
+
+  openModal("sellModal");
 }
 
-function renderHome(){populateMakes();renderCatalogue("homeCatalogue",listings.slice(0,6))}
-function renderCars(){populateMakes();const r=filtered();document.getElementById("carCount").textContent=r.length+" vehicle"+(r.length===1?"":"s");renderCatalogue("carsCatalogue",r)}
-function resetFilters(){["carSearch","carMake","carType","carPrice"].forEach(id=>{const e=document.getElementById(id);if(e)e.value=""});renderCars()}
-function liveSearch(v){go("cars");setTimeout(()=>{const e=document.getElementById("carSearch");if(e){e.value=v;renderCars()}},0)}
-function liveFilter(){go("cars");setTimeout(()=>{[["homeMake","carMake"],["homeType","carType"],["homePrice","carPrice"]].forEach(([a,b])=>document.getElementById(b).value=document.getElementById(a).value);document.getElementById("carSearch").value=document.getElementById("homeSearch").value;renderCars()},0)}
+function previewPhotos(event){
+  selectedPhotos = Array.from(event.target.files || []);
 
-function toggleSave(id){
-if(saved.includes(id))saved=saved.filter(x=>x!==id);
-else{saved.push(id);notify("Car saved",`${getListing(id)?.make||"Vehicle"} ${getListing(id)?.model||""} was saved.`)}
-saveLocal();renderRoute()
+  $("photoPreview").innerHTML =
+    selectedPhotos.map(file=>{
+      const url = URL.createObjectURL(file);
+      return `<img src="${url}" alt="Preview">`;
+    }).join("");
 }
 
-function getListing(id){return listings.find(x=>x.id===id)||DEMO.find(x=>x.id===id)}
-function renderSaved(){renderCatalogue("savedCatalogue",listings.filter(x=>saved.includes(x.id)).concat(DEMO.filter(x=>saved.includes(x.id))))}
+async function uploadPhotos(userId){
+  const urls = [];
 
-function renderVehicle(id){
-const c=getListing(id),e=document.getElementById("vehicleDetail");
-if(!c){e.innerHTML='<div class="empty"><strong>Vehicle not found</strong></div>';return}
-const commission=Number(c.price||0)*.05;
-e.innerHTML=`<div style="margin-bottom:15px"><button class="btn small" onclick="go('cars')">← Back to catalogue</button></div>
-<div class="detail">
-<div>
-<img class="detail-image" src="${esc(c.images?.[0]||DEMO[0].images[0])}" alt="">
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px">
-${(c.images||[]).slice(0,4).map(i=>`<img src="${esc(i)}" style="width:100%;height:80px;object-fit:cover;border-radius:12px">`).join("")}
-</div>
-</div>
-<div class="glass-panel detail-side">
-<span class="status">${c.verified?"✓ VERIFIED-READY":"LISTING"}</span>
-<h1>${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</h1>
-<div class="big-price">${money(c.price)}</div>
-<div class="spec-grid">
-<div class="spec"><span>Type</span><strong>${esc(c.type)}</strong></div>
-<div class="spec"><span>Condition</span><strong>${esc(c.condition)}</strong></div>
-<div class="spec"><span>Mileage</span><strong>${Number(c.mileage||0).toLocaleString()} km</strong></div>
-<div class="spec"><span>Transmission</span><strong>${esc(c.transmission)}</strong></div>
-<div class="spec"><span>VIN / Chassis</span><strong>${esc(c.vin||"Not provided")}</strong></div>
-<div class="spec"><span>Registration</span><strong>${esc(c.registration||"Not provided")}</strong></div>
-</div>
-<p style="color:var(--muted);line-height:1.7;font-size:13px">${esc(c.description||"No description provided.")}</p>
-<div class="alert gold">
-<strong>CarHub transaction preparation</strong><br>
-Future transaction value: ${money(c.price)}<br>
-Prepared CarHub 5% commission: ${money(commission)}<br>
-<small>No payment is processed on this version.</small>
-</div>
-<div style="display:grid;gap:8px">
-${c.ownerListing?
-`<button class="btn full" onclick="editListing('${esc(c.id)}')">Edit my listing</button>
-<button class="btn danger full" onclick="deleteListing('${esc(c.id)}')">Delete listing</button>`:
-`<button class="btn primary full" onclick="viewSeller('${esc(c.sellerId)}')">View seller & continue</button>
-<button class="btn full" onclick="openMessage('${esc(c.id)}')">Message seller</button>
-<button class="btn full" onclick="openInspection('${esc(c.id)}')">Book inspection</button>`}
-<button class="btn full" onclick="toggleSave('${esc(c.id)}')">${saved.includes(c.id)?"♥ Saved":"♡ Save vehicle"}</button>
-</div>
-</div>
-</div>`
+  for(let i=0;i<selectedPhotos.length;i++){
+    const file = selectedPhotos[i];
+
+    const ext =
+      file.name.split(".").pop().toLowerCase() || "jpg";
+
+    const path =
+      `${userId}/${Date.now()}-${i}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const {error} = await db.storage
+      .from("car-images")
+      .upload(path,file,{
+        cacheControl:"3600",
+        upsert:false
+      });
+
+    if(error) throw error;
+
+    const {data} = db.storage
+      .from("car-images")
+      .getPublicUrl(path);
+
+    if(data?.publicUrl){
+      urls.push(data.publicUrl);
+    }
+  }
+
+  return urls;
 }
 
-function viewSeller(id){notify("Seller profile viewed","You viewed the seller before continuing.");go("seller",id)}
+async function publishListing(){
+  if(!currentUser){
+    closeModal("sellModal");
+    openAuth("login");
+    return;
+  }
 
-function renderSeller(id){
-const cars=listings.filter(x=>x.sellerId===id),c=cars[0],e=document.getElementById("sellerDetail");
-if(!c){e.innerHTML='<div class="empty"><strong>Seller not found</strong></div>';return}
-e.innerHTML=`<button class="btn small" onclick="go('cars')">← Back</button>
-<div style="height:15px"></div>
-<div class="glass-panel profile-cover">
-<div class="profile-avatar">${initials(c.sellerName)}</div>
-<div>
-<h2>${esc(c.sellerName)} <span class="status">✓ Verified-ready</span></h2>
-<p>${esc(c.sellerLocation)}</p>
-<p>${cars.length} active listing${cars.length===1?"":"s"}</p>
-</div>
-</div>
-<div class="section-head"><div><h2>Seller's vehicles</h2><p>Review the seller's listings before proceeding.</p></div></div>
-<div class="catalogue">${cars.map(carCard).join("")}</div>`
+  const make = $("make").value.trim();
+  const model = $("model").value.trim();
+  const year = Number($("year").value);
+  const price = Number($("price").value);
+
+  if(!make || !model || !year || !price){
+    showMessage(
+      "sellMessage",
+      "Make, model, year and price are required.",
+      true
+    );
+    return;
+  }
+
+  try{
+    $("publishBtn").disabled = true;
+    $("publishBtn").textContent = "Uploading...";
+
+    const images = await uploadPhotos(currentUser.id);
+
+    $("publishBtn").textContent = "Publishing...";
+
+    const listing = {
+      id:uid(),
+      seller_id:currentUser.id,
+      seller_name:currentProfile?.name || currentUser.email,
+      seller_location:$("location").value.trim() || "Nigeria",
+      make,
+      model,
+      year,
+      price,
+      type:$("vehicleType").value,
+      condition:$("condition").value,
+      mileage:$("mileage").value.trim(),
+      transmission:$("transmission").value,
+      vin:$("vin").value.trim(),
+      registration:$("registration").value.trim(),
+      description:$("description").value.trim(),
+      images,
+      verified:false
+    };
+
+    const {error} = await db
+      .from("listings")
+      .insert(listing);
+
+    if(error) throw error;
+
+    closeModal("sellModal");
+
+    resetSellForm();
+
+    await loadListings();
+
+    toast(
+      "Listing published",
+      "Your vehicle is now on CarHub Africa."
+    );
+
+  }catch(error){
+    console.error(error);
+
+    showMessage(
+      "sellMessage",
+      error.message || "Could not publish listing.",
+      true
+    );
+
+  }finally{
+    $("publishBtn").disabled = false;
+    $("publishBtn").textContent = "Publish listing";
+  }
 }
 
-function previewPhotos(ev){
-selectedPhotos=[];
-document.getElementById("photoPreview").innerHTML="";
-const fs=[...ev.target.files].slice(0,6);
-if(ev.target.files.length>6)toast("Only the first 6 photos will be used.");
-for(const f of fs){
-if(!f.type.startsWith("image/")||f.size>8*1024*1024){toast("Each photo must be an image under 8 MB.");continue}
-selectedPhotos.push(f);
-const url=URL.createObjectURL(f),d=document.createElement("div");
-d.className="preview";
-d.innerHTML=`<img src="${url}"><button type="button" onclick="removePhoto(${selectedPhotos.length-1})">×</button>`;
-document.getElementById("photoPreview").appendChild(d)
-}
+function resetSellForm(){
+  [
+    "make","model","year","price","mileage","location",
+    "vin","registration","description"
+  ].forEach(id=>{
+    $(id).value="";
+  });
+
+  $("photos").value="";
+  $("photoPreview").innerHTML="";
+  selectedPhotos=[];
 }
 
-function removePhoto(i){
-selectedPhotos.splice(i,1);
-const input=document.getElementById("photoInput");
-input.value="";
-document.getElementById("photoPreview").innerHTML="";
-selectedPhotos.forEach((f,j)=>{
-const url=URL.createObjectURL(f),d=document.createElement("div");
-d.className="preview";
-d.innerHTML=`<img src="${url}"><button type="button" onclick="removePhoto(${j})">×</button>`;
-document.getElementById("photoPreview").appendChild(d)
-})
+/* =========================================================
+   MESSAGING
+   ========================================================= */
+
+async function messageSeller(listingId){
+  const car = allListings.find(x=>String(x.id)===String(listingId));
+
+  if(!car) return;
+
+  if(!currentUser){
+    closeModal("carModal");
+    openAuth("login");
+    toast("Sign in required","Sign in to message sellers.");
+    return;
+  }
+
+  if(!car.seller_id){
+    toast("Showcase vehicle","This is a CarHub showcase vehicle.");
+    return;
+  }
+
+  if(car.seller_id===currentUser.id){
+    closeModal("carModal");
+    openDashboard();
+    return;
+  }
+
+  try{
+    let {data,error} = await db
+      .from("conversations")
+      .select("*")
+      .eq("buyer_id",currentUser.id)
+      .eq("seller_id",car.seller_id)
+      .eq("listing_id",car.id)
+      .maybeSingle();
+
+    if(error) throw error;
+
+    if(!data){
+      const result = await db
+        .from("conversations")
+        .insert({
+          id:uid(),
+          buyer_id:currentUser.id,
+          seller_id:car.seller_id,
+          listing_id:car.id
+        })
+        .select()
+        .single();
+
+      if(result.error) throw result.error;
+
+      data = result.data;
+    }
+
+    selectedConversation = data;
+
+    closeModal("carModal");
+
+    openModal("chatModal");
+
+    await loadConversations();
+    await openConversation(data.id);
+
+  }catch(error){
+    console.error(error);
+
+    toast(
+      "Chat unavailable",
+      error.message || "Could not open conversation."
+    );
+  }
 }
 
-function ext(f){return(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg"}
+async function loadConversations(){
+  if(!currentUser) return;
 
-async function uploadPhotos(listingId,files){
-if(!currentUser)throw new Error("You must sign in first.");
-const urls=[];
-for(const file of files.slice(0,6)){
-const path=`${currentUser.id}/${listingId}/${uid()}.${ext(file)}`;
-const {error}=await db.storage.from(BUCKET).upload(path,file,{cacheControl:"31536000",upsert:false,contentType:file.type});
-if(error)throw error;
-const {data}=db.storage.from(BUCKET).getPublicUrl(path);
-urls.push(data.publicUrl)
-}
-return urls
-}
+  const box = $("conversationList");
 
-async function createListing(ev){
-ev.preventDefault();
-if(!currentUser){openAuth("Sign in to sell a car");return}
-const b=document.getElementById("publishBtn");
-b.disabled=true;b.textContent="Uploading & publishing...";
-let id=uid();
+  box.innerHTML =
+    '<div class="loading">Loading...</div>';
 
-try{
-if(!selectedPhotos.length){toast("Please select at least one real vehicle photo.");return}
-const imgs=await uploadPhotos(id,selectedPhotos);
+  try{
+    const {data,error} = await db
+      .from("conversations")
+      .select("*")
+      .or(
+        `buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`
+      )
+      .order("created_at",{ascending:false});
 
-const row={
-id,
-seller_id:currentUser.id,
-seller_name:profile.name,
-seller_location:profile.location||"Nigeria",
-make:document.getElementById("sellMake").value.trim(),
-model:document.getElementById("sellModel").value.trim(),
-year:Number(document.getElementById("sellYear").value),
-price:Number(document.getElementById("sellPrice").value),
-type:document.getElementById("sellType").value,
-condition:document.getElementById("sellCondition").value,
-mileage:Number(document.getElementById("sellMileage").value||0),
-transmission:document.getElementById("sellTransmission").value,
-vin:document.getElementById("sellVin").value.trim(),
-registration:document.getElementById("sellRegistration").value.trim(),
-description:document.getElementById("sellDescription").value.trim(),
-images:imgs,
-verified:false,
-views:0
-};
+    if(error) throw error;
 
-const {error}=await db.from("listings").insert(row);
-if(error)throw error;
+    if(!data?.length){
+      box.innerHTML =
+        '<div class="empty" style="border:0;padding:30px 15px">'+
+        'No conversations yet.<br>'+
+        '<small>Message a seller from a vehicle listing.</small>'+
+        '</div>';
+      return;
+    }
 
-activityAdd("Listing published",`${row.year} ${row.make} ${row.model} was added to the marketplace.`);
-notify("Listing published",`${row.make} ${row.model} is now in your CarHub catalogue.`);
-document.getElementById("sellForm").reset();
-selectedPhotos=[];
-document.getElementById("photoPreview").innerHTML="";
-await loadListings();
-toast("Your vehicle is live in the CarHub catalogue.");
-go("dashboard")
-}catch(err){
-console.error(err);
-toast("Could not publish listing: "+(err.message||"please try again."))
-}finally{
-b.disabled=false;
-b.textContent="Publish listing"
-}
-}
+    const html = [];
 
-function renderDashboard(){
-const mine=listings.filter(x=>x.sellerId===currentUser?.id),savedMine=listings.filter(x=>saved.includes(x.id));
+    for(const conv of data){
 
-document.getElementById("dashboardStats").innerHTML=
-`<div class="glass-panel stat"><span>My listings</span><strong>${mine.length}</strong><small>Cloud marketplace cars</small></div>
-<div class="glass-panel stat"><span>Saved cars</span><strong>${savedMine.length}</strong><small>Your favourites</small></div>
-<div class="glass-panel stat"><span>Messages</span><strong>${messages.length}</strong><small>Local prototype chats</small></div>
-<div class="glass-panel stat"><span>Inspections</span><strong>${inspections.length}</strong><small>Booked inspections</small></div>`;
+      let otherId =
+        conv.buyer_id===currentUser.id
+          ? conv.seller_id
+          : conv.buyer_id;
 
-const e=document.getElementById("myListings");
+      let name = "CarHub member";
 
-if(!currentUser){
-e.innerHTML='<div class="empty"><strong>Sign in to manage listings</strong><button class="btn primary" onclick="openAuth(\'Sign in to manage your listings\')">Sign in</button></div>'
-}else if(!mine.length){
-e.innerHTML='<div class="empty"><strong>You have no cloud listings yet.</strong><br><button class="btn primary" onclick="go(\'sell\')">Sell a car</button></div>'
-}else{
-e.innerHTML=mine.map(c=>`<div class="list-row">
-<img class="row-img" src="${esc(c.images?.[0]||DEMO[0].images[0])}">
-<div class="row-main">
-<strong>${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</strong>
-<span>${money(c.price)} · ${c.views||0} views</span>
-</div>
-<div class="row-actions">
-<button class="btn small" onclick="go('vehicle','${esc(c.id)}')">View</button>
-<button class="btn small" onclick="editListing('${esc(c.id)}')">Edit</button>
-<button class="btn small danger" onclick="deleteListing('${esc(c.id)}')">Delete</button>
-</div>
-</div>`).join("")
+      const profile = await db
+        .from("profiles")
+        .select("name,email")
+        .eq("id",otherId)
+        .maybeSingle();
+
+      if(profile.data){
+        name = profile.data.name || profile.data.email || name;
+      }
+
+      const msgs = await db
+        .from("messages")
+        .select("body,created_at,sender_id")
+        .eq("conversation_id",conv.id)
+        .order("created_at",{ascending:false})
+        .limit(1);
+
+      const latest = msgs.data?.[0];
+
+      html.push(`
+        <div class="conversation ${
+          selectedConversation?.id===conv.id ? "active" : ""
+        }"
+        onclick="openConversation('${escapeHTML(conv.id)}')">
+
+          <div class="conv-name">
+            <span>${escapeHTML(name)}</span>
+          </div>
+
+          <div class="conv-preview">
+            ${escapeHTML(latest?.body || "Start the conversation")}
+          </div>
+
+        </div>
+      `);
+    }
+
+    box.innerHTML = html.join("");
+
+  }catch(error){
+    console.error(error);
+
+    box.innerHTML =
+      '<div class="empty" style="border:0">Unable to load conversations.</div>';
+  }
 }
 
-document.getElementById("dashboardActivity").innerHTML=activity.length?
-activity.slice(0,8).map(a=>`<div class="list-row">
-<div class="feature-icon">•</div>
-<div class="row-main">
-<strong>${esc(a.title)}</strong>
-<span>${esc(a.text)}</span>
-<span>${esc(a.time)}</span>
-</div>
-</div>`).join(""):
-'<div class="empty"><strong>No activity yet</strong></div>'
+async function openConversation(conversationId){
+  try{
+    const {data:conversation,error} = await db
+      .from("conversations")
+      .select("*")
+      .eq("id",conversationId)
+      .single();
+
+    if(error) throw error;
+
+    selectedConversation = conversation;
+
+    let otherId =
+      conversation.buyer_id===currentUser.id
+        ? conversation.seller_id
+        : conversation.buyer_id;
+
+    let name = "CarHub member";
+
+    const profile = await db
+      .from("profiles")
+      .select("name,email")
+      .eq("id",otherId)
+      .maybeSingle();
+
+    if(profile.data){
+      name = profile.data.name || profile.data.email || name;
+    }
+
+    let listing = null;
+
+    const listingResult = await db
+      .from("listings")
+      .select("make,model,year,price")
+      .eq("id",conversation.listing_id)
+      .maybeSingle();
+
+    listing = listingResult.data;
+
+    $("chatTop").innerHTML = `
+      <strong><span class="online"></span>${escapeHTML(name)}</strong>
+      <small>
+        ${
+          listing
+          ? escapeHTML(`${listing.make} ${listing.model} • ${money(listing.price)}`)
+          : "CarHub conversation"
+        }
+      </small>
+    `;
+
+    await loadMessages(conversationId);
+
+    await markMessagesRead(conversationId);
+
+    subscribeMessages(conversationId);
+
+    await loadConversations();
+
+  }catch(error){
+    console.error(error);
+  }
 }
 
-function editListing(id){
-const c=getListing(id);
-if(!c||c.sellerId!==currentUser?.id){toast("You can only edit your own listings.");return}
-editingId=id;
+async function loadMessages(conversationId){
+  const box = $("messages");
 
-openModal("Edit listing",
-`<div class="form-grid">
-<div class="field"><label>Make</label><input class="input" id="editMake" value="${esc(c.make)}"></div>
-<div class="field"><label>Model</label><input class="input" id="editModel" value="${esc(c.model)}"></div>
-<div class="field"><label>Year</label><input class="input" id="editYear" type="number" value="${c.year}"></div>
-<div class="field"><label>Price</label><input class="input" id="editPrice" type="number" value="${c.price}"></div>
-<div class="field"><label>Mileage</label><input class="input" id="editMileage" type="number" value="${c.mileage||0}"></div>
-<div class="field"><label>Type</label><select class="select" id="editType">${["SUV","Saloon","Coupe","Truck","Electric"].map(x=>`<option ${x===c.type?"selected":""}>${x}</option>`).join("")}</select></div>
-<div class="field"><label>Condition</label><select class="select" id="editCondition">${["Foreign Used","Nigerian Used","Brand New"].map(x=>`<option ${x===c.condition?"selected":""}>${x}</option>`).join("")}</select></div>
-<div class="field"><label>Transmission</label><select class="select" id="editTransmission">${["Automatic","Manual","CVT"].map(x=>`<option ${x===c.transmission?"selected":""}>${x}</option>`).join("")}</select></div>
-<div class="field full"><label>Description</label><textarea class="textarea" id="editDescription">${esc(c.description||"")}</textarea></div>
-<div class="field full"><label>Add more photos</label><input class="input" id="editPhotos" type="file" accept="image/*" multiple></div>
-<div class="field full"><button class="btn primary full" onclick="saveListingEdit()">Save changes</button></div>
-</div>`)
+  const {data,error} = await db
+    .from("messages")
+    .select("*")
+    .eq("conversation_id",conversationId)
+    .order("created_at",{ascending:true});
+
+  if(error){
+    console.error(error);
+    box.innerHTML =
+      '<div class="empty" style="border:0">Could not load messages.</div>';
+    return;
+  }
+
+  if(!data?.length){
+    box.innerHTML =
+      '<div class="empty" style="border:0">'+
+      'No messages yet.<br>'+
+      '<small>Say hello to the seller.</small>'+
+      '</div>';
+    return;
+  }
+
+  renderMessages(data);
 }
 
-async function saveListingEdit(){
-const c=getListing(editingId);
-if(!c||!currentUser)return;
+function renderMessages(messages){
+  const box = $("messages");
 
-try{
-let imgs=c.images||[];
-const fs=[...(document.getElementById("editPhotos")?.files||[])].slice(0,6-imgs.length);
-if(fs.length)imgs=imgs.concat(await uploadPhotos(c.id,fs));
+  box.innerHTML = messages.map(message=>{
+    const mine = message.sender_id===currentUser.id;
 
-const patch={
-make:document.getElementById("editMake").value.trim(),
-model:document.getElementById("editModel").value.trim(),
-year:Number(document.getElementById("editYear").value),
-price:Number(document.getElementById("editPrice").value),
-mileage:Number(document.getElementById("editMileage").value||0),
-type:document.getElementById("editType").value,
-condition:document.getElementById("editCondition").value,
-transmission:document.getElementById("editTransmission").value,
-description:document.getElementById("editDescription").value.trim(),
-images:imgs,
-seller_name:profile.name,
-seller_location:profile.location
-};
+    return `
+      <div class="msg ${mine ? "mine" : ""}">
+        <div class="msg-bubble">
+          ${escapeHTML(message.body)}
+        </div>
+        <div class="msg-time">
+          ${formatTime(message.created_at)}
+          ${mine && message.read_at ? " • Read" : ""}
+        </div>
+      </div>
+    `;
+  }).join("");
 
-const {error}=await db.from("listings").update(patch).eq("id",c.id).eq("seller_id",currentUser.id);
-if(error)throw error;
-
-closeModal();
-await loadListings();
-activityAdd("Listing updated",`${patch.make} ${patch.model} was updated.`);
-toast("Listing updated.");
-go("dashboard")
-}catch(e){
-console.error(e);
-toast("Could not update listing: "+e.message)
-}
+  box.scrollTop = box.scrollHeight;
 }
 
-async function deleteListing(id){
-const c=getListing(id);
-if(!c||c.sellerId!==currentUser?.id){toast("You can only delete your own listings.");return}
-if(!confirm(`Delete ${c.year} ${c.make} ${c.model}?`))return;
-
-try{
-const paths=(c.images||[]).map(u=>{
-try{return decodeURIComponent(new URL(u).pathname.split("/object/public/"+BUCKET+"/")[1]||"")}
-catch{return""}
-}).filter(Boolean);
-
-if(paths.length)await db.storage.from(BUCKET).remove(paths);
-
-const {error}=await db.from("listings").delete().eq("id",id).eq("seller_id",currentUser.id);
-if(error)throw error;
-
-saved=saved.filter(x=>x!==id);
-saveLocal();
-await loadListings();
-activityAdd("Listing deleted",`${c.make} ${c.model} was removed.`);
-toast("Listing deleted.");
-go("dashboard")
-}catch(e){
-console.error(e);
-toast("Could not delete listing: "+e.message)
-}
+function formatTime(date){
+  try{
+    return new Date(date).toLocaleTimeString([],{
+      hour:"2-digit",
+      minute:"2-digit"
+    });
+  }catch(e){
+    return "";
+  }
 }
 
-function openMessage(id){
-const c=getListing(id);if(!c)return;
-const key=`${currentUser?.id||"guest"}__${id}`;
-let x=messages.find(v=>v.key===key);
+async function sendMessage(){
+  if(!currentUser || !selectedConversation) return;
 
-if(!x){
-x={
-id:uid(),
-key,
-carId:id,
-sellerName:c.sellerName,
-carName:`${c.year} ${c.make} ${c.model}`,
-messages:[{
-sender:"system",
-text:`Conversation started about ${c.year} ${c.make} ${c.model}.`,
-time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})
-}]
-};
-messages.push(x);
-saveLocal()
+  const input = $("messageInput");
+  const body = input.value.trim();
+
+  if(!body) return;
+
+  try{
+    input.disabled = true;
+
+    const {error} = await db
+      .from("messages")
+      .insert({
+        id:uid(),
+        conversation_id:selectedConversation.id,
+        sender_id:currentUser.id,
+        body
+      });
+
+    if(error) throw error;
+
+    input.value="";
+
+    await loadMessages(selectedConversation.id);
+
+  }catch(error){
+    console.error(error);
+    toast("Message failed",error.message || "Could not send message.");
+  }finally{
+    input.disabled=false;
+    input.focus();
+  }
 }
 
-currentConversation=x.id;
-go("messages")
+async function markMessagesRead(conversationId){
+  if(!currentUser) return;
+
+  await db
+    .from("messages")
+    .update({read_at:new Date().toISOString()})
+    .eq("conversation_id",conversationId)
+    .neq("sender_id",currentUser.id)
+    .is("read_at",null);
 }
 
-function renderMessages(){
-const list=document.getElementById("conversationList");
+function subscribeMessages(conversationId){
 
-if(!messages.length){
-list.innerHTML='<div class="empty"><strong>No messages</strong>Open a car and contact the seller.</div>';
-return
+  if(messageChannel){
+    db.removeChannel(messageChannel);
+    messageChannel=null;
+  }
+
+  messageChannel = db
+    .channel("messages-"+conversationId)
+    .on(
+      "postgres_changes",
+      {
+        event:"INSERT",
+        schema:"public",
+        table:"messages",
+        filter:`conversation_id=eq.${conversationId}`
+      },
+      async payload=>{
+        await loadMessages(conversationId);
+
+        if(payload.new.sender_id!==currentUser?.id){
+          toast("New message","You received a new CarHub message.");
+          await markMessagesRead(conversationId);
+        }
+      }
+    )
+    .subscribe();
 }
 
-list.innerHTML=messages.map(c=>`<div class="conversation" onclick="selectConversation('${c.id}')">
-<strong>${esc(c.sellerName)}</strong>
-<div style="color:var(--mint);font-size:10px">${esc(c.carName)}</div>
-<div style="color:var(--muted);font-size:11px">${esc(c.messages.at(-1)?.text||"")}</div>
-</div>`).join("");
+/* =========================================================
+   CHAT CENTER
+   ========================================================= */
 
-if(!currentConversation)currentConversation=messages[0].id;
-selectConversation(currentConversation)
+async function openDashboard(){
+  if(!currentUser){
+    openAuth("login");
+    return;
+  }
+
+  openModal("dashboardModal");
+  await renderDashboard();
 }
 
-function selectConversation(id){
-currentConversation=id;
-const c=messages.find(x=>x.id===id);
-if(!c)return;
+async function renderDashboard(){
 
-document.getElementById("chatHead").innerHTML=`<strong>${esc(c.sellerName)}</strong><span>${esc(c.carName)}</span>`;
+  const content = $("dashboardContent");
 
-document.getElementById("chatBody").innerHTML=c.messages.map(m=>
-`<div class="bubble ${m.sender==="me"?"me":""}">
-${esc(m.text)}
-<div style="font-size:9px;color:var(--muted);margin-top:5px">${esc(m.time)}</div>
-</div>`).join("")
+  try{
+    const [listingsResult,conversationsResult] =
+      await Promise.all([
+        db.from("listings")
+          .select("*")
+          .eq("seller_id",currentUser.id)
+          .order("created_at",{ascending:false}),
+
+        db.from("conversations")
+          .select("id")
+          .or(
+            `buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`
+          )
+      ]);
+
+    const listings = listingsResult.data || [];
+    const conversations = conversationsResult.data || [];
+
+    content.innerHTML = `
+
+      <div class="profile-box">
+        <div class="avatar">
+          ${escapeHTML(
+            (currentProfile?.name || currentUser.email || "C")
+              .charAt(0)
+              .toUpperCase()
+          )}
+        </div>
+
+        <div style="flex:1">
+          <strong>${escapeHTML(
+            currentProfile?.name || "CarHub User"
+          )}</strong>
+
+          <small style="display:block;color:var(--muted);margin-top:4px">
+            ${escapeHTML(currentUser.email || "")}
+          </small>
+        </div>
+
+        <button class="btn btn-dark" onclick="openChatCenter()">
+          Messages
+        </button>
+
+        <button class="btn btn-danger" onclick="signOut()">
+          Sign out
+        </button>
+      </div>
+
+      <div class="dashboard-grid" style="margin-top:18px">
+
+        <div class="stat">
+          <small>Your listings</small>
+          <strong>${listings.length}</strong>
+        </div>
+
+        <div class="stat">
+          <small>Conversations</small>
+          <strong>${conversations.length}</strong>
+        </div>
+
+        <div class="stat">
+          <small>Account</small>
+          <strong>Active</strong>
+        </div>
+
+      </div>
+
+      <div style="margin-top:25px">
+        <h3>Your vehicle listings</h3>
+
+        ${
+          listings.length
+          ? listings.map(car=>`
+              <div class="list-row">
+                <img src="${escapeHTML(
+                  car.images?.[0] ||
+                  "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=600&q=80"
+                )}">
+
+                <div class="list-row-main">
+                  <strong>
+                    ${escapeHTML(car.make)} ${escapeHTML(car.model)}
+                  </strong>
+                  <small>
+                    ${money(car.price)} • ${car.views || 0} views
+                  </small>
+                </div>
+              </div>
+            `).join("")
+          : '<div class="empty">You have not listed a vehicle yet.</div>'
+        }
+      </div>
+    `;
+
+  }catch(error){
+    console.error(error);
+    content.innerHTML =
+      '<div class="empty">Could not load your dashboard.</div>';
+  }
 }
 
-function sendMessage(){
-const i=document.getElementById("messageInput"),t=i.value.trim(),c=messages.find(x=>x.id===currentConversation);
-if(!t||!c)return;
+async function openChatCenter(){
+  closeModal("dashboardModal");
 
-c.messages.push({
-sender:"me",
-text:t,
-time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})
-});
+  if(!currentUser){
+    openAuth("login");
+    return;
+  }
 
-const words=["buy","purchase","pay","payment","deposit","transfer","bank","account","price","deal","sale","sold","money"];
-
-if(words.some(w=>t.toLowerCase().includes(w)))
-notify("Conversation needs attention",`Your conversation about ${c.carName} contains transaction-related language.`,"transaction");
-
-i.value="";
-saveLocal();
-renderMessages()
-}
-
-function openInspection(id){
-const c=getListing(id);
-
-openModal("Book vehicle inspection",
-`<div class="alert"><strong>${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</strong><br>${money(c.price)}</div>
-<div class="field">
-<label>Inspection date</label>
-<input class="input" id="inspectionDate" type="date" min="${new Date().toISOString().split("T")[0]}">
-</div>
-<div class="field">
-<label>Inspection time</label>
-<select class="select" id="inspectionTime">
-<option value="">Select time</option>
-${["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00"].map(x=>`<option>${x}</option>`).join("")}
-</select>
-</div>
-<div class="field"><label>Note</label><textarea class="textarea" id="inspectionNote"></textarea></div>
-<button class="btn primary full" onclick="bookInspection('${esc(id)}')">Confirm inspection</button>`)
-}
-
-function bookInspection(id){
-const c=getListing(id),
-date=document.getElementById("inspectionDate").value,
-time=document.getElementById("inspectionTime").value,
-note=document.getElementById("inspectionNote").value.trim();
-
-if(!date||!time)return toast("Please choose a date and time.");
-
-inspections.unshift({
-id:uid(),
-carId:id,
-carName:`${c.year} ${c.make} ${c.model}`,
-date,
-time,
-note,
-status:"Booked"
-});
-
-activityAdd("Inspection booked",`${c.year} ${c.make} ${c.model} · ${date} at ${time}`);
-notify("Inspection booked",`${c.year} ${c.make} ${c.model} is scheduled for ${date} at ${time}.`);
-closeModal();
-saveLocal();
-go("inspections")
-}
-
-function renderInspections(){
-const e=document.getElementById("inspectionList");
-
-e.innerHTML=inspections.length?
-inspections.map(x=>`<div class="list-row">
-<div class="feature-icon">◷</div>
-<div class="row-main">
-<strong>${esc(x.carName)}</strong>
-<span>${esc(x.date)} · ${esc(x.time)}</span>
-${x.note?`<span>${esc(x.note)}</span>`:""}
-</div>
-<span class="status">${esc(x.status)}</span>
-</div>`).join(""):
-'<div class="empty"><strong>No inspections yet</strong>Book an inspection from a vehicle page.</div>'
-}
-
-function renderNotifications(){
-const e=document.getElementById("notificationsList");
-
-e.innerHTML=notifications.length?
-notifications.map(n=>`<div class="list-row">
-<div class="feature-icon">${n.type==="transaction"?"!":"•"}</div>
-<div class="row-main">
-<strong>${esc(n.title)}</strong>
-<span>${esc(n.text)}</span>
-<span>${esc(n.time)}</span>
-</div>
-${n.type==="transaction"?'<span class="status gold">ATTENTION</span>':""}
-</div>`).join(""):
-'<div class="empty"><strong>You&apos;re all caught up</strong></div>'
-}
-
-function renderAccount(){
-document.getElementById("accountAvatar").textContent=initials(profile.name);
-document.getElementById("accountName").textContent=profile.name;
-document.getElementById("accountEmail").textContent=profile.email||"Not signed in";
-document.getElementById("accountStatus").textContent=currentUser?"SIGNED IN":"GUEST";
-document.getElementById("profileName").value=profile.name||"";
-document.getElementById("profileEmail").value=profile.email||"";
-document.getElementById("profilePhone").value=profile.phone||"";
-document.getElementById("profileLocation").value=profile.location||"";
-document.getElementById("profileType").value=profile.type||"Buyer & Seller"
-}
-
-async function saveProfile(){
-if(!currentUser)return openAuth("Sign in to save your profile");
-
-const p={
-id:currentUser.id,
-name:document.getElementById("profileName").value.trim()||"CarHub User",
-email:currentUser.email,
-phone:document.getElementById("profilePhone").value.trim(),
-location:document.getElementById("profileLocation").value.trim()||"Nigeria",
-type:document.getElementById("profileType").value
-};
-
-const {error}=await db.from("profiles").upsert(p);
-if(error)return toast(error.message);
-
-profile=p;
-await db.from("listings").update({seller_name:p.name,seller_location:p.location}).eq("seller_id",currentUser.id);
-await loadListings();
-updateHeader();
-toast("Profile saved.");
-renderAccount()
-}
-
-function generateAdvert(){
-const v=document.getElementById("aiVehicle").value.trim()||"your vehicle";
-const p=document.getElementById("aiPrice").value.trim()||"Contact seller";
-const d=document.getElementById("aiDetails").value.trim()||"Clean condition with a comfortable interior and strong road presence.";
-
-document.getElementById("aiOutput").textContent=
-`CARHUB AFRICA VEHICLE ADVERT
-
-${v}
-
-Price: ${p}
-
-${d}
-
-Why consider it:
-• Clean and marketplace-ready
-• Inspection can be booked through CarHub Africa
-• Buyer can view the seller profile before proceeding
-
-Interested?
-Open the vehicle listing on CarHub Africa and start a conversation with the seller.
-
-#CarHubAfrica #CarsNigeria #BuySellDrive`;
-
-activityAdd("Advert created",`Advert draft created for ${v}.`);
-toast("Advert generated.")
-}
-
-function openModal(t,b){
-document.getElementById("modalTitle").textContent=t;
-document.getElementById("modalBody").innerHTML=b;
-document.getElementById("modal").classList.add("show")
-}
-
-function closeModal(){document.getElementById("modal").classList.remove("show")}
-
-document.getElementById("modal").addEventListener("click",e=>{
-if(e.target.id==="modal")closeModal()
-});
-
-function openAuth(title="Sign in to CarHub Africa"){
-openModal(title,
-`<div class="alert">Create an account or sign in to publish and manage cloud listings.</div>
-<div class="field"><label>Email</label><input class="input" id="authEmail" type="email" placeholder="you@example.com"></div>
-<div class="field"><label>Password</label><input class="input" id="authPassword" type="password" placeholder="Minimum 6 characters"></div>
-<div class="field"><label>Name (for new accounts)</label><input class="input" id="authName" placeholder="Your name"></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<button class="btn primary" onclick="signIn()">Sign in</button>
-<button class="btn" onclick="signUp()">Create account</button>
-</div>`)
-}
-
-async function signIn(){
-const email=document.getElementById("authEmail").value.trim(),
-password=document.getElementById("authPassword").value;
-
-if(!email||!password)return toast("Enter email and password.");
-
-const {error}=await db.auth.signInWithPassword({email,password});
-if(error)return toast(error.message);
-
-closeModal();
-await refresh();
-toast("Signed in successfully.")
-}
-
-async function signUp(){
-const email=document.getElementById("authEmail").value.trim(),
-password=document.getElementById("authPassword").value,
-name=document.getElementById("authName").value.trim()||"CarHub User";
-
-if(!email||password.length<6)return toast("Enter an email and a password of at least 6 characters.");
-
-const {data,error}=await db.auth.signUp({
-email,
-password,
-options:{data:{name}}
-});
-
-if(error)return toast(error.message);
-
-if(data.user){
-await db.from("profiles").upsert({
-id:data.user.id,
-name,
-email,
-location:"Nigeria",
-type:"Buyer & Seller"
-});
-
-closeModal();
-await refresh();
-toast(data.session?"Account created.":"Account created — check your email to confirm.")
-}
+  openModal("chatModal");
+  await loadConversations();
 }
 
 async function signOut(){
-await db.auth.signOut();
-currentUser=null;
-await refresh();
-toast("Signed out.")
+  await db.auth.signOut();
+
+  currentUser=null;
+  currentProfile=null;
+  selectedConversation=null;
+
+  closeModal("dashboardModal");
+  closeModal("chatModal");
+
+  updateAccountButton();
+
+  toast("Signed out","You have been signed out of CarHub Africa.");
 }
 
-function toggleBubble(){document.getElementById("bubbleMenu").classList.toggle("open")}
-function toggleDrawer(){document.getElementById("mobileDrawer").classList.toggle("open")}
-function closeDrawer(){document.getElementById("mobileDrawer").classList.remove("open")}
+/* =========================================================
+   INSPECTION
+   ========================================================= */
 
-function go(route,param){
-const h="#"+route+(param?"/"+encodeURIComponent(param):"");
-if(location.hash!==h)location.hash=h;
-else renderRoute();
-scrollTo({top:0,behavior:"smooth"})
+async function bookInspection(listingId){
+  if(!currentUser){
+    closeModal("carModal");
+    openAuth("login");
+    return;
+  }
+
+  const date = prompt("Choose inspection date (YYYY-MM-DD):");
+
+  if(!date) return;
+
+  const time = prompt("Choose inspection time (e.g. 10:00):");
+
+  if(!time) return;
+
+  try{
+    const {error} = await db
+      .from("inspections")
+      .insert({
+        id:uid(),
+        user_id:currentUser.id,
+        listing_id:listingId,
+        date,
+        time,
+        status:"pending"
+      });
+
+    if(error) throw error;
+
+    toast(
+      "Inspection requested",
+      "Your inspection request has been recorded."
+    );
+
+  }catch(error){
+    toast(
+      "Inspection failed",
+      error.message || "Could not request inspection."
+    );
+  }
 }
 
-/* FIXED ROUTER */
-function parseRoute(){
-const p=location.hash.replace(/^#/,"").split("/");
-return{
-route:p[0]||"home",
-param:p.slice(1).map(decodeURIComponent).join("/")
+/* =========================================================
+   REALTIME LISTENERS
+   ========================================================= */
+
+function setupRealtime(){
+
+  if(listingsChannel){
+    db.removeChannel(listingsChannel);
+  }
+
+  listingsChannel = db
+    .channel("carhub-listings")
+    .on(
+      "postgres_changes",
+      {
+        event:"*",
+        schema:"public",
+        table:"listings"
+      },
+      async ()=>{
+        await loadListings();
+      }
+    )
+    .subscribe();
+
+  if(conversationChannel){
+    db.removeChannel(conversationChannel);
+  }
+
+  if(currentUser){
+
+    conversationChannel = db
+      .channel("carhub-conversations-"+currentUser.id)
+      .on(
+        "postgres_changes",
+        {
+          event:"INSERT",
+          schema:"public",
+          table:"conversations"
+        },
+        async payload=>{
+
+          const c = payload.new;
+
+          if(
+            c.buyer_id===currentUser.id ||
+            c.seller_id===currentUser.id
+          ){
+            toast(
+              "New conversation",
+              "A new CarHub conversation is available."
+            );
+
+            if($("chatModal").classList.contains("show")){
+              await loadConversations();
+            }
+          }
+        }
+      )
+      .subscribe();
+  }
 }
-}
 
-function renderRoute(){
-const {route:paramRoute,param}=parseRoute();
+/* =========================================================
+   GLOBAL SEARCH EVENTS
+   ========================================================= */
 
-document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
-
-const actual=document.getElementById("screen-"+paramRoute)?paramRoute:"home";
-
-document.getElementById("screen-"+actual).classList.add("active");
-
-document.querySelectorAll(".nav button").forEach(b=>
-b.classList.toggle("active",b.dataset.route===actual)
-);
-
-if(actual==="home")renderHome();
-if(actual==="cars")renderCars();
-if(actual==="saved")renderSaved();
-if(actual==="sell"&&!currentUser)setTimeout(()=>openAuth("Sign in to sell a car"),0);
-if(actual==="dashboard")renderDashboard();
-if(actual==="messages")renderMessages();
-if(actual==="inspections")renderInspections();
-if(actual==="notifications")renderNotifications();
-if(actual==="account")renderAccount();
-if(actual==="vehicle")renderVehicle(param);
-if(actual==="seller")renderSeller(param)
-}
-
-window.addEventListener("hashchange",renderRoute);
-
-db.auth.onAuthStateChange(async()=>{
-await loadProfile();
-await loadListings();
-renderRoute()
+$("searchInput").addEventListener("keydown",event=>{
+  if(event.key==="Enter") loadListings();
 });
 
-(async()=>{
-await loadProfile();
-await loadListings();
-renderRoute();
+$("typeFilter").addEventListener("change",loadListings);
+$("conditionFilter").addEventListener("change",loadListings);
 
-const hero=document.getElementById("heroImage");
-let i=0;
+/* =========================================================
+   START
+   ========================================================= */
 
-setInterval(()=>{
-if(!hero||!listings.length)return;
+init();
 
-i=(i+1)%Math.min(listings.length,6);
-const c=listings[i];
-
-if(c?.images?.[0]){
-hero.style.opacity=".45";
-setTimeout(()=>{
-hero.src=c.images[0];
-hero.style.opacity=".88"
-},180)
-}
-},7000)
-})();
 </script>
-</div>
+
 </body>
 </html>
