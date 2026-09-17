@@ -40,70 +40,374 @@ main{max-width:1400px;margin:auto;padding:28px 22px 100px}.screen{display:none;a
 </head>
 <body>
 <div class="app">
-<header class="header"><div class="header-inner">
-<button class="menu-btn icon-btn" onclick="toggleDrawer()">☰</button>
-<button class="logo" onclick="go('home')" style="background:none;border:0;color:white;text-align:left">CarHub <span>Africa</span><small>BUY · SELL · DRIVE</small></button>
-<nav class="nav"><button data-route="home" onclick="go('home')">Home</button><button data-route="cars" onclick="go('cars')">Cars</button><button data-route="messages" onclick="go('messages')">Messages</button><button data-route="inspections" onclick="go('inspections')">Inspections</button><button data-route="dashboard" onclick="go('dashboard')">Dashboard</button></nav>
-<div class="header-actions"><button class="icon-btn" onclick="go('saved')">♡</button><button class="icon-btn" onclick="go('notifications')">◔</button><button class="profile-btn" onclick="go('account')"><span class="avatar" id="headerAvatar">CH</span><span id="accountButtonText">Account</span></button></div>
-</div></header>
 
-<div class="mobile-drawer" id="mobileDrawer"><button onclick="closeDrawer();go('home')">Home</button><button onclick="closeDrawer();go('cars')">Cars</button><button onclick="closeDrawer();go('saved')">Saved Cars</button><button onclick="closeDrawer();go('messages')">Messages</button><button onclick="closeDrawer();go('inspections')">Inspections</button><button onclick="closeDrawer();go('sell')">Sell a Car</button><button onclick="closeDrawer();go('ai')">AI Advert Studio</button><button onclick="closeDrawer();go('dashboard')">Dashboard</button><button onclick="closeDrawer();go('account')">My Account</button></div>
+<header class="header">
+<div class="header-inner">
+<button class="menu-btn icon-btn" onclick="toggleDrawer()">☰</button>
+<button class="logo" onclick="go('home')" style="background:none;border:0;color:white;text-align:left">
+CarHub <span>Africa</span><small>BUY · SELL · DRIVE</small>
+</button>
+
+<nav class="nav">
+<button data-route="home" onclick="go('home')">Home</button>
+<button data-route="cars" onclick="go('cars')">Cars</button>
+<button data-route="messages" onclick="go('messages')">Messages</button>
+<button data-route="inspections" onclick="go('inspections')">Inspections</button>
+<button data-route="dashboard" onclick="go('dashboard')">Dashboard</button>
+</nav>
+
+<div class="header-actions">
+<button class="icon-btn" onclick="go('saved')">♡</button>
+<button class="icon-btn" onclick="go('notifications')">◔</button>
+<button class="profile-btn" onclick="go('account')">
+<span class="avatar" id="headerAvatar">CH</span>
+<span id="accountButtonText">Account</span>
+</button>
+</div>
+</div>
+</header>
+
+<div class="mobile-drawer" id="mobileDrawer">
+<button onclick="closeDrawer();go('home')">Home</button>
+<button onclick="closeDrawer();go('cars')">Cars</button>
+<button onclick="closeDrawer();go('saved')">Saved Cars</button>
+<button onclick="closeDrawer();go('messages')">Messages</button>
+<button onclick="closeDrawer();go('inspections')">Inspections</button>
+<button onclick="closeDrawer();go('sell')">Sell a Car</button>
+<button onclick="closeDrawer();go('ai')">AI Advert Studio</button>
+<button onclick="closeDrawer();go('dashboard')">Dashboard</button>
+<button onclick="closeDrawer();go('account')">My Account</button>
+</div>
 
 <main>
+
 <section class="screen" id="screen-home">
-<div class="hero"><div><div class="eyebrow">Africa's automotive marketplace</div><h1>Buy.<br><span>Sell.</span><br>Drive.</h1><p>A cleaner way to discover vehicles, connect with sellers, book inspections and manage your car journey — all inside CarHub Africa.</p><div class="hero-actions"><button class="btn primary" onclick="go('cars')">Explore cars</button><button class="btn" onclick="go('sell')">Sell a car</button></div></div>
-<div class="hero-showcase"><img id="heroImage" src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=85"><div class="hero-glass"><strong>Drive something you love.</strong><span>Real marketplace listings · Nigeria</span></div></div></div>
-<div class="search-panel glass-panel"><div class="search-row"><input class="input" id="homeSearch" placeholder="Search Toyota, Lexus, Mercedes..." oninput="liveSearch(this.value)"><select class="select" id="homeMake" onchange="liveFilter()"><option value="">All makes</option></select><select class="select" id="homeType" onchange="liveFilter()"><option value="">All types</option><option>SUV</option><option>Saloon</option><option>Coupe</option><option>Truck</option><option>Electric</option></select><select class="select" id="homePrice" onchange="liveFilter()"><option value="">Any price</option><option value="30000000">Under ₦30m</option><option value="60000000">Under ₦60m</option><option value="100000000">Under ₦100m</option></select><button class="btn primary" onclick="go('cars')">Search</button></div></div>
-<div class="section-head"><div><h2>Featured cars</h2><p>Real seller listings appear here automatically.</p></div><button class="btn small" onclick="go('cars')">View all</button></div><div class="catalogue" id="homeCatalogue"></div>
-<div class="section-head"><div><h2>Built around trust</h2><p>Important parts of the buying journey stay connected.</p></div></div><div class="features"><div class="feature glass-panel"><div class="feature-icon">✓</div><h3>Seller profiles</h3><p>View seller information and their other listings before moving forward.</p></div><div class="feature glass-panel"><div class="feature-icon">◷</div><h3>Inspections</h3><p>Choose a date and time and keep the inspection connected to the vehicle.</p></div><div class="feature glass-panel"><div class="feature-icon">⌁</div><h3>Inside CarHub</h3><p>Messages, saved vehicles and enquiries stay in one place.</p></div></div>
+<div class="hero">
+<div>
+<div class="eyebrow">Africa's automotive marketplace</div>
+<h1>Buy.<br><span>Sell.</span><br>Drive.</h1>
+<p>A cleaner way to discover vehicles, connect with sellers, book inspections and manage your car journey — all inside CarHub Africa.</p>
+<div class="hero-actions">
+<button class="btn primary" onclick="go('cars')">Explore cars</button>
+<button class="btn" onclick="go('sell')">Sell a car</button>
+</div>
+</div>
+
+<div class="hero-showcase">
+<img id="heroImage" src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=85">
+<div class="hero-glass">
+<strong>Drive something you love.</strong>
+<span>Real marketplace listings · Nigeria</span>
+</div>
+</div>
+</div>
+
+<div class="search-panel glass-panel">
+<div class="search-row">
+<input class="input" id="homeSearch" placeholder="Search Toyota, Lexus, Mercedes..." oninput="liveSearch(this.value)">
+<select class="select" id="homeMake" onchange="liveFilter()"><option value="">All makes</option></select>
+<select class="select" id="homeType" onchange="liveFilter()">
+<option value="">All types</option>
+<option>SUV</option><option>Saloon</option><option>Coupe</option><option>Truck</option><option>Electric</option>
+</select>
+<select class="select" id="homePrice" onchange="liveFilter()">
+<option value="">Any price</option>
+<option value="30000000">Under ₦30m</option>
+<option value="60000000">Under ₦60m</option>
+<option value="100000000">Under ₦100m</option>
+</select>
+<button class="btn primary" onclick="go('cars')">Search</button>
+</div>
+</div>
+
+<div class="section-head">
+<div><h2>Featured cars</h2><p>Real seller listings appear here automatically.</p></div>
+<button class="btn small" onclick="go('cars')">View all</button>
+</div>
+<div class="catalogue" id="homeCatalogue"></div>
+
+<div class="section-head">
+<div><h2>Built around trust</h2><p>Important parts of the buying journey stay connected.</p></div>
+</div>
+
+<div class="features">
+<div class="feature glass-panel">
+<div class="feature-icon">✓</div>
+<h3>Seller profiles</h3>
+<p>View seller information and their other listings before moving forward.</p>
+</div>
+<div class="feature glass-panel">
+<div class="feature-icon">◷</div>
+<h3>Inspections</h3>
+<p>Choose a date and time and keep the inspection connected to the vehicle.</p>
+</div>
+<div class="feature glass-panel">
+<div class="feature-icon">⌁</div>
+<h3>Inside CarHub</h3>
+<p>Messages, saved vehicles and enquiries stay in one place.</p>
+</div>
+</div>
 </section>
 
-<section class="screen" id="screen-cars"><div class="page-title"><h1>Car Catalogue</h1><p>Search the CarHub Africa marketplace.</p></div><div class="search-panel glass-panel"><div class="search-row"><input class="input" id="carSearch" placeholder="Search make, model, year..." oninput="renderCars()"><select class="select" id="carMake" onchange="renderCars()"><option value="">All makes</option></select><select class="select" id="carType" onchange="renderCars()"><option value="">All types</option><option>SUV</option><option>Saloon</option><option>Coupe</option><option>Truck</option><option>Electric</option></select><select class="select" id="carPrice" onchange="renderCars()"><option value="">Any price</option><option value="30000000">Under ₦30m</option><option value="60000000">Under ₦60m</option><option value="100000000">Under ₦100m</option></select><button class="btn" onclick="resetFilters()">Reset</button></div></div><div class="section-head"><div><h2>Available vehicles</h2><p>New seller listings appear here automatically.</p></div><span class="count" id="carCount"></span></div><div class="catalogue" id="carsCatalogue"></div></section>
+<section class="screen" id="screen-cars">
+<div class="page-title"><h1>Car Catalogue</h1><p>Search the CarHub Africa marketplace.</p></div>
+<div class="search-panel glass-panel">
+<div class="search-row">
+<input class="input" id="carSearch" placeholder="Search make, model, year..." oninput="renderCars()">
+<select class="select" id="carMake" onchange="renderCars()"><option value="">All makes</option></select>
+<select class="select" id="carType" onchange="renderCars()">
+<option value="">All types</option><option>SUV</option><option>Saloon</option><option>Coupe</option><option>Truck</option><option>Electric</option>
+</select>
+<select class="select" id="carPrice" onchange="renderCars()">
+<option value="">Any price</option>
+<option value="30000000">Under ₦30m</option>
+<option value="60000000">Under ₦60m</option>
+<option value="100000000">Under ₦100m</option>
+</select>
+<button class="btn" onclick="resetFilters()">Reset</button>
+</div>
+</div>
+<div class="section-head">
+<div><h2>Available vehicles</h2><p>New seller listings appear here automatically.</p></div>
+<span class="count" id="carCount"></span>
+</div>
+<div class="catalogue" id="carsCatalogue"></div>
+</section>
 
-<section class="screen" id="screen-saved"><div class="page-title"><h1>Saved Cars</h1><p>Your favourite vehicles.</p></div><div class="catalogue" id="savedCatalogue"></div></section>
+<section class="screen" id="screen-saved">
+<div class="page-title"><h1>Saved Cars</h1><p>Your favourite vehicles.</p></div>
+<div class="catalogue" id="savedCatalogue"></div>
+</section>
 
-<section class="screen" id="screen-sell"><div class="page-title"><h1>Sell a Car</h1><p>Publish a real listing with photos stored securely in CarHub cloud storage.</p></div><div class="glass-panel panel-pad"><div class="alert"><strong>Cloud photo upload:</strong> select up to 6 real vehicle photos. They are uploaded to the CarHub Africa <strong>car-images</strong> storage bucket.</div><form id="sellForm" onsubmit="createListing(event)"><div class="form-grid">
-<div class="field"><label>Make</label><input class="input" id="sellMake" required placeholder="Toyota"></div><div class="field"><label>Model</label><input class="input" id="sellModel" required placeholder="Land Cruiser"></div>
-<div class="field"><label>Year</label><input class="input" id="sellYear" required type="number" min="1980" max="2030" placeholder="2024"></div><div class="field"><label>Price (₦)</label><input class="input" id="sellPrice" required type="number" placeholder="85000000"></div>
-<div class="field"><label>Vehicle type</label><select class="select" id="sellType" required><option value="">Select</option><option>SUV</option><option>Saloon</option><option>Coupe</option><option>Truck</option><option>Electric</option></select></div>
-<div class="field"><label>Condition</label><select class="select" id="sellCondition"><option>Foreign Used</option><option>Nigerian Used</option><option>Brand New</option></select></div>
-<div class="field"><label>Mileage (km)</label><input class="input" id="sellMileage" type="number" placeholder="42000"></div><div class="field"><label>Transmission</label><select class="select" id="sellTransmission"><option>Automatic</option><option>Manual</option><option>CVT</option></select></div>
-<div class="field"><label>VIN / Chassis number</label><input class="input" id="sellVin" placeholder="Enter VIN or chassis"></div><div class="field"><label>Registration / tracking number</label><input class="input" id="sellRegistration" placeholder="Registration details"></div>
-<div class="field full"><label>Description</label><textarea class="textarea" id="sellDescription" placeholder="Tell buyers about the vehicle..."></textarea></div>
-<div class="field full"><label>Vehicle photos</label><div class="upload"><input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple onchange="previewPhotos(event)"><label for="photoInput">＋ Select real vehicle photos</label><div style="color:var(--muted);font-size:11px;margin-top:7px">Up to 6 photos · maximum 8 MB each</div><div class="preview-grid" id="photoPreview"></div></div></div>
-<div class="field full"><button class="btn primary full" type="submit" id="publishBtn">Publish listing</button></div>
-</div></form></div></section>
+<section class="screen" id="screen-sell">
+<div class="page-title"><h1>Sell a Car</h1><p>Publish a real listing with photos stored securely in CarHub cloud storage.</p></div>
 
-<section class="screen" id="screen-dashboard"><div class="page-title"><h1>Dashboard</h1><p>Manage your CarHub activity and listings.</p></div><div class="dashboard-grid" id="dashboardStats"></div><div style="height:18px"></div><div class="two-col"><div class="glass-panel panel-pad"><div class="section-head" style="margin:0 0 10px"><div><h2>My Listings</h2><p>Vehicles you've published.</p></div><button class="btn small primary" onclick="go('sell')">＋ Add</button></div><div id="myListings"></div></div><div class="glass-panel panel-pad"><div class="section-head" style="margin:0 0 10px"><div><h2>Recent activity</h2><p>Latest marketplace events.</p></div></div><div id="dashboardActivity"></div></div></div></section>
+<div class="glass-panel panel-pad">
+<div class="alert">
+<strong>Cloud photo upload:</strong> select up to 6 real vehicle photos. They are uploaded to the CarHub Africa <strong>car-images</strong> storage bucket.
+</div>
 
-<section class="screen" id="screen-messages"><div class="page-title"><h1>Messages</h1><p>Keep vehicle enquiries inside CarHub Africa.</p></div><div class="glass-panel message-layout"><div class="conversations" id="conversationList"></div><div class="chat"><div class="chat-head" id="chatHead"><strong>Select a conversation</strong><span>Your conversations will appear here.</span></div><div class="chat-body" id="chatBody"><div class="empty"><strong>No conversation selected</strong>Open a vehicle and message the seller.</div></div><div class="chat-input"><input class="input" id="messageInput" placeholder="Write a message..." onkeydown="if(event.key==='Enter')sendMessage()"><button class="btn primary" onclick="sendMessage()">Send</button></div></div></div></section>
+<form id="sellForm" onsubmit="createListing(event)">
+<div class="form-grid">
 
-<section class="screen" id="screen-inspections"><div class="page-title"><h1>Inspections</h1><p>Book and track vehicle inspections.</p></div><div class="two-col"><div class="glass-panel panel-pad"><h2 style="margin-top:0">My inspections</h2><div id="inspectionList"></div></div><div class="glass-panel panel-pad"><h2 style="margin-top:0">How it works</h2><div class="timeline-item"><div class="timeline-dot"></div><div><strong>Select a vehicle</strong><span>Open any listing and choose Book inspection.</span></div></div><div class="timeline-item"><div class="timeline-dot"></div><div><strong>Choose date & time</strong><span>Pick a convenient inspection slot.</span></div></div><div class="timeline-item"><div class="timeline-dot"></div><div><strong>Track status</strong><span>Your booking stays attached to the vehicle.</span></div></div></div></div></section>
+<div class="field"><label>Make</label><input class="input" id="sellMake" required placeholder="Toyota"></div>
+<div class="field"><label>Model</label><input class="input" id="sellModel" required placeholder="Land Cruiser"></div>
 
-<section class="screen" id="screen-ai"><div class="page-title"><h1>AI Advert Studio</h1><p>Turn vehicle information into a clean marketplace advert.</p></div><div class="glass-panel ai-box"><div class="form-grid"><div class="field"><label>Vehicle</label><input class="input" id="aiVehicle" placeholder="2024 Toyota Land Cruiser"></div><div class="field"><label>Price</label><input class="input" id="aiPrice" placeholder="₦85,000,000"></div><div class="field full"><label>Details</label><textarea class="textarea" id="aiDetails" placeholder="Mileage, condition, features, colour, location..."></textarea></div></div><button class="btn primary" onclick="generateAdvert()">Generate advert</button><div class="ai-output glass-panel" id="aiOutput">Your generated advert will appear here.</div></div></section>
+<div class="field"><label>Year</label><input class="input" id="sellYear" required type="number" min="1980" max="2030" placeholder="2024"></div>
+<div class="field"><label>Price (₦)</label><input class="input" id="sellPrice" required type="number" placeholder="85000000"></div>
 
-<section class="screen" id="screen-notifications"><div class="page-title"><h1>Notifications</h1><p>Important marketplace activity.</p></div><div class="glass-panel panel-pad" id="notificationsList"></div></section>
+<div class="field"><label>Vehicle type</label>
+<select class="select" id="sellType" required>
+<option value="">Select</option><option>SUV</option><option>Saloon</option><option>Coupe</option><option>Truck</option><option>Electric</option>
+</select>
+</div>
 
-<section class="screen" id="screen-account"><div class="page-title"><h1>My Account</h1><p>Your CarHub identity and marketplace profile.</p></div><div class="glass-panel profile-cover"><div class="profile-avatar" id="accountAvatar">CH</div><div><h2 id="accountName">CarHub User</h2><p id="accountEmail">Not signed in</p><div class="status" id="accountStatus">GUEST</div></div></div><div style="height:18px"></div><div class="two-col"><div class="glass-panel panel-pad"><h2 style="margin-top:0">Profile details</h2><div class="field"><label>Full name</label><input class="input" id="profileName"></div><div class="field"><label>Email</label><input class="input" id="profileEmail" readonly></div><div class="field"><label>Phone</label><input class="input" id="profilePhone"></div><div class="field"><label>Location</label><input class="input" id="profileLocation"></div><div class="field"><label>Account type</label><select class="select" id="profileType"><option>Buyer</option><option>Seller</option><option>Buyer & Seller</option></select></div><button class="btn primary" onclick="saveProfile()">Save profile</button><button class="btn" style="margin-left:7px" onclick="signOut()">Sign out</button></div><div class="glass-panel panel-pad"><h2 style="margin-top:0">Cloud marketplace</h2><div class="alert"><strong>Account-linked listings.</strong><br>Your listings are connected to your Supabase account and stored centrally, so they can appear to other CarHub visitors.</div><div class="list-row"><div class="feature-icon">☁</div><div class="row-main"><strong>Cloud photos</strong><span>Stored in Supabase Storage.</span></div><span class="status">READY</span></div><div class="list-row"><div class="feature-icon">✓</div><div class="row-main"><strong>Seller ownership</strong><span>Only your account can edit or delete your listings.</span></div><span class="status">READY</span></div></div></div></section>
+<div class="field"><label>Condition</label>
+<select class="select" id="sellCondition">
+<option>Foreign Used</option><option>Nigerian Used</option><option>Brand New</option>
+</select>
+</div>
 
-<section class="screen" id="screen-vehicle"><div id="vehicleDetail"></div></section><section class="screen" id="screen-seller"><div id="sellerDetail"></div></section>
+<div class="field"><label>Mileage (km)</label><input class="input" id="sellMileage" type="number" placeholder="42000"></div>
+<div class="field"><label>Transmission</label>
+<select class="select" id="sellTransmission"><option>Automatic</option><option>Manual</option><option>CVT</option></select>
+</div>
+
+<div class="field"><label>VIN / Chassis number</label><input class="input" id="sellVin" placeholder="Enter VIN or chassis"></div>
+<div class="field"><label>Registration / tracking number</label><input class="input" id="sellRegistration" placeholder="Registration details"></div>
+
+<div class="field full">
+<label>Description</label>
+<textarea class="textarea" id="sellDescription" placeholder="Tell buyers about the vehicle..."></textarea>
+</div>
+
+<div class="field full">
+<label>Vehicle photos</label>
+<div class="upload">
+<input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple onchange="previewPhotos(event)">
+<label for="photoInput">＋ Select real vehicle photos</label>
+<div style="color:var(--muted);font-size:11px;margin-top:7px">Up to 6 photos · maximum 8 MB each</div>
+<div class="preview-grid" id="photoPreview"></div>
+</div>
+</div>
+
+<div class="field full">
+<button class="btn primary full" type="submit" id="publishBtn">Publish listing</button>
+</div>
+
+</div>
+</form>
+</div>
+</section>
+
+<section class="screen" id="screen-dashboard">
+<div class="page-title"><h1>Dashboard</h1><p>Manage your CarHub activity and listings.</p></div>
+<div class="dashboard-grid" id="dashboardStats"></div>
+<div style="height:18px"></div>
+
+<div class="two-col">
+<div class="glass-panel panel-pad">
+<div class="section-head" style="margin:0 0 10px">
+<div><h2>My Listings</h2><p>Vehicles you've published.</p></div>
+<button class="btn small primary" onclick="go('sell')">＋ Add</button>
+</div>
+<div id="myListings"></div>
+</div>
+
+<div class="glass-panel panel-pad">
+<div class="section-head" style="margin:0 0 10px">
+<div><h2>Recent activity</h2><p>Latest marketplace events.</p></div>
+</div>
+<div id="dashboardActivity"></div>
+</div>
+</div>
+</section>
+
+<section class="screen" id="screen-messages">
+<div class="page-title"><h1>Messages</h1><p>Keep vehicle enquiries inside CarHub Africa.</p></div>
+<div class="glass-panel message-layout">
+<div class="conversations" id="conversationList"></div>
+<div class="chat">
+<div class="chat-head" id="chatHead"><strong>Select a conversation</strong><span>Your conversations will appear here.</span></div>
+<div class="chat-body" id="chatBody">
+<div class="empty"><strong>No conversation selected</strong>Open a vehicle and message the seller.</div>
+</div>
+<div class="chat-input">
+<input class="input" id="messageInput" placeholder="Write a message..." onkeydown="if(event.key==='Enter')sendMessage()">
+<button class="btn primary" onclick="sendMessage()">Send</button>
+</div>
+</div>
+</div>
+</section>
+
+<section class="screen" id="screen-inspections">
+<div class="page-title"><h1>Inspections</h1><p>Book and track vehicle inspections.</p></div>
+<div class="two-col">
+<div class="glass-panel panel-pad"><h2 style="margin-top:0">My inspections</h2><div id="inspectionList"></div></div>
+<div class="glass-panel panel-pad">
+<h2 style="margin-top:0">How it works</h2>
+<div class="timeline-item"><div class="timeline-dot"></div><div><strong>Select a vehicle</strong><span>Open any listing and choose Book inspection.</span></div></div>
+<div class="timeline-item"><div class="timeline-dot"></div><div><strong>Choose date & time</strong><span>Pick a convenient inspection slot.</span></div></div>
+<div class="timeline-item"><div class="timeline-dot"></div><div><strong>Track status</strong><span>Your booking stays attached to the vehicle.</span></div></div>
+</div>
+</div>
+</section>
+
+<section class="screen" id="screen-ai">
+<div class="page-title"><h1>AI Advert Studio</h1><p>Turn vehicle information into a clean marketplace advert.</p></div>
+<div class="glass-panel ai-box">
+<div class="form-grid">
+<div class="field"><label>Vehicle</label><input class="input" id="aiVehicle" placeholder="2024 Toyota Land Cruiser"></div>
+<div class="field"><label>Price</label><input class="input" id="aiPrice" placeholder="₦85,000,000"></div>
+<div class="field full"><label>Details</label><textarea class="textarea" id="aiDetails" placeholder="Mileage, condition, features, colour, location..."></textarea></div>
+</div>
+<button class="btn primary" onclick="generateAdvert()">Generate advert</button>
+<div class="ai-output glass-panel" id="aiOutput">Your generated advert will appear here.</div>
+</div>
+</section>
+
+<section class="screen" id="screen-notifications">
+<div class="page-title"><h1>Notifications</h1><p>Important marketplace activity.</p></div>
+<div class="glass-panel panel-pad" id="notificationsList"></div>
+</section>
+
+<section class="screen" id="screen-account">
+<div class="page-title"><h1>My Account</h1><p>Your CarHub identity and marketplace profile.</p></div>
+
+<div class="glass-panel profile-cover">
+<div class="profile-avatar" id="accountAvatar">CH</div>
+<div>
+<h2 id="accountName">CarHub User</h2>
+<p id="accountEmail">Not signed in</p>
+<div class="status" id="accountStatus">GUEST</div>
+</div>
+</div>
+
+<div style="height:18px"></div>
+
+<div class="two-col">
+<div class="glass-panel panel-pad">
+<h2 style="margin-top:0">Profile details</h2>
+
+<div class="field"><label>Full name</label><input class="input" id="profileName"></div>
+<div class="field"><label>Email</label><input class="input" id="profileEmail" readonly></div>
+<div class="field"><label>Phone</label><input class="input" id="profilePhone"></div>
+<div class="field"><label>Location</label><input class="input" id="profileLocation"></div>
+
+<div class="field"><label>Account type</label>
+<select class="select" id="profileType">
+<option>Buyer</option><option>Seller</option><option>Buyer & Seller</option>
+</select>
+</div>
+
+<button class="btn primary" onclick="saveProfile()">Save profile</button>
+<button class="btn" style="margin-left:7px" onclick="signOut()">Sign out</button>
+</div>
+
+<div class="glass-panel panel-pad">
+<h2 style="margin-top:0">Cloud marketplace</h2>
+<div class="alert">
+<strong>Account-linked listings.</strong><br>
+Your listings are connected to your Supabase account and stored centrally, so they can appear to other CarHub visitors.
+</div>
+
+<div class="list-row">
+<div class="feature-icon">☁</div>
+<div class="row-main"><strong>Cloud photos</strong><span>Stored in Supabase Storage.</span></div>
+<span class="status">READY</span>
+</div>
+
+<div class="list-row">
+<div class="feature-icon">✓</div>
+<div class="row-main"><strong>Seller ownership</strong><span>Only your account can edit or delete your listings.</span></div>
+<span class="status">READY</span>
+</div>
+</div>
+</div>
+</section>
+
+<section class="screen" id="screen-vehicle"><div id="vehicleDetail"></div></section>
+<section class="screen" id="screen-seller"><div id="sellerDetail"></div></section>
+
 </main>
+
 <footer class="footer"><strong>CarHub Africa</strong> · Buy. Sell. Drive.</footer>
-<div class="bubble-menu" id="bubbleMenu"><div class="bubble-items"><button class="bubble-item" onclick="go('sell');toggleBubble()">＋ Sell a car</button><button class="bubble-item" onclick="go('ai');toggleBubble()">✦ AI Advert</button><button class="bubble-item" onclick="go('inspections');toggleBubble()">◷ Inspection</button><button class="bubble-item" onclick="go('messages');toggleBubble()">⌁ Messages</button></div><button class="bubble-main" onclick="toggleBubble()">✦</button></div>
+
+<div class="bubble-menu" id="bubbleMenu">
+<div class="bubble-items">
+<button class="bubble-item" onclick="go('sell');toggleBubble()">＋ Sell a car</button>
+<button class="bubble-item" onclick="go('ai');toggleBubble()">✦ AI Advert</button>
+<button class="bubble-item" onclick="go('inspections');toggleBubble()">◷ Inspection</button>
+<button class="bubble-item" onclick="go('messages');toggleBubble()">⌁ Messages</button>
+</div>
+<button class="bubble-main" onclick="toggleBubble()">✦</button>
+</div>
+
 <div class="toast" id="toast"></div>
-<div class="modal" id="modal"><div class="modal-box"><div class="modal-head"><h3 id="modalTitle">CarHub Africa</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body" id="modalBody"></div></div></div>
+
+<div class="modal" id="modal">
+<div class="modal-box">
+<div class="modal-head">
+<h3 id="modalTitle">CarHub Africa</h3>
+<button class="modal-close" onclick="closeModal()">×</button>
+</div>
+<div class="modal-body" id="modalBody"></div>
+</div>
+</div>
 
 <script>
 const SUPABASE_URL="https://lmhdzwzblztlvunbykot.supabase.co";
 const SUPABASE_KEY="sb_publishable_nJCzpTFugWcCZWLSkpy0ag_TofoGWBS";
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const BUCKET="car-images";
+
 const DEMO=[
 {id:"demo-1",make:"Toyota",model:"Land Cruiser",year:2024,price:85000000,type:"SUV",condition:"Foreign Used",mileage:18000,transmission:"Automatic",images:["https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=85"],sellerId:"demo",sellerName:"CarHub Motors",sellerLocation:"Abuja, Nigeria",verified:true,views:184},
 {id:"demo-2",make:"Lexus",model:"RX 350",year:2023,price:62000000,type:"SUV",condition:"Foreign Used",mileage:22000,transmission:"Automatic",images:["https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=85"],sellerId:"demo",sellerName:"CarHub Motors",sellerLocation:"Lagos, Nigeria",verified:true,views:143},
 {id:"demo-3",make:"Mercedes-Benz",model:"C300",year:2024,price:58000000,type:"Saloon",condition:"Foreign Used",mileage:12000,transmission:"Automatic",images:["https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1200&q=85"],sellerId:"demo",sellerName:"CarHub Motors",sellerLocation:"Lagos, Nigeria",verified:true,views:201},
 {id:"demo-4",make:"BMW",model:"X5",year:2023,price:72000000,type:"SUV",condition:"Foreign Used",mileage:19000,transmission:"Automatic",images:["https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=1200&q=85"],sellerId:"demo",sellerName:"CarHub Motors",sellerLocation:"Abuja, Nigeria",verified:true,views:117}
 ];
+
 let listings=[],currentUser=null,profile={id:null,name:"CarHub User",email:"",phone:"",location:"Nigeria",type:"Buyer & Seller"};
 let saved=JSON.parse(localStorage.getItem("carhub_saved_v5")||"[]"),selectedPhotos=[],editingId=null,currentConversation=null;
 let messages=JSON.parse(localStorage.getItem("carhub_messages_v5")||"[]"),inspections=JSON.parse(localStorage.getItem("carhub_inspections_v5")||"[]"),notifications=JSON.parse(localStorage.getItem("carhub_notifications_v5")||"[]"),activity=JSON.parse(localStorage.getItem("carhub_activity_v5")||"[]");
@@ -118,87 +422,759 @@ function notify(title,text,type="normal"){notifications.unshift({id:uid(),title,
 function activityAdd(title,text){activity.unshift({id:uid(),title,text,time:new Date().toLocaleString()});activity=activity.slice(0,30);saveLocal()}
 
 async function loadProfile(){
- const {data:{user}}=await db.auth.getUser(); currentUser=user;
- if(!user){profile={id:null,name:"CarHub User",email:"",phone:"",location:"Nigeria",type:"Buyer & Seller"};updateHeader();return}
- const {data}=await db.from("profiles").select("*").eq("id",user.id).maybeSingle();
- profile={id:user.id,name:data?.name||user.user_metadata?.name||"CarHub User",email:user.email||"",phone:data?.phone||"",location:data?.location||"Nigeria",type:data?.type||"Buyer & Seller"};
- updateHeader();
+const {data:{user}}=await db.auth.getUser();currentUser=user;
+if(!user){profile={id:null,name:"CarHub User",email:"",phone:"",location:"Nigeria",type:"Buyer & Seller"};updateHeader();return}
+const {data}=await db.from("profiles").select("*").eq("id",user.id).maybeSingle();
+profile={id:user.id,name:data?.name||user.user_metadata?.name||"CarHub User",email:user.email||"",phone:data?.phone||"",location:data?.location||"Nigeria",type:data?.type||"Buyer & Seller"};
+updateHeader();
 }
+
 async function loadListings(){
- const {data,error}=await db.from("listings").select("*").order("created_at",{ascending:false});
- if(error){console.error(error);toast("Could not load cloud listings.");listings=[...DEMO];return}
- listings=(data||[]).map(normalizeListing);
+const {data,error}=await db.from("listings").select("*").order("created_at",{ascending:false});
+if(error){console.error(error);toast("Could not load cloud listings.");listings=[...DEMO];return}
+listings=(data||[]).map(normalizeListing);
 }
+
 function normalizeListing(x){return {...x,sellerId:x.seller_id,sellerName:x.seller_name||"CarHub Seller",sellerLocation:x.seller_location||"Nigeria",images:Array.isArray(x.images)?x.images:[],verified:!!x.verified,ownerListing:!!currentUser&&x.seller_id===currentUser.id}}
 async function refresh(){await loadProfile();await loadListings();renderRoute()}
 function updateHeader(){document.getElementById("headerAvatar").textContent=initials(profile.name);document.getElementById("accountButtonText").textContent=currentUser?profile.name:"Sign in"}
-function populateMakes(){const makes=[...new Set(listings.map(x=>x.make).filter(Boolean))].sort();["carMake","homeMake"].forEach(id=>{const e=document.getElementById(id);if(!e)return;const v=e.value;e.innerHTML='<option value="">All makes</option>'+makes.map(m=>`<option>${esc(m)}</option>`).join("");e.value=v})}
-function filtered(){const q=(document.getElementById("carSearch")?.value||"").toLowerCase().trim(),make=document.getElementById("carMake")?.value||"",type=document.getElementById("carType")?.value||"",price=Number(document.getElementById("carPrice")?.value||0);return listings.filter(c=>{const hay=`${c.make} ${c.model} ${c.year} ${c.type} ${c.condition}`.toLowerCase();return(!q||hay.includes(q))&&(!make||c.make===make)&&(!type||c.type===type)&&(!price||Number(c.price)<=price)})}
-function renderCatalogue(id,data){const e=document.getElementById(id);if(!e)return;if(!data.length){e.innerHTML='<div class="glass-panel empty" style="grid-column:1/-1"><strong>No vehicles found</strong>Try another search or sell a car.<br><br><button class="btn primary" onclick="go(\'sell\')">Sell a car</button></div>';return}e.innerHTML=data.map(carCard).join("")}
-function carCard(c){const s=saved.includes(c.id),img=c.images?.[0]||DEMO[0].images[0];return `<article class="car-card"><div class="car-photo"><img src="${esc(img)}" loading="lazy" alt="${esc(c.make+" "+c.model)}"><span class="car-badge">${esc(c.condition||"Available")}</span><button class="save ${s?"saved":""}" onclick="event.stopPropagation();toggleSave('${esc(c.id)}')">${s?"♥":"♡"}</button></div><div class="car-body"><div class="car-title-row"><div class="car-title">${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</div><div class="car-price">${money(c.price)}</div></div><div class="car-meta"><span class="tag">${esc(c.type||"Vehicle")}</span><span class="tag">${Number(c.mileage||0).toLocaleString()} km</span><span class="tag">${esc(c.transmission||"Automatic")}</span></div><div class="seller-mini"><span class="avatar">${initials(c.sellerName)}</span><div><strong>${esc(c.sellerName)}</strong>${c.verified?'<span class="verified"> ✓ VERIFIED-READY</span>':""}<div style="color:var(--muted)">${esc(c.sellerLocation)}</div></div></div><div class="card-actions"><button class="btn primary small" onclick="go('vehicle','${esc(c.id)}')">View vehicle</button><button class="btn small" onclick="go('seller','${esc(c.sellerId)}')">View seller</button></div>${c.ownerListing?'<div style="margin-top:8px;color:var(--mint);font-size:10px;font-weight:800">YOUR LISTING</div>':""}</div></article>`}
+
+function populateMakes(){
+const makes=[...new Set(listings.map(x=>x.make).filter(Boolean))].sort();
+["carMake","homeMake"].forEach(id=>{
+const e=document.getElementById(id);if(!e)return;
+const v=e.value;
+e.innerHTML='<option value="">All makes</option>'+makes.map(m=>`<option>${esc(m)}</option>`).join("");
+e.value=v
+})
+}
+
+function filtered(){
+const q=(document.getElementById("carSearch")?.value||"").toLowerCase().trim();
+const make=document.getElementById("carMake")?.value||"";
+const type=document.getElementById("carType")?.value||"";
+const price=Number(document.getElementById("carPrice")?.value||0);
+return listings.filter(c=>{
+const hay=`${c.make} ${c.model} ${c.year} ${c.type} ${c.condition}`.toLowerCase();
+return(!q||hay.includes(q))&&(!make||c.make===make)&&(!type||c.type===type)&&(!price||Number(c.price)<=price)
+})
+}
+
+function renderCatalogue(id,data){
+const e=document.getElementById(id);if(!e)return;
+if(!data.length){
+e.innerHTML='<div class="glass-panel empty" style="grid-column:1/-1"><strong>No vehicles found</strong>Try another search or sell a car.<br><br><button class="btn primary" onclick="go(\'sell\')">Sell a car</button></div>';
+return
+}
+e.innerHTML=data.map(carCard).join("")
+}
+
+function carCard(c){
+const s=saved.includes(c.id),img=c.images?.[0]||DEMO[0].images[0];
+return `<article class="car-card">
+<div class="car-photo">
+<img src="${esc(img)}" loading="lazy" alt="${esc(c.make+" "+c.model)}">
+<span class="car-badge">${esc(c.condition||"Available")}</span>
+<button class="save ${s?"saved":""}" onclick="event.stopPropagation();toggleSave('${esc(c.id)}')">${s?"♥":"♡"}</button>
+</div>
+<div class="car-body">
+<div class="car-title-row">
+<div class="car-title">${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</div>
+<div class="car-price">${money(c.price)}</div>
+</div>
+<div class="car-meta">
+<span class="tag">${esc(c.type||"Vehicle")}</span>
+<span class="tag">${Number(c.mileage||0).toLocaleString()} km</span>
+<span class="tag">${esc(c.transmission||"Automatic")}</span>
+</div>
+<div class="seller-mini">
+<span class="avatar">${initials(c.sellerName)}</span>
+<div>
+<strong>${esc(c.sellerName)}</strong>${c.verified?'<span class="verified"> ✓ VERIFIED-READY</span>':""}
+<div style="color:var(--muted)">${esc(c.sellerLocation)}</div>
+</div>
+</div>
+<div class="card-actions">
+<button class="btn primary small" onclick="go('vehicle','${esc(c.id)}')">View vehicle</button>
+<button class="btn small" onclick="go('seller','${esc(c.sellerId)}')">View seller</button>
+</div>
+${c.ownerListing?'<div style="margin-top:8px;color:var(--mint);font-size:10px;font-weight:800">YOUR LISTING</div>':""}
+</div>
+</article>`
+}
+
 function renderHome(){populateMakes();renderCatalogue("homeCatalogue",listings.slice(0,6))}
 function renderCars(){populateMakes();const r=filtered();document.getElementById("carCount").textContent=r.length+" vehicle"+(r.length===1?"":"s");renderCatalogue("carsCatalogue",r)}
 function resetFilters(){["carSearch","carMake","carType","carPrice"].forEach(id=>{const e=document.getElementById(id);if(e)e.value=""});renderCars()}
 function liveSearch(v){go("cars");setTimeout(()=>{const e=document.getElementById("carSearch");if(e){e.value=v;renderCars()}},0)}
 function liveFilter(){go("cars");setTimeout(()=>{[["homeMake","carMake"],["homeType","carType"],["homePrice","carPrice"]].forEach(([a,b])=>document.getElementById(b).value=document.getElementById(a).value);document.getElementById("carSearch").value=document.getElementById("homeSearch").value;renderCars()},0)}
-function toggleSave(id){if(saved.includes(id))saved=saved.filter(x=>x!==id);else{saved.push(id);notify("Car saved",`${getListing(id)?.make||"Vehicle"} ${getListing(id)?.model||""} was saved.`)}saveLocal();renderRoute()}
+
+function toggleSave(id){
+if(saved.includes(id))saved=saved.filter(x=>x!==id);
+else{saved.push(id);notify("Car saved",`${getListing(id)?.make||"Vehicle"} ${getListing(id)?.model||""} was saved.`)}
+saveLocal();renderRoute()
+}
+
 function getListing(id){return listings.find(x=>x.id===id)||DEMO.find(x=>x.id===id)}
 function renderSaved(){renderCatalogue("savedCatalogue",listings.filter(x=>saved.includes(x.id)).concat(DEMO.filter(x=>saved.includes(x.id))))}
 
-function renderVehicle(id){const c=getListing(id),e=document.getElementById("vehicleDetail");if(!c){e.innerHTML='<div class="empty"><strong>Vehicle not found</strong></div>';return}const commission=Number(c.price||0)*.05;e.innerHTML=`<div style="margin-bottom:15px"><button class="btn small" onclick="go('cars')">← Back to catalogue</button></div><div class="detail"><div><img class="detail-image" src="${esc(c.images?.[0]||DEMO[0].images[0])}" alt=""><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px">${(c.images||[]).slice(0,4).map(i=>`<img src="${esc(i)}" style="width:100%;height:80px;object-fit:cover;border-radius:12px">`).join("")}</div></div><div class="glass-panel detail-side"><span class="status">${c.verified?"✓ VERIFIED-READY":"LISTING"}</span><h1>${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</h1><div class="big-price">${money(c.price)}</div><div class="spec-grid"><div class="spec"><span>Type</span><strong>${esc(c.type)}</strong></div><div class="spec"><span>Condition</span><strong>${esc(c.condition)}</strong></div><div class="spec"><span>Mileage</span><strong>${Number(c.mileage||0).toLocaleString()} km</strong></div><div class="spec"><span>Transmission</span><strong>${esc(c.transmission)}</strong></div><div class="spec"><span>VIN / Chassis</span><strong>${esc(c.vin||"Not provided")}</strong></div><div class="spec"><span>Registration</span><strong>${esc(c.registration||"Not provided")}</strong></div></div><p style="color:var(--muted);line-height:1.7;font-size:13px">${esc(c.description||"No description provided.")}</p><div class="alert gold"><strong>CarHub transaction preparation</strong><br>Future transaction value: ${money(c.price)}<br>Prepared CarHub 5% commission: ${money(commission)}<br><small>No payment is processed on this version.</small></div><div style="display:grid;gap:8px">${c.ownerListing?`<button class="btn full" onclick="editListing('${esc(c.id)}')">Edit my listing</button><button class="btn danger full" onclick="deleteListing('${esc(c.id)}')">Delete listing</button>`:`<button class="btn primary full" onclick="viewSeller('${esc(c.sellerId)}')">View seller & continue</button><button class="btn full" onclick="openMessage('${esc(c.id)}')">Message seller</button><button class="btn full" onclick="openInspection('${esc(c.id)}')">Book inspection</button>`}<button class="btn full" onclick="toggleSave('${esc(c.id)}')">${saved.includes(c.id)?"♥ Saved":"♡ Save vehicle"}</button></div></div></div>`}
-function viewSeller(id){notify("Seller profile viewed","You viewed the seller before continuing.");go("seller",id)}
-function renderSeller(id){const cars=listings.filter(x=>x.sellerId===id),c=cars[0],e=document.getElementById("sellerDetail");if(!c){e.innerHTML='<div class="empty"><strong>Seller not found</strong></div>';return}e.innerHTML=`<button class="btn small" onclick="go('cars')">← Back</button><div style="height:15px"></div><div class="glass-panel profile-cover"><div class="profile-avatar">${initials(c.sellerName)}</div><div><h2>${esc(c.sellerName)} <span class="status">✓ Verified-ready</span></h2><p>${esc(c.sellerLocation)}</p><p>${cars.length} active listing${cars.length===1?"":"s"}</p></div></div><div class="section-head"><div><h2>Seller's vehicles</h2><p>Review the seller's listings before proceeding.</p></div></div><div class="catalogue">${cars.map(carCard).join("")}</div>`}
+function renderVehicle(id){
+const c=getListing(id),e=document.getElementById("vehicleDetail");
+if(!c){e.innerHTML='<div class="empty"><strong>Vehicle not found</strong></div>';return}
+const commission=Number(c.price||0)*.05;
+e.innerHTML=`<div style="margin-bottom:15px"><button class="btn small" onclick="go('cars')">← Back to catalogue</button></div>
+<div class="detail">
+<div>
+<img class="detail-image" src="${esc(c.images?.[0]||DEMO[0].images[0])}" alt="">
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px">
+${(c.images||[]).slice(0,4).map(i=>`<img src="${esc(i)}" style="width:100%;height:80px;object-fit:cover;border-radius:12px">`).join("")}
+</div>
+</div>
+<div class="glass-panel detail-side">
+<span class="status">${c.verified?"✓ VERIFIED-READY":"LISTING"}</span>
+<h1>${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</h1>
+<div class="big-price">${money(c.price)}</div>
+<div class="spec-grid">
+<div class="spec"><span>Type</span><strong>${esc(c.type)}</strong></div>
+<div class="spec"><span>Condition</span><strong>${esc(c.condition)}</strong></div>
+<div class="spec"><span>Mileage</span><strong>${Number(c.mileage||0).toLocaleString()} km</strong></div>
+<div class="spec"><span>Transmission</span><strong>${esc(c.transmission)}</strong></div>
+<div class="spec"><span>VIN / Chassis</span><strong>${esc(c.vin||"Not provided")}</strong></div>
+<div class="spec"><span>Registration</span><strong>${esc(c.registration||"Not provided")}</strong></div>
+</div>
+<p style="color:var(--muted);line-height:1.7;font-size:13px">${esc(c.description||"No description provided.")}</p>
+<div class="alert gold">
+<strong>CarHub transaction preparation</strong><br>
+Future transaction value: ${money(c.price)}<br>
+Prepared CarHub 5% commission: ${money(commission)}<br>
+<small>No payment is processed on this version.</small>
+</div>
+<div style="display:grid;gap:8px">
+${c.ownerListing?
+`<button class="btn full" onclick="editListing('${esc(c.id)}')">Edit my listing</button>
+<button class="btn danger full" onclick="deleteListing('${esc(c.id)}')">Delete listing</button>`:
+`<button class="btn primary full" onclick="viewSeller('${esc(c.sellerId)}')">View seller & continue</button>
+<button class="btn full" onclick="openMessage('${esc(c.id)}')">Message seller</button>
+<button class="btn full" onclick="openInspection('${esc(c.id)}')">Book inspection</button>`}
+<button class="btn full" onclick="toggleSave('${esc(c.id)}')">${saved.includes(c.id)?"♥ Saved":"♡ Save vehicle"}</button>
+</div>
+</div>
+</div>`
+}
 
-function previewPhotos(ev){selectedPhotos=[];document.getElementById("photoPreview").innerHTML="";const fs=[...ev.target.files].slice(0,6);if(ev.target.files.length>6)toast("Only the first 6 photos will be used.");for(const f of fs){if(!f.type.startsWith("image/")||f.size>8*1024*1024){toast("Each photo must be an image under 8 MB.");continue}selectedPhotos.push(f);const url=URL.createObjectURL(f),d=document.createElement("div");d.className="preview";d.innerHTML=`<img src="${url}"><button type="button" onclick="removePhoto(${selectedPhotos.length-1})">×</button>`;document.getElementById("photoPreview").appendChild(d)}}
-function removePhoto(i){selectedPhotos.splice(i,1);const input=document.getElementById("photoInput");input.value="";document.getElementById("photoPreview").innerHTML="";selectedPhotos.forEach((f,j)=>{const url=URL.createObjectURL(f),d=document.createElement("div");d.className="preview";d.innerHTML=`<img src="${url}"><button type="button" onclick="removePhoto(${j})">×</button>`;document.getElementById("photoPreview").appendChild(d)})}
-function ext(f){return (f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg"}
+function viewSeller(id){notify("Seller profile viewed","You viewed the seller before continuing.");go("seller",id)}
+
+function renderSeller(id){
+const cars=listings.filter(x=>x.sellerId===id),c=cars[0],e=document.getElementById("sellerDetail");
+if(!c){e.innerHTML='<div class="empty"><strong>Seller not found</strong></div>';return}
+e.innerHTML=`<button class="btn small" onclick="go('cars')">← Back</button>
+<div style="height:15px"></div>
+<div class="glass-panel profile-cover">
+<div class="profile-avatar">${initials(c.sellerName)}</div>
+<div>
+<h2>${esc(c.sellerName)} <span class="status">✓ Verified-ready</span></h2>
+<p>${esc(c.sellerLocation)}</p>
+<p>${cars.length} active listing${cars.length===1?"":"s"}</p>
+</div>
+</div>
+<div class="section-head"><div><h2>Seller's vehicles</h2><p>Review the seller's listings before proceeding.</p></div></div>
+<div class="catalogue">${cars.map(carCard).join("")}</div>`
+}
+
+function previewPhotos(ev){
+selectedPhotos=[];
+document.getElementById("photoPreview").innerHTML="";
+const fs=[...ev.target.files].slice(0,6);
+if(ev.target.files.length>6)toast("Only the first 6 photos will be used.");
+for(const f of fs){
+if(!f.type.startsWith("image/")||f.size>8*1024*1024){toast("Each photo must be an image under 8 MB.");continue}
+selectedPhotos.push(f);
+const url=URL.createObjectURL(f),d=document.createElement("div");
+d.className="preview";
+d.innerHTML=`<img src="${url}"><button type="button" onclick="removePhoto(${selectedPhotos.length-1})">×</button>`;
+document.getElementById("photoPreview").appendChild(d)
+}
+}
+
+function removePhoto(i){
+selectedPhotos.splice(i,1);
+const input=document.getElementById("photoInput");
+input.value="";
+document.getElementById("photoPreview").innerHTML="";
+selectedPhotos.forEach((f,j)=>{
+const url=URL.createObjectURL(f),d=document.createElement("div");
+d.className="preview";
+d.innerHTML=`<img src="${url}"><button type="button" onclick="removePhoto(${j})">×</button>`;
+document.getElementById("photoPreview").appendChild(d)
+})
+}
+
+function ext(f){return(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg"}
 
 async function uploadPhotos(listingId,files){
- if(!currentUser)throw new Error("You must sign in first.");
- const urls=[];
- for(const file of files.slice(0,6)){
-   const path=`${currentUser.id}/${listingId}/${uid()}.${ext(file)}`;
-   const {error}=await db.storage.from(BUCKET).upload(path,file,{cacheControl:"31536000",upsert:false,contentType:file.type});
-   if(error)throw error;
-   const {data}=db.storage.from(BUCKET).getPublicUrl(path);
-   urls.push(data.publicUrl);
- }
- return urls;
+if(!currentUser)throw new Error("You must sign in first.");
+const urls=[];
+for(const file of files.slice(0,6)){
+const path=`${currentUser.id}/${listingId}/${uid()}.${ext(file)}`;
+const {error}=await db.storage.from(BUCKET).upload(path,file,{cacheControl:"31536000",upsert:false,contentType:file.type});
+if(error)throw error;
+const {data}=db.storage.from(BUCKET).getPublicUrl(path);
+urls.push(data.publicUrl)
 }
-async function createListing(ev){ev.preventDefault();if(!currentUser){openAuth("Sign in to sell a car");return}const b=document.getElementById("publishBtn");b.disabled=true;b.textContent="Uploading & publishing...";let id=uid();try{if(!selectedPhotos.length){toast("Please select at least one real vehicle photo.");return}const imgs=await uploadPhotos(id,selectedPhotos);const row={id,seller_id:currentUser.id,seller_name:profile.name,seller_location:profile.location||"Nigeria",make:document.getElementById("sellMake").value.trim(),model:document.getElementById("sellModel").value.trim(),year:Number(document.getElementById("sellYear").value),price:Number(document.getElementById("sellPrice").value),type:document.getElementById("sellType").value,condition:document.getElementById("sellCondition").value,mileage:Number(document.getElementById("sellMileage").value||0),transmission:document.getElementById("sellTransmission").value,vin:document.getElementById("sellVin").value.trim(),registration:document.getElementById("sellRegistration").value.trim(),description:document.getElementById("sellDescription").value.trim(),images:imgs,verified:false,views:0};const {error}=await db.from("listings").insert(row);if(error)throw error;activityAdd("Listing published",`${row.year} ${row.make} ${row.model} was added to the marketplace.`);notify("Listing published",`${row.make} ${row.model} is now in your CarHub catalogue.`);document.getElementById("sellForm").reset();selectedPhotos=[];document.getElementById("photoPreview").innerHTML="";await loadListings();toast("Your vehicle is live in the CarHub catalogue.");go("dashboard")}catch(err){console.error(err);toast("Could not publish listing: "+(err.message||"please try again."))}finally{b.disabled=false;b.textContent="Publish listing"}}
+return urls
+}
 
-function renderDashboard(){const mine=listings.filter(x=>x.sellerId===currentUser?.id),savedMine=listings.filter(x=>saved.includes(x.id));document.getElementById("dashboardStats").innerHTML=`<div class="glass-panel stat"><span>My listings</span><strong>${mine.length}</strong><small>Cloud marketplace cars</small></div><div class="glass-panel stat"><span>Saved cars</span><strong>${savedMine.length}</strong><small>Your favourites</small></div><div class="glass-panel stat"><span>Messages</span><strong>${messages.length}</strong><small>Local prototype chats</small></div><div class="glass-panel stat"><span>Inspections</span><strong>${inspections.length}</strong><small>Booked inspections</small></div>`;const e=document.getElementById("myListings");if(!currentUser){e.innerHTML='<div class="empty"><strong>Sign in to manage listings</strong><button class="btn primary" onclick="openAuth(\'Sign in to manage your listings\')">Sign in</button></div>'}else if(!mine.length)e.innerHTML='<div class="empty"><strong>You have no cloud listings yet.</strong><br><button class="btn primary" onclick="go(\'sell\')">Sell a car</button></div>';else e.innerHTML=mine.map(c=>`<div class="list-row"><img class="row-img" src="${esc(c.images?.[0]||DEMO[0].images[0])}"><div class="row-main"><strong>${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</strong><span>${money(c.price)} · ${c.views||0} views</span></div><div class="row-actions"><button class="btn small" onclick="go('vehicle','${esc(c.id)}')">View</button><button class="btn small" onclick="editListing('${esc(c.id)}')">Edit</button><button class="btn small danger" onclick="deleteListing('${esc(c.id)}')">Delete</button></div></div>`).join("");document.getElementById("dashboardActivity").innerHTML=activity.length?activity.slice(0,8).map(a=>`<div class="list-row"><div class="feature-icon">•</div><div class="row-main"><strong>${esc(a.title)}</strong><span>${esc(a.text)}</span><span>${esc(a.time)}</span></div></div>`).join(""):'<div class="empty"><strong>No activity yet</strong></div>'}
+async function createListing(ev){
+ev.preventDefault();
+if(!currentUser){openAuth("Sign in to sell a car");return}
+const b=document.getElementById("publishBtn");
+b.disabled=true;b.textContent="Uploading & publishing...";
+let id=uid();
 
-function editListing(id){const c=getListing(id);if(!c||c.sellerId!==currentUser?.id){toast("You can only edit your own listings.");return}editingId=id;openModal("Edit listing",`<div class="form-grid"><div class="field"><label>Make</label><input class="input" id="editMake" value="${esc(c.make)}"></div><div class="field"><label>Model</label><input class="input" id="editModel" value="${esc(c.model)}"></div><div class="field"><label>Year</label><input class="input" id="editYear" type="number" value="${c.year}"></div><div class="field"><label>Price</label><input class="input" id="editPrice" type="number" value="${c.price}"></div><div class="field"><label>Mileage</label><input class="input" id="editMileage" type="number" value="${c.mileage||0}"></div><div class="field"><label>Type</label><select class="select" id="editType">${["SUV","Saloon","Coupe","Truck","Electric"].map(x=>`<option ${x===c.type?"selected":""}>${x}</option>`).join("")}</select></div><div class="field"><label>Condition</label><select class="select" id="editCondition">${["Foreign Used","Nigerian Used","Brand New"].map(x=>`<option ${x===c.condition?"selected":""}>${x}</option>`).join("")}</select></div><div class="field"><label>Transmission</label><select class="select" id="editTransmission">${["Automatic","Manual","CVT"].map(x=>`<option ${x===c.transmission?"selected":""}>${x}</option>`).join("")}</select></div><div class="field full"><label>Description</label><textarea class="textarea" id="editDescription">${esc(c.description||"")}</textarea></div><div class="field full"><label>Add more photos</label><input class="input" id="editPhotos" type="file" accept="image/*" multiple></div><div class="field full"><button class="btn primary full" onclick="saveListingEdit()">Save changes</button></div></div>`)}
-async function saveListingEdit(){const c=getListing(editingId);if(!c||!currentUser)return;try{let imgs=c.images||[];const fs=[...(document.getElementById("editPhotos")?.files||[])].slice(0,6-imgs.length);if(fs.length)imgs=imgs.concat(await uploadPhotos(c.id,fs));const patch={make:document.getElementById("editMake").value.trim(),model:document.getElementById("editModel").value.trim(),year:Number(document.getElementById("editYear").value),price:Number(document.getElementById("editPrice").value),mileage:Number(document.getElementById("editMileage").value||0),type:document.getElementById("editType").value,condition:document.getElementById("editCondition").value,transmission:document.getElementById("editTransmission").value,description:document.getElementById("editDescription").value.trim(),images:imgs,seller_name:profile.name,seller_location:profile.location};const {error}=await db.from("listings").update(patch).eq("id",c.id).eq("seller_id",currentUser.id);if(error)throw error;closeModal();await loadListings();activityAdd("Listing updated",`${patch.make} ${patch.model} was updated.`);toast("Listing updated.");go("dashboard")}catch(e){console.error(e);toast("Could not update listing: "+e.message)}}
-async function deleteListing(id){const c=getListing(id);if(!c||c.sellerId!==currentUser?.id){toast("You can only delete your own listings.");return}if(!confirm(`Delete ${c.year} ${c.make} ${c.model}?`))return;try{const paths=(c.images||[]).map(u=>{try{return decodeURIComponent(new URL(u).pathname.split("/object/public/"+BUCKET+"/")[1]||"")}catch{return""}}).filter(Boolean);if(paths.length)await db.storage.from(BUCKET).remove(paths);const {error}=await db.from("listings").delete().eq("id",id).eq("seller_id",currentUser.id);if(error)throw error;saved=saved.filter(x=>x!==id);saveLocal();await loadListings();activityAdd("Listing deleted",`${c.make} ${c.model} was removed.`);toast("Listing deleted.");go("dashboard")}catch(e){console.error(e);toast("Could not delete listing: "+e.message)}}
+try{
+if(!selectedPhotos.length){toast("Please select at least one real vehicle photo.");return}
+const imgs=await uploadPhotos(id,selectedPhotos);
 
-function openMessage(id){const c=getListing(id);if(!c)return;const key=`${currentUser?.id||"guest"}__${id}`;let x=messages.find(v=>v.key===key);if(!x){x={id:uid(),key,carId:id,sellerName:c.sellerName,carName:`${c.year} ${c.make} ${c.model}`,messages:[{sender:"system",text:`Conversation started about ${c.year} ${c.make} ${c.model}.`,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}]};messages.push(x);saveLocal()}currentConversation=x.id;go("messages")}
-function renderMessages(){const list=document.getElementById("conversationList");if(!messages.length){list.innerHTML='<div class="empty"><strong>No messages</strong>Open a car and contact the seller.</div>';return}list.innerHTML=messages.map(c=>`<div class="conversation" onclick="selectConversation('${c.id}')"><strong>${esc(c.sellerName)}</strong><div style="color:var(--mint);font-size:10px">${esc(c.carName)}</div><div style="color:var(--muted);font-size:11px">${esc(c.messages.at(-1)?.text||"")}</div></div>`).join("");if(!currentConversation)currentConversation=messages[0].id;selectConversation(currentConversation)}
-function selectConversation(id){currentConversation=id;const c=messages.find(x=>x.id===id);if(!c)return;document.getElementById("chatHead").innerHTML=`<strong>${esc(c.sellerName)}</strong><span>${esc(c.carName)}</span>`;document.getElementById("chatBody").innerHTML=c.messages.map(m=>`<div class="bubble ${m.sender==="me"?"me":""}">${esc(m.text)}<div style="font-size:9px;color:var(--muted);margin-top:5px">${esc(m.time)}</div></div>`).join("")}
-function sendMessage(){const i=document.getElementById("messageInput"),t=i.value.trim(),c=messages.find(x=>x.id===currentConversation);if(!t||!c)return;c.messages.push({sender:"me",text:t,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})});const words=["buy","purchase","pay","payment","deposit","transfer","bank","account","price","deal","sale","sold","money"];if(words.some(w=>t.toLowerCase().includes(w)))notify("Conversation needs attention",`Your conversation about ${c.carName} contains transaction-related language.`,"transaction");i.value="";saveLocal();renderMessages()}
+const row={
+id,
+seller_id:currentUser.id,
+seller_name:profile.name,
+seller_location:profile.location||"Nigeria",
+make:document.getElementById("sellMake").value.trim(),
+model:document.getElementById("sellModel").value.trim(),
+year:Number(document.getElementById("sellYear").value),
+price:Number(document.getElementById("sellPrice").value),
+type:document.getElementById("sellType").value,
+condition:document.getElementById("sellCondition").value,
+mileage:Number(document.getElementById("sellMileage").value||0),
+transmission:document.getElementById("sellTransmission").value,
+vin:document.getElementById("sellVin").value.trim(),
+registration:document.getElementById("sellRegistration").value.trim(),
+description:document.getElementById("sellDescription").value.trim(),
+images:imgs,
+verified:false,
+views:0
+};
 
-function openInspection(id){const c=getListing(id);openModal("Book vehicle inspection",`<div class="alert"><strong>${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</strong><br>${money(c.price)}</div><div class="field"><label>Inspection date</label><input class="input" id="inspectionDate" type="date" min="${new Date().toISOString().split("T")[0]}"></div><div class="field"><label>Inspection time</label><select class="select" id="inspectionTime"><option value="">Select time</option>${["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00"].map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>Note</label><textarea class="textarea" id="inspectionNote"></textarea></div><button class="btn primary full" onclick="bookInspection('${esc(id)}')">Confirm inspection</button>`)}
-function bookInspection(id){const c=getListing(id),date=document.getElementById("inspectionDate").value,time=document.getElementById("inspectionTime").value,note=document.getElementById("inspectionNote").value.trim();if(!date||!time)return toast("Please choose a date and time.");inspections.unshift({id:uid(),carId:id,carName:`${c.year} ${c.make} ${c.model}`,date,time,note,status:"Booked"});activityAdd("Inspection booked",`${c.year} ${c.make} ${c.model} · ${date} at ${time}`);notify("Inspection booked",`${c.year} ${c.make} ${c.model} is scheduled for ${date} at ${time}.`);closeModal();saveLocal();go("inspections")}
-function renderInspections(){const e=document.getElementById("inspectionList");e.innerHTML=inspections.length?inspections.map(x=>`<div class="list-row"><div class="feature-icon">◷</div><div class="row-main"><strong>${esc(x.carName)}</strong><span>${esc(x.date)} · ${esc(x.time)}</span>${x.note?`<span>${esc(x.note)}</span>`:""}</div><span class="status">${esc(x.status)}</span></div>`).join(""):'<div class="empty"><strong>No inspections yet</strong>Book an inspection from a vehicle page.</div>'}
-function renderNotifications(){const e=document.getElementById("notificationsList");e.innerHTML=notifications.length?notifications.map(n=>`<div class="list-row"><div class="feature-icon">${n.type==="transaction"?"!":"•"}</div><div class="row-main"><strong>${esc(n.title)}</strong><span>${esc(n.text)}</span><span>${esc(n.time)}</span></div>${n.type==="transaction"?'<span class="status gold">ATTENTION</span>':""}</div>`).join(""):'<div class="empty"><strong>You're all caught up</strong></div>'}
-function renderAccount(){document.getElementById("accountAvatar").textContent=initials(profile.name);document.getElementById("accountName").textContent=profile.name;document.getElementById("accountEmail").textContent=profile.email||"Not signed in";document.getElementById("accountStatus").textContent=currentUser?"SIGNED IN":"GUEST";document.getElementById("profileName").value=profile.name||"";document.getElementById("profileEmail").value=profile.email||"";document.getElementById("profilePhone").value=profile.phone||"";document.getElementById("profileLocation").value=profile.location||"";document.getElementById("profileType").value=profile.type||"Buyer & Seller"}
-async function saveProfile(){if(!currentUser)return openAuth("Sign in to save your profile");const p={id:currentUser.id,name:document.getElementById("profileName").value.trim()||"CarHub User",email:currentUser.email,phone:document.getElementById("profilePhone").value.trim(),location:document.getElementById("profileLocation").value.trim()||"Nigeria",type:document.getElementById("profileType").value};const {error}=await db.from("profiles").upsert(p);if(error)return toast(error.message);profile=p;await db.from("listings").update({seller_name:p.name,seller_location:p.location}).eq("seller_id",currentUser.id);await loadListings();updateHeader();toast("Profile saved.");renderAccount()}
-function generateAdvert(){const v=document.getElementById("aiVehicle").value.trim()||"your vehicle",p=document.getElementById("aiPrice").value.trim()||"Contact seller",d=document.getElementById("aiDetails").value.trim()||"Clean condition with a comfortable interior and strong road presence.";document.getElementById("aiOutput").textContent=`CARHUB AFRICA VEHICLE ADVERT\n\n${v}\n\nPrice: ${p}\n\n${d}\n\nWhy consider it:\n• Clean and marketplace-ready\n• Inspection can be booked through CarHub Africa\n• Buyer can view the seller profile before proceeding\n\nInterested?\nOpen the vehicle listing on CarHub Africa and start a conversation with the seller.\n\n#CarHubAfrica #CarsNigeria #BuySellDrive`;activityAdd("Advert created",`Advert draft created for ${v}.`);toast("Advert generated.")}
-function openModal(t,b){document.getElementById("modalTitle").textContent=t;document.getElementById("modalBody").innerHTML=b;document.getElementById("modal").classList.add("show")}
+const {error}=await db.from("listings").insert(row);
+if(error)throw error;
+
+activityAdd("Listing published",`${row.year} ${row.make} ${row.model} was added to the marketplace.`);
+notify("Listing published",`${row.make} ${row.model} is now in your CarHub catalogue.`);
+document.getElementById("sellForm").reset();
+selectedPhotos=[];
+document.getElementById("photoPreview").innerHTML="";
+await loadListings();
+toast("Your vehicle is live in the CarHub catalogue.");
+go("dashboard")
+}catch(err){
+console.error(err);
+toast("Could not publish listing: "+(err.message||"please try again."))
+}finally{
+b.disabled=false;
+b.textContent="Publish listing"
+}
+}
+
+function renderDashboard(){
+const mine=listings.filter(x=>x.sellerId===currentUser?.id),savedMine=listings.filter(x=>saved.includes(x.id));
+
+document.getElementById("dashboardStats").innerHTML=
+`<div class="glass-panel stat"><span>My listings</span><strong>${mine.length}</strong><small>Cloud marketplace cars</small></div>
+<div class="glass-panel stat"><span>Saved cars</span><strong>${savedMine.length}</strong><small>Your favourites</small></div>
+<div class="glass-panel stat"><span>Messages</span><strong>${messages.length}</strong><small>Local prototype chats</small></div>
+<div class="glass-panel stat"><span>Inspections</span><strong>${inspections.length}</strong><small>Booked inspections</small></div>`;
+
+const e=document.getElementById("myListings");
+
+if(!currentUser){
+e.innerHTML='<div class="empty"><strong>Sign in to manage listings</strong><button class="btn primary" onclick="openAuth(\'Sign in to manage your listings\')">Sign in</button></div>'
+}else if(!mine.length){
+e.innerHTML='<div class="empty"><strong>You have no cloud listings yet.</strong><br><button class="btn primary" onclick="go(\'sell\')">Sell a car</button></div>'
+}else{
+e.innerHTML=mine.map(c=>`<div class="list-row">
+<img class="row-img" src="${esc(c.images?.[0]||DEMO[0].images[0])}">
+<div class="row-main">
+<strong>${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</strong>
+<span>${money(c.price)} · ${c.views||0} views</span>
+</div>
+<div class="row-actions">
+<button class="btn small" onclick="go('vehicle','${esc(c.id)}')">View</button>
+<button class="btn small" onclick="editListing('${esc(c.id)}')">Edit</button>
+<button class="btn small danger" onclick="deleteListing('${esc(c.id)}')">Delete</button>
+</div>
+</div>`).join("")
+}
+
+document.getElementById("dashboardActivity").innerHTML=activity.length?
+activity.slice(0,8).map(a=>`<div class="list-row">
+<div class="feature-icon">•</div>
+<div class="row-main">
+<strong>${esc(a.title)}</strong>
+<span>${esc(a.text)}</span>
+<span>${esc(a.time)}</span>
+</div>
+</div>`).join(""):
+'<div class="empty"><strong>No activity yet</strong></div>'
+}
+
+function editListing(id){
+const c=getListing(id);
+if(!c||c.sellerId!==currentUser?.id){toast("You can only edit your own listings.");return}
+editingId=id;
+
+openModal("Edit listing",
+`<div class="form-grid">
+<div class="field"><label>Make</label><input class="input" id="editMake" value="${esc(c.make)}"></div>
+<div class="field"><label>Model</label><input class="input" id="editModel" value="${esc(c.model)}"></div>
+<div class="field"><label>Year</label><input class="input" id="editYear" type="number" value="${c.year}"></div>
+<div class="field"><label>Price</label><input class="input" id="editPrice" type="number" value="${c.price}"></div>
+<div class="field"><label>Mileage</label><input class="input" id="editMileage" type="number" value="${c.mileage||0}"></div>
+<div class="field"><label>Type</label><select class="select" id="editType">${["SUV","Saloon","Coupe","Truck","Electric"].map(x=>`<option ${x===c.type?"selected":""}>${x}</option>`).join("")}</select></div>
+<div class="field"><label>Condition</label><select class="select" id="editCondition">${["Foreign Used","Nigerian Used","Brand New"].map(x=>`<option ${x===c.condition?"selected":""}>${x}</option>`).join("")}</select></div>
+<div class="field"><label>Transmission</label><select class="select" id="editTransmission">${["Automatic","Manual","CVT"].map(x=>`<option ${x===c.transmission?"selected":""}>${x}</option>`).join("")}</select></div>
+<div class="field full"><label>Description</label><textarea class="textarea" id="editDescription">${esc(c.description||"")}</textarea></div>
+<div class="field full"><label>Add more photos</label><input class="input" id="editPhotos" type="file" accept="image/*" multiple></div>
+<div class="field full"><button class="btn primary full" onclick="saveListingEdit()">Save changes</button></div>
+</div>`)
+}
+
+async function saveListingEdit(){
+const c=getListing(editingId);
+if(!c||!currentUser)return;
+
+try{
+let imgs=c.images||[];
+const fs=[...(document.getElementById("editPhotos")?.files||[])].slice(0,6-imgs.length);
+if(fs.length)imgs=imgs.concat(await uploadPhotos(c.id,fs));
+
+const patch={
+make:document.getElementById("editMake").value.trim(),
+model:document.getElementById("editModel").value.trim(),
+year:Number(document.getElementById("editYear").value),
+price:Number(document.getElementById("editPrice").value),
+mileage:Number(document.getElementById("editMileage").value||0),
+type:document.getElementById("editType").value,
+condition:document.getElementById("editCondition").value,
+transmission:document.getElementById("editTransmission").value,
+description:document.getElementById("editDescription").value.trim(),
+images:imgs,
+seller_name:profile.name,
+seller_location:profile.location
+};
+
+const {error}=await db.from("listings").update(patch).eq("id",c.id).eq("seller_id",currentUser.id);
+if(error)throw error;
+
+closeModal();
+await loadListings();
+activityAdd("Listing updated",`${patch.make} ${patch.model} was updated.`);
+toast("Listing updated.");
+go("dashboard")
+}catch(e){
+console.error(e);
+toast("Could not update listing: "+e.message)
+}
+}
+
+async function deleteListing(id){
+const c=getListing(id);
+if(!c||c.sellerId!==currentUser?.id){toast("You can only delete your own listings.");return}
+if(!confirm(`Delete ${c.year} ${c.make} ${c.model}?`))return;
+
+try{
+const paths=(c.images||[]).map(u=>{
+try{return decodeURIComponent(new URL(u).pathname.split("/object/public/"+BUCKET+"/")[1]||"")}
+catch{return""}
+}).filter(Boolean);
+
+if(paths.length)await db.storage.from(BUCKET).remove(paths);
+
+const {error}=await db.from("listings").delete().eq("id",id).eq("seller_id",currentUser.id);
+if(error)throw error;
+
+saved=saved.filter(x=>x!==id);
+saveLocal();
+await loadListings();
+activityAdd("Listing deleted",`${c.make} ${c.model} was removed.`);
+toast("Listing deleted.");
+go("dashboard")
+}catch(e){
+console.error(e);
+toast("Could not delete listing: "+e.message)
+}
+}
+
+function openMessage(id){
+const c=getListing(id);if(!c)return;
+const key=`${currentUser?.id||"guest"}__${id}`;
+let x=messages.find(v=>v.key===key);
+
+if(!x){
+x={
+id:uid(),
+key,
+carId:id,
+sellerName:c.sellerName,
+carName:`${c.year} ${c.make} ${c.model}`,
+messages:[{
+sender:"system",
+text:`Conversation started about ${c.year} ${c.make} ${c.model}.`,
+time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})
+}]
+};
+messages.push(x);
+saveLocal()
+}
+
+currentConversation=x.id;
+go("messages")
+}
+
+function renderMessages(){
+const list=document.getElementById("conversationList");
+
+if(!messages.length){
+list.innerHTML='<div class="empty"><strong>No messages</strong>Open a car and contact the seller.</div>';
+return
+}
+
+list.innerHTML=messages.map(c=>`<div class="conversation" onclick="selectConversation('${c.id}')">
+<strong>${esc(c.sellerName)}</strong>
+<div style="color:var(--mint);font-size:10px">${esc(c.carName)}</div>
+<div style="color:var(--muted);font-size:11px">${esc(c.messages.at(-1)?.text||"")}</div>
+</div>`).join("");
+
+if(!currentConversation)currentConversation=messages[0].id;
+selectConversation(currentConversation)
+}
+
+function selectConversation(id){
+currentConversation=id;
+const c=messages.find(x=>x.id===id);
+if(!c)return;
+
+document.getElementById("chatHead").innerHTML=`<strong>${esc(c.sellerName)}</strong><span>${esc(c.carName)}</span>`;
+
+document.getElementById("chatBody").innerHTML=c.messages.map(m=>
+`<div class="bubble ${m.sender==="me"?"me":""}">
+${esc(m.text)}
+<div style="font-size:9px;color:var(--muted);margin-top:5px">${esc(m.time)}</div>
+</div>`).join("")
+}
+
+function sendMessage(){
+const i=document.getElementById("messageInput"),t=i.value.trim(),c=messages.find(x=>x.id===currentConversation);
+if(!t||!c)return;
+
+c.messages.push({
+sender:"me",
+text:t,
+time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})
+});
+
+const words=["buy","purchase","pay","payment","deposit","transfer","bank","account","price","deal","sale","sold","money"];
+
+if(words.some(w=>t.toLowerCase().includes(w)))
+notify("Conversation needs attention",`Your conversation about ${c.carName} contains transaction-related language.`,"transaction");
+
+i.value="";
+saveLocal();
+renderMessages()
+}
+
+function openInspection(id){
+const c=getListing(id);
+
+openModal("Book vehicle inspection",
+`<div class="alert"><strong>${esc(c.year)} ${esc(c.make)} ${esc(c.model)}</strong><br>${money(c.price)}</div>
+<div class="field">
+<label>Inspection date</label>
+<input class="input" id="inspectionDate" type="date" min="${new Date().toISOString().split("T")[0]}">
+</div>
+<div class="field">
+<label>Inspection time</label>
+<select class="select" id="inspectionTime">
+<option value="">Select time</option>
+${["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00"].map(x=>`<option>${x}</option>`).join("")}
+</select>
+</div>
+<div class="field"><label>Note</label><textarea class="textarea" id="inspectionNote"></textarea></div>
+<button class="btn primary full" onclick="bookInspection('${esc(id)}')">Confirm inspection</button>`)
+}
+
+function bookInspection(id){
+const c=getListing(id),
+date=document.getElementById("inspectionDate").value,
+time=document.getElementById("inspectionTime").value,
+note=document.getElementById("inspectionNote").value.trim();
+
+if(!date||!time)return toast("Please choose a date and time.");
+
+inspections.unshift({
+id:uid(),
+carId:id,
+carName:`${c.year} ${c.make} ${c.model}`,
+date,
+time,
+note,
+status:"Booked"
+});
+
+activityAdd("Inspection booked",`${c.year} ${c.make} ${c.model} · ${date} at ${time}`);
+notify("Inspection booked",`${c.year} ${c.make} ${c.model} is scheduled for ${date} at ${time}.`);
+closeModal();
+saveLocal();
+go("inspections")
+}
+
+function renderInspections(){
+const e=document.getElementById("inspectionList");
+
+e.innerHTML=inspections.length?
+inspections.map(x=>`<div class="list-row">
+<div class="feature-icon">◷</div>
+<div class="row-main">
+<strong>${esc(x.carName)}</strong>
+<span>${esc(x.date)} · ${esc(x.time)}</span>
+${x.note?`<span>${esc(x.note)}</span>`:""}
+</div>
+<span class="status">${esc(x.status)}</span>
+</div>`).join(""):
+'<div class="empty"><strong>No inspections yet</strong>Book an inspection from a vehicle page.</div>'
+}
+
+function renderNotifications(){
+const e=document.getElementById("notificationsList");
+
+e.innerHTML=notifications.length?
+notifications.map(n=>`<div class="list-row">
+<div class="feature-icon">${n.type==="transaction"?"!":"•"}</div>
+<div class="row-main">
+<strong>${esc(n.title)}</strong>
+<span>${esc(n.text)}</span>
+<span>${esc(n.time)}</span>
+</div>
+${n.type==="transaction"?'<span class="status gold">ATTENTION</span>':""}
+</div>`).join(""):
+'<div class="empty"><strong>You&apos;re all caught up</strong></div>'
+}
+
+function renderAccount(){
+document.getElementById("accountAvatar").textContent=initials(profile.name);
+document.getElementById("accountName").textContent=profile.name;
+document.getElementById("accountEmail").textContent=profile.email||"Not signed in";
+document.getElementById("accountStatus").textContent=currentUser?"SIGNED IN":"GUEST";
+document.getElementById("profileName").value=profile.name||"";
+document.getElementById("profileEmail").value=profile.email||"";
+document.getElementById("profilePhone").value=profile.phone||"";
+document.getElementById("profileLocation").value=profile.location||"";
+document.getElementById("profileType").value=profile.type||"Buyer & Seller"
+}
+
+async function saveProfile(){
+if(!currentUser)return openAuth("Sign in to save your profile");
+
+const p={
+id:currentUser.id,
+name:document.getElementById("profileName").value.trim()||"CarHub User",
+email:currentUser.email,
+phone:document.getElementById("profilePhone").value.trim(),
+location:document.getElementById("profileLocation").value.trim()||"Nigeria",
+type:document.getElementById("profileType").value
+};
+
+const {error}=await db.from("profiles").upsert(p);
+if(error)return toast(error.message);
+
+profile=p;
+await db.from("listings").update({seller_name:p.name,seller_location:p.location}).eq("seller_id",currentUser.id);
+await loadListings();
+updateHeader();
+toast("Profile saved.");
+renderAccount()
+}
+
+function generateAdvert(){
+const v=document.getElementById("aiVehicle").value.trim()||"your vehicle";
+const p=document.getElementById("aiPrice").value.trim()||"Contact seller";
+const d=document.getElementById("aiDetails").value.trim()||"Clean condition with a comfortable interior and strong road presence.";
+
+document.getElementById("aiOutput").textContent=
+`CARHUB AFRICA VEHICLE ADVERT
+
+${v}
+
+Price: ${p}
+
+${d}
+
+Why consider it:
+• Clean and marketplace-ready
+• Inspection can be booked through CarHub Africa
+• Buyer can view the seller profile before proceeding
+
+Interested?
+Open the vehicle listing on CarHub Africa and start a conversation with the seller.
+
+#CarHubAfrica #CarsNigeria #BuySellDrive`;
+
+activityAdd("Advert created",`Advert draft created for ${v}.`);
+toast("Advert generated.")
+}
+
+function openModal(t,b){
+document.getElementById("modalTitle").textContent=t;
+document.getElementById("modalBody").innerHTML=b;
+document.getElementById("modal").classList.add("show")
+}
+
 function closeModal(){document.getElementById("modal").classList.remove("show")}
-document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()})
-function openAuth(title="Sign in to CarHub Africa"){openModal(title,`<div class="alert">Create an account or sign in to publish and manage cloud listings.</div><div class="field"><label>Email</label><input class="input" id="authEmail" type="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input class="input" id="authPassword" type="password" placeholder="Minimum 6 characters"></div><div class="field"><label>Name (for new accounts)</label><input class="input" id="authName" placeholder="Your name"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="btn primary" onclick="signIn()">Sign in</button><button class="btn" onclick="signUp()">Create account</button></div>`)}
-async function signIn(){const email=document.getElementById("authEmail").value.trim(),password=document.getElementById("authPassword").value;if(!email||!password)return toast("Enter email and password.");const {error}=await db.auth.signInWithPassword({email,password});if(error)return toast(error.message);closeModal();await refresh();toast("Signed in successfully.")}
-async function signUp(){const email=document.getElementById("authEmail").value.trim(),password=document.getElementById("authPassword").value,name=document.getElementById("authName").value.trim()||"CarHub User";if(!email||password.length<6)return toast("Enter an email and a password of at least 6 characters.");const {data,error}=await db.auth.signUp({email,password,options:{data:{name}}});if(error)return toast(error.message);if(data.user){await db.from("profiles").upsert({id:data.user.id,name,email,location:"Nigeria",type:"Buyer & Seller"});closeModal();await refresh();toast(data.session?"Account created.":"Account created — check your email to confirm.");}}
-async function signOut(){await db.auth.signOut();currentUser=null;await refresh();toast("Signed out.")}
-function toggleBubble(){document.getElementById("bubbleMenu").classList.toggle("open")}function toggleDrawer(){document.getElementById("mobileDrawer").classList.toggle("open")}function closeDrawer(){document.getElementById("mobileDrawer").classList.remove("open")}
-function go(route,param){const h="#"+route+(param?"/"+encodeURIComponent(param):"");if(location.hash!==h)location.hash=h;else renderRoute();scrollTo({top:0,behavior:"smooth"})}
-function route(){const p=location.hash.replace(/^#/,"").split("/");return{route:p[0]||"home",param:p.slice(1).map(decodeURIComponent).join("/")}}
-function renderRoute(){const {route,param}=route();document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));const actual=document.getElementById("screen-"+route)?route:"home";document.getElementById("screen-"+actual).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.route===actual));if(actual==="home")renderHome();if(actual==="cars")renderCars();if(actual==="saved")renderSaved();if(actual==="sell"&&!currentUser)setTimeout(()=>openAuth("Sign in to sell a car"),0);if(actual==="dashboard")renderDashboard();if(actual==="messages")renderMessages();if(actual==="inspections")renderInspections();if(actual==="notifications")renderNotifications();if(actual==="account")renderAccount();if(actual==="vehicle")renderVehicle(param);if(actual==="seller")renderSeller(param)}
+
+document.getElementById("modal").addEventListener("click",e=>{
+if(e.target.id==="modal")closeModal()
+});
+
+function openAuth(title="Sign in to CarHub Africa"){
+openModal(title,
+`<div class="alert">Create an account or sign in to publish and manage cloud listings.</div>
+<div class="field"><label>Email</label><input class="input" id="authEmail" type="email" placeholder="you@example.com"></div>
+<div class="field"><label>Password</label><input class="input" id="authPassword" type="password" placeholder="Minimum 6 characters"></div>
+<div class="field"><label>Name (for new accounts)</label><input class="input" id="authName" placeholder="Your name"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<button class="btn primary" onclick="signIn()">Sign in</button>
+<button class="btn" onclick="signUp()">Create account</button>
+</div>`)
+}
+
+async function signIn(){
+const email=document.getElementById("authEmail").value.trim(),
+password=document.getElementById("authPassword").value;
+
+if(!email||!password)return toast("Enter email and password.");
+
+const {error}=await db.auth.signInWithPassword({email,password});
+if(error)return toast(error.message);
+
+closeModal();
+await refresh();
+toast("Signed in successfully.")
+}
+
+async function signUp(){
+const email=document.getElementById("authEmail").value.trim(),
+password=document.getElementById("authPassword").value,
+name=document.getElementById("authName").value.trim()||"CarHub User";
+
+if(!email||password.length<6)return toast("Enter an email and a password of at least 6 characters.");
+
+const {data,error}=await db.auth.signUp({
+email,
+password,
+options:{data:{name}}
+});
+
+if(error)return toast(error.message);
+
+if(data.user){
+await db.from("profiles").upsert({
+id:data.user.id,
+name,
+email,
+location:"Nigeria",
+type:"Buyer & Seller"
+});
+
+closeModal();
+await refresh();
+toast(data.session?"Account created.":"Account created — check your email to confirm.")
+}
+}
+
+async function signOut(){
+await db.auth.signOut();
+currentUser=null;
+await refresh();
+toast("Signed out.")
+}
+
+function toggleBubble(){document.getElementById("bubbleMenu").classList.toggle("open")}
+function toggleDrawer(){document.getElementById("mobileDrawer").classList.toggle("open")}
+function closeDrawer(){document.getElementById("mobileDrawer").classList.remove("open")}
+
+function go(route,param){
+const h="#"+route+(param?"/"+encodeURIComponent(param):"");
+if(location.hash!==h)location.hash=h;
+else renderRoute();
+scrollTo({top:0,behavior:"smooth"})
+}
+
+/* FIXED ROUTER */
+function parseRoute(){
+const p=location.hash.replace(/^#/,"").split("/");
+return{
+route:p[0]||"home",
+param:p.slice(1).map(decodeURIComponent).join("/")
+}
+}
+
+function renderRoute(){
+const {route:paramRoute,param}=parseRoute();
+
+document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+
+const actual=document.getElementById("screen-"+paramRoute)?paramRoute:"home";
+
+document.getElementById("screen-"+actual).classList.add("active");
+
+document.querySelectorAll(".nav button").forEach(b=>
+b.classList.toggle("active",b.dataset.route===actual)
+);
+
+if(actual==="home")renderHome();
+if(actual==="cars")renderCars();
+if(actual==="saved")renderSaved();
+if(actual==="sell"&&!currentUser)setTimeout(()=>openAuth("Sign in to sell a car"),0);
+if(actual==="dashboard")renderDashboard();
+if(actual==="messages")renderMessages();
+if(actual==="inspections")renderInspections();
+if(actual==="notifications")renderNotifications();
+if(actual==="account")renderAccount();
+if(actual==="vehicle")renderVehicle(param);
+if(actual==="seller")renderSeller(param)
+}
+
 window.addEventListener("hashchange",renderRoute);
-db.auth.onAuthStateChange(async()=>{await loadProfile();await loadListings();renderRoute()});
-(async()=>{await loadProfile();await loadListings();renderRoute();const hero=document.getElementById("heroImage");let i=0;setInterval(()=>{if(!hero||!listings.length)return;i=(i+1)%Math.min(listings.length,6);const c=listings[i];if(c?.images?.[0]){hero.style.opacity=".45";setTimeout(()=>{hero.src=c.images[0];hero.style.opacity=".88"},180)}},7000)})();
+
+db.auth.onAuthStateChange(async()=>{
+await loadProfile();
+await loadListings();
+renderRoute()
+});
+
+(async()=>{
+await loadProfile();
+await loadListings();
+renderRoute();
+
+const hero=document.getElementById("heroImage");
+let i=0;
+
+setInterval(()=>{
+if(!hero||!listings.length)return;
+
+i=(i+1)%Math.min(listings.length,6);
+const c=listings[i];
+
+if(c?.images?.[0]){
+hero.style.opacity=".45";
+setTimeout(()=>{
+hero.src=c.images[0];
+hero.style.opacity=".88"
+},180)
+}
+},7000)
+})();
 </script>
 </div>
 </body>
