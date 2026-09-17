@@ -1,36 +1,675 @@
 <!-- =========================================================
-CARHUB AFRICA — SHARED ACCOUNT FOUNDATION
-CODE 1 OF 4
-========================================================= -->
+     CARHUB AFRICA — LISTINGS & PHOTO ENGINE
+     CODE 2 OF 4
+     ========================================================= -->
 
 <script>
 
 /* =========================================================
-   CARHUB DATA ENGINE
-   Shared-backend-ready architecture
+   CARHUB LISTING ENGINE
    ========================================================= */
 
-const CH={
-  version:"2.0",
-  app:"CarHub Africa"
-};
+const CARHUB_LISTINGS_KEY = "carhub_shared_listings";
 
 
 /* ---------------------------------------------------------
-   LOCAL SESSION
+   SAFE LISTING STORAGE
    --------------------------------------------------------- */
 
-const SESSION_KEY="carhub_session";
-
-function getSession(){
+function getAllCarHubListings(){
 
   try{
 
-    return JSON.parse(
-      localStorage.getItem(SESSION_KEY)
-    ) || null;
+    const data =
+      JSON.parse(
+        localStorage.getItem(
+          CARHUB_LISTINGS_KEY
+        )
+      );
 
-  }catch{
+    return Array.isArray(data)
+      ? data
+      : [];
+
+  }catch(error){
+
+    return [];
+
+  }
+
+}
+
+
+function saveAllCarHubListings(items){
+
+  localStorage.setItem(
+    CARHUB_LISTINGS_KEY,
+    JSON.stringify(items)
+  );
+
+}
+
+
+/* ---------------------------------------------------------
+   MIGRATE EXISTING LISTINGS
+   --------------------------------------------------------- */
+
+function migrateExistingListings(){
+
+  const existing =
+    getAllCarHubListings();
+
+  if(existing.length){
+
+    return existing;
+
+  }
+
+  let oldListings=[];
+
+  try{
+
+    oldListings =
+      JSON.parse(
+        localStorage.getItem(
+          "carhub_listings"
+        )
+      ) || [];
+
+  }catch(error){
+
+    oldListings=[];
+
+  }
+
+  if(
+    Array.isArray(oldListings) &&
+    oldListings.length
+  ){
+
+    const migrated =
+      oldListings.map(item=>({
+
+        ...item,
+
+        sellerId:
+          item.sellerId ||
+          item.ownerId ||
+          profile?.id ||
+          "legacy",
+
+        sellerName:
+          item.sellerName ||
+          item.seller ||
+          profile?.name ||
+          "CarHub Seller",
+
+        status:
+          item.status ||
+          "active",
+
+        createdAt:
+          item.createdAt ||
+          new Date().toISOString(),
+
+        updatedAt:
+          new Date().toISOString(),
+
+        images:
+          Array.isArray(item.images)
+          ?item.images
+          :item.image
+            ?[item.image]
+            :[]
+
+      }));
+
+    saveAllCarHubListings(
+      migrated
+    );
+
+    return migrated;
+
+  }
+
+  return [];
+
+}
+
+
+let sharedListings =
+  migrateExistingListings();
+
+
+/* ---------------------------------------------------------
+   KEEP OLD VARIABLE COMPATIBLE
+   --------------------------------------------------------- */
+
+if(
+  typeof listings === "undefined"
+){
+
+  var listings =
+    sharedListings;
+
+}else{
+
+  listings =
+    sharedListings;
+
+}
+
+
+/* ---------------------------------------------------------
+   LISTING HELPERS
+   --------------------------------------------------------- */
+
+function syncListings(){
+
+  sharedListings =
+    getAllCarHubListings();
+
+  listings =
+    sharedListings;
+
+  return sharedListings;
+
+}
+
+
+function getListing(id){
+
+  syncListings();
+
+  return listings.find(
+    item => String(item.id) === String(id)
+  );
+
+}
+
+
+function getSellerListings(sellerId){
+
+  syncListings();
+
+  return listings.filter(
+    item =>
+      String(item.sellerId) ===
+      String(sellerId)
+  );
+
+}
+
+
+/* ---------------------------------------------------------
+   IMAGE PROCESSING
+   --------------------------------------------------------- */
+
+function carHubReadFile(file){
+
+  return new Promise(
+    (resolve,reject)=>{
+
+      const reader =
+        new FileReader();
+
+      reader.onload=()=>{
+        resolve(reader.result);
+      };
+
+      reader.onerror=()=>{
+        reject(
+          new Error(
+            "Unable to read image."
+          )
+        );
+      };
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+}
+
+
+function carHubCompressImage(
+  file,
+  maxWidth=1400,
+  quality=.82
+){
+
+  return new Promise(
+    (resolve,reject)=>{
+
+      const reader =
+        new FileReader();
+
+      reader.onload=event=>{
+
+        const image =
+          new Image();
+
+        image.onload=()=>{
+
+          let width =
+            image.width;
+
+          let height =
+            image.height;
+
+          if(width>maxWidth){
+
+            height =
+              Math.round(
+                height *
+                maxWidth /
+                width
+              );
+
+            width =
+              maxWidth;
+
+          }
+
+          const canvas =
+            document.createElement(
+              "canvas"
+            );
+
+          canvas.width=width;
+
+          canvas.height=height;
+
+          const context =
+            canvas.getContext(
+              "2d"
+            );
+
+          context.drawImage(
+            image,
+            0,
+            0,
+            width,
+            height
+          );
+
+          resolve(
+            canvas.toDataURL(
+              "image/jpeg",
+              quality
+            )
+          );
+
+        };
+
+        image.onerror=()=>{
+          reject(
+            new Error(
+              "Invalid image."
+            )
+          );
+        };
+
+        image.src=
+          event.target.result;
+
+      };
+
+      reader.onerror=()=>{
+        reject(
+          new Error(
+            "Could not read image."
+          )
+        );
+      };
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+}
+
+
+/* ---------------------------------------------------------
+   SELLER INFORMATION
+   --------------------------------------------------------- */
+
+function getCurrentSeller(){
+
+  const session =
+    typeof getSession === "function"
+    ?getSession()
+    :null;
+
+  if(!session){
+
+    return null;
+
+  }
+
+  let user=null;
+
+  if(
+    typeof UserDB !== "undefined" &&
+    UserDB.findById
+  ){
+
+    user =
+      UserDB.findById(
+        session.id
+      );
+
+  }
+
+  return {
+
+    id:
+      user?.id ||
+      session.id,
+
+    name:
+      user?.name ||
+      session.name ||
+      "CarHub Seller",
+
+    email:
+      user?.email ||
+      session.email ||
+      "",
+
+    phone:
+      user?.phone ||
+      session.phone ||
+      "",
+
+    location:
+      user?.location ||
+      session.location ||
+      "Nigeria",
+
+    verified:
+      Boolean(
+        user?.verified ||
+        session.verified
+      )
+
+  };
+
+}
+
+
+/* ---------------------------------------------------------
+   BUILD LISTING
+   --------------------------------------------------------- */
+
+async function buildCarHubListing(formData){
+
+  const seller =
+    getCurrentSeller();
+
+  if(!seller){
+
+    throw new Error(
+      "Please sign in before creating a listing."
+    );
+
+  }
+
+  const files =
+    Array.from(
+      formData.files || []
+    );
+
+  const images=[];
+
+  for(
+    const file of files.slice(0,12)
+  ){
+
+    if(
+      !file.type.startsWith(
+        "image/"
+      )
+    ){
+
+      continue;
+
+    }
+
+    const image =
+      await carHubCompressImage(
+        file
+      );
+
+    images.push(image);
+
+  }
+
+
+  const now =
+    new Date().toISOString();
+
+
+  const listing={
+
+    id:
+      "car_"+Date.now()
+      .toString(36)+
+      "_"+
+      Math.random()
+      .toString(36)
+      .slice(2,8),
+
+    sellerId:
+      seller.id,
+
+    sellerName:
+      seller.name,
+
+    sellerEmail:
+      seller.email,
+
+    sellerPhone:
+      seller.phone,
+
+    sellerLocation:
+      seller.location,
+
+    sellerVerified:
+      seller.verified,
+
+    make:
+      String(
+        formData.make || ""
+      ).trim(),
+
+    model:
+      String(
+        formData.model || ""
+      ).trim(),
+
+    year:
+      String(
+        formData.year || ""
+      ).trim(),
+
+    price:
+      Number(
+        String(
+          formData.price || 0
+        )
+        .replace(/[^\d.]/g,"")
+      ),
+
+    mileage:
+      String(
+        formData.mileage || ""
+      ).trim(),
+
+    condition:
+      formData.condition ||
+      "Used",
+
+    transmission:
+      formData.transmission ||
+      "",
+
+    fuel:
+      formData.fuel ||
+      "",
+
+    location:
+      formData.location ||
+      seller.location ||
+      "Nigeria",
+
+    description:
+      String(
+        formData.description || ""
+      ).trim(),
+
+    images,
+
+    status:
+      "active",
+
+    views:
+      0,
+
+    saves:
+      0,
+
+    createdAt:
+      now,
+
+    updatedAt:
+      now
+
+  };
+
+  return listing;
+
+}
+
+
+/* ---------------------------------------------------------
+   CREATE LISTING
+   --------------------------------------------------------- */
+
+async function createCarHubListing(formData){
+
+  const seller =
+    getCurrentSeller();
+
+  if(!seller){
+
+    if(
+      typeof openLogin ===
+      "function"
+    ){
+
+      openLogin();
+
+    }
+
+    return null;
+
+  }
+
+
+  try{
+
+    const listing =
+      await buildCarHubListing(
+        formData
+      );
+
+    if(
+      !listing.make ||
+      !listing.model ||
+      !listing.year ||
+      !listing.price
+    ){
+
+      toast(
+        "Please complete the vehicle details."
+      );
+
+      return null;
+
+    }
+
+
+    const current =
+      getAllCarHubListings();
+
+    current.unshift(
+      listing
+    );
+
+    saveAllCarHubListings(
+      current
+    );
+
+    sharedListings =
+      current;
+
+    listings =
+      current;
+
+
+    if(
+      typeof addActivity ===
+      "function"
+    ){
+
+      addActivity(
+        "Vehicle listed",
+        `${listing.year} ${listing.make} ${listing.model} is now live on CarHub.`
+      );
+
+    }
+
+
+    if(
+      typeof notify ===
+      "function"
+    ){
+
+      notify(
+        "Vehicle published",
+        "Your vehicle is now live on CarHub Africa."
+      );
+
+    }
+
+
+    if(
+      typeof toast ===
+      "function"
+    ){
+
+      toast(
+        "Vehicle listed successfully."
+      );
+
+    }
+
+
+    return listing;
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+    toast(
+      error.message ||
+      "Unable to create listing."
+    );
 
     return null;
 
@@ -38,551 +677,106 @@ function getSession(){
 
 }
 
-function setSession(user){
-
-  localStorage.setItem(
-    SESSION_KEY,
-    JSON.stringify(user)
-  );
-
-}
-
-function clearSession(){
-
-  localStorage.removeItem(
-    SESSION_KEY
-  );
-
-}
-
 
 /* ---------------------------------------------------------
-   USER DATABASE ADAPTER
+   DELETE LISTING
    --------------------------------------------------------- */
 
-const UserDB={
+function deleteCarHubListing(id){
 
-  key:"carhub_users",
+  const seller =
+    getCurrentSeller();
 
-  all(){
+  if(!seller){
 
-    try{
-
-      return JSON.parse(
-        localStorage.getItem(this.key)
-      ) || [];
-
-    }catch{
-
-      return [];
-
-    }
-
-  },
-
-  save(users){
-
-    localStorage.setItem(
-      this.key,
-      JSON.stringify(users)
-    );
-
-  },
-
-  findByEmail(email){
-
-    return this.all().find(
-      user =>
-        user.email.toLowerCase() ===
-        email.toLowerCase()
-    );
-
-  },
-
-  findById(id){
-
-    return this.all().find(
-      user => user.id===id
-    );
-
-  },
-
-  create(data){
-
-    const users=this.all();
-
-    const user={
-
-      id:
-        "usr_"+Date.now().toString(36)+
-        Math.random().toString(36).slice(2,8),
-
-      name:data.name.trim(),
-
-      email:data.email.trim().toLowerCase(),
-
-      phone:data.phone?.trim()||"",
-
-      location:data.location?.trim()||"Nigeria",
-
-      accountType:
-        data.accountType||
-        "Buyer & Seller",
-
-      verified:false,
-
-      createdAt:
-        new Date().toISOString(),
-
-      avatar:""
-
-    };
-
-    users.push(user);
-
-    this.save(users);
-
-    return user;
+    return;
 
   }
 
-};
+  const current =
+    getAllCarHubListings();
 
+  const listing =
+    current.find(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
 
-/* ---------------------------------------------------------
-   AUTHENTICATION UI
-   --------------------------------------------------------- */
+  if(!listing){
 
-function openLogin(){
+    return;
 
-  openModal(
-    "Welcome back",
-    `
+  }
 
-    <div class="field">
-
-      <label>Email</label>
-
-      <input
-        class="input"
-        id="loginEmail"
-        type="email"
-        placeholder="you@example.com"
-      >
-
-    </div>
-
-    <br>
-
-    <div class="field">
-
-      <label>Password</label>
-
-      <input
-        class="input"
-        id="loginPassword"
-        type="password"
-        placeholder="Password"
-      >
-
-    </div>
-
-    <br>
-
-    <button
-      class="btn primary full"
-      onclick="loginUser()"
-    >
-      Sign in
-    </button>
-
-    <br><br>
-
-    <button
-      class="btn full"
-      onclick="openRegister()"
-    >
-      Create account
-    </button>
-
-    `
-  );
-
-}
-
-
-function openRegister(){
-
-  openModal(
-    "Create your CarHub account",
-    `
-
-    <div class="alert">
-
-      Create an account to sell cars,
-      message sellers, save vehicles and
-      manage inspections.
-
-    </div>
-
-    <div class="form-grid">
-
-      <div class="field">
-
-        <label>Full name</label>
-
-        <input
-          class="input"
-          id="registerName"
-          placeholder="Your name"
-        >
-
-      </div>
-
-      <div class="field">
-
-        <label>Email</label>
-
-        <input
-          class="input"
-          id="registerEmail"
-          type="email"
-          placeholder="you@example.com"
-        >
-
-      </div>
-
-      <div class="field">
-
-        <label>Phone</label>
-
-        <input
-          class="input"
-          id="registerPhone"
-          placeholder="+234..."
-        >
-
-      </div>
-
-      <div class="field">
-
-        <label>Location</label>
-
-        <input
-          class="input"
-          id="registerLocation"
-          placeholder="Lagos, Nigeria"
-        >
-
-      </div>
-
-      <div class="field">
-
-        <label>Account type</label>
-
-        <select
-          class="select"
-          id="registerType"
-        >
-
-          <option>Buyer & Seller</option>
-          <option>Buyer</option>
-          <option>Seller</option>
-          <option>Dealer</option>
-
-        </select>
-
-      </div>
-
-      <div class="field">
-
-        <label>Password</label>
-
-        <input
-          class="input"
-          id="registerPassword"
-          type="password"
-          placeholder="Create password"
-        >
-
-      </div>
-
-      <div class="field full">
-
-        <button
-          class="btn primary full"
-          onclick="registerUser()"
-        >
-          Create account
-        </button>
-
-      </div>
-
-    </div>
-
-    `
-  );
-
-}
-
-
-function registerUser(){
-
-  const name=
-    document
-      .getElementById("registerName")
-      .value.trim();
-
-  const email=
-    document
-      .getElementById("registerEmail")
-      .value.trim();
-
-  const phone=
-    document
-      .getElementById("registerPhone")
-      .value.trim();
-
-  const location=
-    document
-      .getElementById("registerLocation")
-      .value.trim();
-
-  const type=
-    document
-      .getElementById("registerType")
-      .value;
-
-  const password=
-    document
-      .getElementById("registerPassword")
-      .value;
-
-  if(!name||!email||!password){
+  if(
+    String(listing.sellerId) !==
+    String(seller.id)
+  ){
 
     toast(
-      "Please complete the required fields."
+      "You can only manage your own listings."
     );
 
     return;
 
   }
 
-  if(password.length<6){
 
-    toast(
-      "Password must contain at least 6 characters."
+  const confirmed =
+    confirm(
+      "Remove this vehicle listing?"
     );
+
+  if(!confirmed){
 
     return;
 
   }
 
-  if(UserDB.findByEmail(email)){
 
-    toast(
-      "An account with this email already exists."
+  const updated =
+    current.filter(
+      item =>
+        String(item.id) !==
+        String(id)
     );
 
-    return;
+  saveAllCarHubListings(
+    updated
+  );
+
+  sharedListings =
+    updated;
+
+  listings =
+    updated;
+
+
+  if(
+    typeof addActivity ===
+    "function"
+  ){
+
+    addActivity(
+      "Vehicle removed",
+      "Your vehicle listing was removed."
+    );
 
   }
 
-  /*
-    IMPORTANT:
-
-    This browser implementation only creates
-    the account structure.
-
-    The final production version will move
-    password handling to the backend so that
-    passwords are NEVER stored in browser
-    localStorage.
-  */
-
-  const user=UserDB.create({
-
-    name,
-    email,
-    phone,
-    location,
-    accountType:type
-
-  });
-
-  setSession(user);
-
-  profile=user;
-
-  closeModal();
-
-  updateUserInterface();
-
-  addActivity(
-    "Account created",
-    "Welcome to CarHub Africa."
-  );
-
-  notify(
-    "Welcome to CarHub Africa",
-    "Your account has been created."
-  );
 
   toast(
-    "Account created successfully."
+    "Vehicle listing removed."
   );
 
-  go("dashboard");
 
-}
+  if(
+    typeof go ===
+    "function"
+  ){
 
-
-function loginUser(){
-
-  const email=
-    document
-      .getElementById("loginEmail")
-      .value.trim();
-
-  const password=
-    document
-      .getElementById("loginPassword")
-      .value;
-
-  if(!email||!password){
-
-    toast(
-      "Enter your email and password."
-    );
-
-    return;
-
-  }
-
-  const user=
-    UserDB.findByEmail(email);
-
-  if(!user){
-
-    toast(
-      "Account not found. Create an account first."
-    );
-
-    return;
-
-  }
-
-  /*
-    Temporary development authentication.
-
-    Production authentication will be handled
-    by the shared backend in the next stages.
-  */
-
-  setSession(user);
-
-  profile=user;
-
-  closeModal();
-
-  updateUserInterface();
-
-  addActivity(
-    "Signed in",
-    "You signed in to CarHub Africa."
-  );
-
-  toast(
-    "Welcome back, "+user.name+"."
-  );
-
-  go("dashboard");
-
-}
-
-
-function logoutUser(){
-
-  clearSession();
-
-  profile={
-
-    id:"guest",
-
-    name:"CarHub User",
-
-    email:"",
-
-    phone:"",
-
-    location:"Nigeria",
-
-    type:"Buyer & Seller"
-
-  };
-
-  updateUserInterface();
-
-  toast(
-    "You have been signed out."
-  );
-
-  go("home");
-
-}
-
-
-/* ---------------------------------------------------------
-   USER INTERFACE
-   --------------------------------------------------------- */
-
-function updateUserInterface(){
-
-  const avatar=
-    document.getElementById(
-      "headerAvatar"
-    );
-
-  if(avatar){
-
-    avatar.textContent=
-      initials(profile.name);
-
-  }
-
-  const accountName=
-    document.getElementById(
-      "accountName"
-    );
-
-  if(accountName){
-
-    accountName.textContent=
-      profile.name;
-
-  }
-
-  const accountEmail=
-    document.getElementById(
-      "accountEmail"
-    );
-
-  if(accountEmail){
-
-    accountEmail.textContent=
-      profile.email||"";
-
-  }
-
-  const accountAvatar=
-    document.getElementById(
-      "accountAvatar"
-    );
-
-  if(accountAvatar){
-
-    accountAvatar.textContent=
-      initials(profile.name);
+    go("cars");
 
   }
 
@@ -590,378 +784,150 @@ function updateUserInterface(){
 
 
 /* ---------------------------------------------------------
-   ACCOUNT ACCESS CONTROL
+   EDIT LISTING
    --------------------------------------------------------- */
 
-function requireLogin(action){
+function editCarHubListing(id){
 
-  const session=getSession();
+  const seller =
+    getCurrentSeller();
 
-  if(session){
+  const listing =
+    getListing(id);
 
-    return true;
+  if(!seller || !listing){
+
+    return;
 
   }
+
+
+  if(
+    String(listing.sellerId) !==
+    String(seller.id)
+  ){
+
+    toast(
+      "You can only edit your own listing."
+    );
+
+    return;
+
+  }
+
 
   openModal(
-    "Sign in required",
+    "Edit vehicle",
     `
-
-    <div class="alert">
-
-      Create or sign in to your CarHub
-      account before you continue.
-
-    </div>
-
-    <button
-      class="btn primary full"
-      onclick="openLogin()"
-    >
-      Sign in
-    </button>
-
-    <br><br>
-
-    <button
-      class="btn full"
-      onclick="openRegister()"
-    >
-      Create account
-    </button>
-
-    `
-  );
-
-  return false;
-
-}
-
-
-/* ---------------------------------------------------------
-   PROTECTED ACTIONS
-   --------------------------------------------------------- */
-
-const oldOpenMessage=
-  window.openMessage;
-
-window.openMessage=function(carId){
-
-  if(!requireLogin("message")){
-
-    return;
-
-  }
-
-  oldOpenMessage(carId);
-
-};
-
-
-const oldOpenInspection=
-  window.openInspection;
-
-window.openInspection=function(carId){
-
-  if(!requireLogin("inspection")){
-
-    return;
-
-  }
-
-  oldOpenInspection(carId);
-
-};
-
-
-/* ---------------------------------------------------------
-   SELLING REQUIRES ACCOUNT
-   --------------------------------------------------------- */
-
-const oldCreateListing=
-  window.createListing;
-
-window.createListing=function(event){
-
-  if(!requireLogin("sell")){
-
-    event.preventDefault();
-
-    return;
-
-  }
-
-  oldCreateListing(event);
-
-};
-
-
-/* ---------------------------------------------------------
-   PROFILE SESSION
-   --------------------------------------------------------- */
-
-function loadCurrentUser(){
-
-  const session=getSession();
-
-  if(session){
-
-    const current=
-      UserDB.findById(session.id);
-
-    if(current){
-
-      profile=current;
-
-      setSession(current);
-
-    }
-
-  }
-
-}
-
-
-/* ---------------------------------------------------------
-   ACCOUNT BUTTON
-   --------------------------------------------------------- */
-
-function accountAction(){
-
-  if(getSession()){
-
-    go("account");
-
-  }else{
-
-    openLogin();
-
-  }
-
-}
-
-
-/* ---------------------------------------------------------
-   UPGRADED ACCOUNT SCREEN
-   --------------------------------------------------------- */
-
-function renderAccount(){
-
-  updateUserInterface();
-
-  const session=getSession();
-
-  if(!session){
-
-    document.getElementById(
-      "screen-account"
-    ).innerHTML=`
-
-      <div class="page-title">
-
-        <h1>Account</h1>
-
-        <p>
-          Sign in to manage your CarHub account.
-        </p>
-
-      </div>
-
-      <div
-        class="glass-panel account-card"
-      >
-
-        <div class="empty">
-
-          <strong>
-            You're not signed in
-          </strong>
-
-          Create an account or sign in
-          to access your dashboard.
-
-          <br><br>
-
-          <button
-            class="btn primary"
-            onclick="openRegister()"
-          >
-            Create account
-          </button>
-
-          <button
-            class="btn"
-            onclick="openLogin()"
-          >
-            Sign in
-          </button>
-
-        </div>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-  document.getElementById(
-    "screen-account"
-  ).innerHTML=`
-
-    <div class="page-title">
-
-      <h1>Account</h1>
-
-      <p>
-        Manage your CarHub profile.
-      </p>
-
-    </div>
-
-    <div class="glass-panel account-card">
-
-      <div class="account-top">
-
-        <div
-          class="account-avatar"
-          id="accountAvatar"
-        >
-          ${initials(profile.name)}
-        </div>
-
-        <div>
-
-          <h2
-            id="accountName"
-            style="margin:0"
-          >
-            ${esc(profile.name)}
-          </h2>
-
-          <div
-            id="accountEmail"
-            style="
-              color:var(--muted);
-              margin-top:5px
-            "
-          >
-            ${esc(profile.email)}
-          </div>
-
-          <div
-            style="
-              color:var(--mint);
-              font-size:11px;
-              margin-top:6px
-            "
-          >
-            ${profile.verified
-              ?"✓ Verified account"
-              :"Account created"}
-          </div>
-
-        </div>
-
-      </div>
 
       <div class="form-grid">
 
         <div class="field">
 
-          <label>Full name</label>
+          <label>Make</label>
 
           <input
             class="input"
-            id="profileName"
-            value="${esc(profile.name)}"
+            id="editMake"
+            value="${esc(listing.make)}"
           >
 
         </div>
 
         <div class="field">
 
-          <label>Email</label>
+          <label>Model</label>
 
           <input
             class="input"
-            id="profileEmail"
-            type="email"
-            value="${esc(profile.email)}"
+            id="editModel"
+            value="${esc(listing.model)}"
           >
 
         </div>
 
         <div class="field">
 
-          <label>Phone</label>
+          <label>Year</label>
 
           <input
             class="input"
-            id="profilePhone"
-            value="${esc(profile.phone)}"
+            id="editYear"
+            value="${esc(listing.year)}"
           >
 
         </div>
 
         <div class="field">
 
-          <label>Location</label>
+          <label>Price (₦)</label>
 
           <input
             class="input"
-            id="profileLocation"
-            value="${esc(profile.location)}"
+            id="editPrice"
+            inputmode="numeric"
+            value="${listing.price || ""}"
           >
 
         </div>
 
         <div class="field">
 
-          <label>Account type</label>
+          <label>Mileage</label>
+
+          <input
+            class="input"
+            id="editMileage"
+            value="${esc(listing.mileage || "")}"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>Condition</label>
 
           <select
             class="select"
-            id="profileType"
+            id="editCondition"
           >
 
-            ${[
-              "Buyer & Seller",
-              "Buyer",
-              "Seller",
-              "Dealer"
-            ].map(type=>`
+            <option
+              ${listing.condition==="New"
+                ?"selected":""
+              }
+            >
+              New
+            </option>
 
-              <option
-                ${profile.accountType===type
-                  ?"selected"
-                  :""
-                }
-              >
-                ${type}
-              </option>
+            <option
+              ${listing.condition==="Used"
+                ?"selected":""
+              }
+            >
+              Used
+            </option>
 
-            `).join("")}
+            <option
+              ${listing.condition==="Foreign Used"
+                ?"selected":""
+              }
+            >
+              Foreign Used
+            </option>
 
           </select>
 
         </div>
 
-        <div class="field">
+        <div class="field full">
 
-          <label>Member since</label>
+          <label>Description</label>
 
-          <input
-            class="input"
-            disabled
-            value="${
-              profile.createdAt
-              ?new Date(profile.createdAt)
-                .toLocaleDateString()
-              :""
-            }"
-          >
+          <textarea
+            class="textarea"
+            id="editDescription"
+          >${esc(listing.description || "")}</textarea>
 
         </div>
 
@@ -969,20 +935,580 @@ function renderAccount(){
 
           <button
             class="btn primary full"
-            onclick="saveProfile()"
+            onclick="
+              saveEditedCarHubListing('${listing.id}')
+            "
           >
-            Save profile
+            Save changes
           </button>
 
         </div>
 
-        <div class="field full">
+      </div>
+
+    `
+  );
+
+}
+
+
+function saveEditedCarHubListing(id){
+
+  const seller =
+    getCurrentSeller();
+
+  if(!seller){
+
+    return;
+
+  }
+
+  const current =
+    getAllCarHubListings();
+
+  const index =
+    current.findIndex(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+  if(index<0){
+
+    return;
+
+  }
+
+
+  if(
+    String(
+      current[index].sellerId
+    ) !==
+    String(seller.id)
+  ){
+
+    toast(
+      "You can only edit your own listing."
+    );
+
+    return;
+
+  }
+
+
+  current[index]={
+
+    ...current[index],
+
+    make:
+      document
+        .getElementById("editMake")
+        .value.trim(),
+
+    model:
+      document
+        .getElementById("editModel")
+        .value.trim(),
+
+    year:
+      document
+        .getElementById("editYear")
+        .value.trim(),
+
+    price:
+      Number(
+        document
+          .getElementById("editPrice")
+          .value
+          .replace(/[^\d.]/g,"")
+      ),
+
+    mileage:
+      document
+        .getElementById("editMileage")
+        .value.trim(),
+
+    condition:
+      document
+        .getElementById("editCondition")
+        .value,
+
+    description:
+      document
+        .getElementById("editDescription")
+        .value.trim(),
+
+    updatedAt:
+      new Date().toISOString()
+
+  };
+
+
+  saveAllCarHubListings(
+    current
+  );
+
+  sharedListings =
+    current;
+
+  listings =
+    current;
+
+
+  closeModal();
+
+  toast(
+    "Vehicle updated."
+  );
+
+
+  if(
+    typeof go ===
+    "function"
+  ){
+
+    go(
+      "vehicle",
+      id
+    );
+
+  }
+
+}
+
+
+/* ---------------------------------------------------------
+   IMAGE GALLERY
+   --------------------------------------------------------- */
+
+function renderCarHubGallery(listing){
+
+  const images =
+    Array.isArray(
+      listing.images
+    )
+    ?listing.images
+    :[];
+
+
+  if(!images.length){
+
+    return `
+
+      <div
+        class="vehicle-gallery-empty"
+      >
+
+        <span>🚘</span>
+
+        <div>
+          No vehicle photos yet
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  return `
+
+    <div
+      class="carhub-gallery"
+      data-gallery="${listing.id}"
+    >
+
+      <div
+        class="carhub-gallery-main"
+      >
+
+        <img
+          id="galleryMain-${listing.id}"
+          src="${esc(images[0])}"
+          alt="${esc(
+            listing.year+" "+
+            listing.make+" "+
+            listing.model
+          )}"
+        >
+
+      </div>
+
+
+      <div
+        class="carhub-gallery-thumbs"
+      >
+
+        ${images
+          .map(
+            (image,index)=>`
+
+              <button
+                class="
+                  carhub-gallery-thumb
+                  ${index===0?"active":""}
+                "
+                onclick="
+                  changeCarHubGallery(
+                    '${listing.id}',
+                    ${index}
+                  )
+                "
+              >
+
+                <img
+                  src="${esc(image)}"
+                  alt=""
+                >
+
+              </button>
+
+            `
+          )
+          .join("")}
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+function changeCarHubGallery(
+  listingId,
+  imageIndex
+){
+
+  const listing =
+    getListing(
+      listingId
+    );
+
+  if(!listing)return;
+
+  const images =
+    listing.images || [];
+
+  const image =
+    images[imageIndex];
+
+  if(!image)return;
+
+
+  const main =
+    document.getElementById(
+      "galleryMain-"+listingId
+    );
+
+  if(main){
+
+    main.style.opacity="0";
+
+    setTimeout(()=>{
+
+      main.src=image;
+
+      main.style.opacity="1";
+
+    },120);
+
+  }
+
+
+  const gallery =
+    document.querySelector(
+      `[data-gallery="${listingId}"]`
+    );
+
+  if(gallery){
+
+    gallery
+      .querySelectorAll(
+        ".carhub-gallery-thumb"
+      )
+      .forEach(
+        (button,index)=>{
+
+          button.classList.toggle(
+            "active",
+            index===imageIndex
+          );
+
+        }
+      );
+
+  }
+
+}
+
+
+/* ---------------------------------------------------------
+   SELLER CARD
+   --------------------------------------------------------- */
+
+function renderSellerCard(listing){
+
+  const seller =
+    typeof UserDB !== "undefined"
+    ?UserDB.findById(
+      listing.sellerId
+    )
+    :null;
+
+
+  const name =
+    seller?.name ||
+    listing.sellerName ||
+    "CarHub Seller";
+
+
+  const location =
+    seller?.location ||
+    listing.sellerLocation ||
+    listing.location ||
+    "Nigeria";
+
+
+  const verified =
+    seller?.verified ||
+    listing.sellerVerified;
+
+
+  const sellerCars =
+    getSellerListings(
+      listing.sellerId
+    );
+
+
+  return `
+
+    <div
+      class="glass-panel seller-profile-card"
+    >
+
+      <div class="seller-profile-head">
+
+        <div
+          class="seller-avatar"
+        >
+
+          ${initials(name)}
+
+        </div>
+
+        <div>
+
+          <div
+            class="seller-name"
+          >
+
+            ${esc(name)}
+
+            ${
+              verified
+              ?`
+                <span
+                  class="verified-badge"
+                >
+                  ✓
+                </span>
+              `
+              :""
+            }
+
+          </div>
+
+          <div
+            class="seller-location"
+          >
+
+            ${esc(location)}
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="seller-stats"
+      >
+
+        <div>
+
+          <strong>
+            ${sellerCars.length}
+          </strong>
+
+          <span>
+            Listings
+          </span>
+
+        </div>
+
+        <div>
+
+          <strong>
+            ${verified?"Verified":"Member"}
+          </strong>
+
+          <span>
+            Status
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <button
+        class="btn full"
+        onclick="
+          viewSeller('${listing.id}')
+        "
+      >
+
+        View seller profile
+
+      </button>
+
+
+      <button
+        class="btn primary full"
+        onclick="
+          openMessage('${listing.id}')
+        "
+      >
+
+        Message seller
+
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ---------------------------------------------------------
+   LISTING MANAGEMENT CARD
+   --------------------------------------------------------- */
+
+function renderMyListingCard(listing){
+
+  return `
+
+    <div
+      class="glass-panel my-listing-card"
+    >
+
+      <div
+        class="my-listing-image"
+      >
+
+        <img
+          src="${esc(
+            listing.images?.[0] ||
+            (
+              typeof demoImages !==
+              "undefined"
+              ?demoImages[0]
+              :""
+            )
+          )}"
+          alt=""
+        >
+
+      </div>
+
+
+      <div
+        class="my-listing-content"
+      >
+
+        <div
+          class="listing-status"
+        >
+
+          ${listing.status==="active"
+            ?"LIVE"
+            :"INACTIVE"
+          }
+
+        </div>
+
+
+        <h3>
+
+          ${esc(listing.year)}
+          ${esc(listing.make)}
+          ${esc(listing.model)}
+
+        </h3>
+
+
+        <strong
+          class="listing-price"
+        >
+
+          ${money(listing.price)}
+
+        </strong>
+
+
+        <div
+          class="listing-meta"
+        >
+
+          ${esc(
+            listing.mileage ||
+            "Mileage not specified"
+          )}
+
+          ·
+
+          ${esc(
+            listing.location ||
+            "Nigeria"
+          )}
+
+        </div>
+
+
+        <div
+          class="listing-actions"
+        >
 
           <button
-            class="btn danger full"
-            onclick="logoutUser()"
+            class="btn small"
+            onclick="
+              go('vehicle','${listing.id}')
+            "
           >
-            Sign out
+            View
+          </button>
+
+          <button
+            class="btn small"
+            onclick="
+              editCarHubListing('${listing.id}')
+            "
+          >
+            Edit
+          </button>
+
+          <button
+            class="btn small danger"
+            onclick="
+              deleteCarHubListing('${listing.id}')
+            "
+          >
+            Delete
           </button>
 
         </div>
@@ -997,295 +1523,33 @@ function renderAccount(){
 
 
 /* ---------------------------------------------------------
-   PROFILE SAVE — SHARED USER STRUCTURE
+   MY VEHICLES
    --------------------------------------------------------- */
 
-function saveProfile(){
+function renderMyVehicles(){
 
-  if(!requireLogin("profile")){
+  const container =
+    document.getElementById(
+      "myVehicles"
+    );
+
+  if(!container){
 
     return;
 
   }
 
-  const session=getSession();
 
-  if(!session)return;
+  const seller =
+    getCurrentSeller();
 
-  const user=
-    UserDB.findById(session.id);
+  if(!seller){
 
-  if(!user)return;
+    container.innerHTML=`
 
-  user.name=
-    document
-      .getElementById("profileName")
-      .value.trim()||
-    "CarHub User";
-
-  user.email=
-    document
-      .getElementById("profileEmail")
-      .value.trim()
-      .toLowerCase();
-
-  user.phone=
-    document
-      .getElementById("profilePhone")
-      .value.trim();
-
-  user.location=
-    document
-      .getElementById("profileLocation")
-      .value.trim()||
-    "Nigeria";
-
-  user.accountType=
-    document
-      .getElementById("profileType")
-      .value;
-
-  UserDB.save(
-    UserDB.all().map(x=>
-      x.id===user.id?user:x
-    )
-  );
-
-  profile=user;
-
-  setSession(user);
-
-  updateUserInterface();
-
-  addActivity(
-    "Profile updated",
-    "Your CarHub profile was updated."
-  );
-
-  toast(
-    "Profile saved."
-  );
-
-  renderAccount();
-
-}
-
-
-/* ---------------------------------------------------------
-   UPGRADED SELLER PROFILE
-   --------------------------------------------------------- */
-
-function viewSeller(carId){
-
-  const car=getListing(carId);
-
-  if(!car)return;
-
-  const seller=
-    UserDB.findById(
-      car.sellerId
-    );
-
-  const sellerName=
-    seller?.name||
-    car.sellerName||
-    "CarHub Seller";
-
-  const sellerLocation=
-    seller?.location||
-    car.sellerLocation||
-    "Nigeria";
-
-  const sellerListings=
-    listings.filter(
-      item =>
-        item.sellerId===car.sellerId
-    );
-
-  openModal(
-    "Seller profile",
-    `
-
-    <div class="account-top">
-
-      <div class="account-avatar">
-
-        ${initials(sellerName)}
-
-      </div>
-
-      <div>
-
-        <h2 style="margin:0">
-
-          ${esc(sellerName)}
-
-        </h2>
-
-        <div
-          style="
-            color:var(--mint);
-            font-size:11px;
-            margin-top:6px
-          "
-        >
-
-          ${
-            seller?.verified
-            ?"✓ Verified account"
-            :"CarHub seller"
-          }
-
-        </div>
-
-        <div
-          style="
-            color:var(--muted);
-            font-size:12px;
-            margin-top:5px
-          "
-        >
-
-          ${esc(sellerLocation)}
-
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="alert">
-
-      <strong>
-        ${sellerListings.length}
-      </strong>
-
-      active vehicle listing${
-        sellerListings.length===1
-        ?""
-        :"s"
-      }
-
-    </div>
-
-    <h3>
-      Seller vehicles
-    </h3>
-
-    ${
-      sellerListings.length
-      ?
-      sellerListings.map(item=>`
-
-        <div class="list-row">
-
-          <img
-            class="row-img"
-            src="${
-              esc(
-                item.images?.[0]||
-                demoImages[0]
-              )
-            }"
-          >
-
-          <div class="row-main">
-
-            <strong>
-
-              ${esc(item.year)}
-              ${esc(item.make)}
-              ${esc(item.model)}
-
-            </strong>
-
-            <span>
-
-              ${money(item.price)}
-
-            </span>
-
-          </div>
-
-          <button
-            class="btn small"
-            onclick="
-              closeModal();
-              go('vehicle','${item.id}')
-            "
-          >
-            View
-          </button>
-
-        </div>
-
-      `).join("")
-      :
-      `
       <div class="empty">
 
-        <strong>
-          No active listings
-        </strong>
-
-      </div>
-      `
-    }
-
-    `
-  );
-
-}
-
-
-/* ---------------------------------------------------------
-   PROTECTED DASHBOARD
-   --------------------------------------------------------- */
-
-const oldRenderDashboard=
-  window.renderDashboard;
-
-window.renderDashboard=function(){
-
-  if(!getSession()){
-
-    document.getElementById(
-      "screen-dashboard"
-    ).innerHTML=`
-
-      <div class="page-title">
-
-        <h1>Dashboard</h1>
-
-        <p>
-          Your CarHub activity in one place.
-        </p>
-
-      </div>
-
-      <div class="glass-panel account-card">
-
-        <div class="empty">
-
-          <strong>
-            Sign in to access your dashboard
-          </strong>
-
-          <button
-            class="btn primary"
-            onclick="openLogin()"
-          >
-            Sign in
-          </button>
-
-          <button
-            class="btn"
-            onclick="openRegister()"
-          >
-            Create account
-          </button>
-
-        </div>
+        Sign in to manage your vehicles.
 
       </div>
 
@@ -1295,119 +1559,1437 @@ window.renderDashboard=function(){
 
   }
 
-  oldRenderDashboard();
 
-};
+  const mine =
+    getSellerListings(
+      seller.id
+    );
 
 
-/* ---------------------------------------------------------
-   NAVIGATION AUTH CHECK
-   --------------------------------------------------------- */
+  if(!mine.length){
 
-const oldGo=
-  window.go;
+    container.innerHTML=`
 
-window.go=function(route,id=null){
+      <div class="empty">
 
-  const protectedRoutes=[
-    "dashboard",
-    "messages",
-    "inspections",
-    "notifications"
-  ];
+        <strong>
+          You haven't listed a vehicle yet.
+        </strong>
 
-  if(
-    protectedRoutes.includes(route) &&
-    !getSession()
-  ){
+        <p>
+          Your vehicles will appear here
+          after you publish them.
+        </p>
 
-    openLogin();
+        <button
+          class="btn primary"
+          onclick="openSellModal()"
+        >
+          Sell a car
+        </button>
+
+      </div>
+
+    `;
 
     return;
 
   }
 
-  oldGo(route,id);
 
-};
+  container.innerHTML =
+    mine
+      .map(
+        renderMyListingCard
+      )
+      .join("");
+
+}
 
 
 /* ---------------------------------------------------------
-   STARTUP
+   MARKETPLACE REFRESH
    --------------------------------------------------------- */
 
-loadCurrentUser();
+function refreshCarHubCatalogue(){
 
-updateUserInterface();
+  syncListings();
+
+
+  /*
+    If the existing catalogue renderer
+    exists, refresh it.
+  */
+
+  const catalogue =
+    document.getElementById(
+      "catalogue"
+    );
+
+  if(!catalogue){
+
+    return;
+
+  }
+
+
+  if(!listings.length){
+
+    catalogue.innerHTML=`
+
+      <div
+        class="empty"
+        style="grid-column:1/-1"
+      >
+
+        <strong>
+          No vehicles listed yet.
+        </strong>
+
+        <p>
+          Be the first seller on CarHub Africa.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  catalogue.innerHTML =
+    listings
+      .filter(
+        car =>
+          car.status !==
+          "sold"
+      )
+      .map(
+        car =>`
+
+          <article
+            class="
+              car-card
+              floating-car-card
+            "
+            onclick="
+              go('vehicle','${car.id}')
+            "
+          >
+
+            <div
+              class="car-card-image"
+            >
+
+              <img
+                src="${esc(
+                  car.images?.[0] ||
+                  (
+                    typeof demoImages !==
+                    "undefined"
+                    ?demoImages[0]
+                    :""
+                  )
+                )}"
+                alt="${esc(
+                  car.year+" "+
+                  car.make+" "+
+                  car.model
+                )}"
+                loading="lazy"
+              >
+
+
+              <div
+                class="car-card-condition"
+              >
+
+                ${esc(
+                  car.condition ||
+                  "Used"
+                )}
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="car-card-body"
+            >
+
+              <div
+                class="car-card-title"
+              >
+
+                ${esc(car.year)}
+                ${esc(car.make)}
+                ${esc(car.model)}
+
+              </div>
+
+
+              <div
+                class="car-card-price"
+              >
+
+                ${money(car.price)}
+
+              </div>
+
+
+              <div
+                class="car-card-meta"
+              >
+
+                <span>
+                  ${esc(
+                    car.mileage ||
+                    "Mileage N/A"
+                  )}
+                </span>
+
+                <span>
+                  ${esc(
+                    car.location ||
+                    "Nigeria"
+                  )}
+                </span>
+
+              </div>
+
+
+              <div
+                class="car-card-seller"
+              >
+
+                <span
+                  class="mini-avatar"
+                >
+
+                  ${initials(
+                    car.sellerName ||
+                    "Seller"
+                  )}
+
+                </span>
+
+                <span>
+
+                  ${esc(
+                    car.sellerName ||
+                    "CarHub Seller"
+                  )}
+
+                </span>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        `
+      )
+      .join("");
+
+}
 
 
 /* ---------------------------------------------------------
-   ACCOUNT BUTTON BEHAVIOUR
+   CONNECT WITH EXISTING SELL FORM
+   --------------------------------------------------------- */
+
+function setupCarHubSellForm(){
+
+  const form =
+    document.querySelector(
+      "#sellForm"
+    );
+
+  if(!form){
+
+    return;
+
+  }
+
+
+  /*
+    Prevent the older local-only
+    createListing handler.
+  */
+
+  form.addEventListener(
+    "submit",
+    async event=>{
+
+      event.preventDefault();
+
+      const seller =
+        getCurrentSeller();
+
+      if(!seller){
+
+        if(
+          typeof openLogin ===
+          "function"
+        ){
+
+          openLogin();
+
+        }
+
+        return;
+
+      }
+
+
+      const getValue=id=>{
+
+        const el =
+          document.getElementById(
+            id
+          );
+
+        return el
+          ?el.value
+          :"";
+
+      };
+
+
+      const fileInput =
+        document.querySelector(
+          "#sellPhotos"
+        ) ||
+        document.querySelector(
+          "#listingPhotos"
+        ) ||
+        form.querySelector(
+          'input[type="file"]'
+        );
+
+
+      const formData={
+
+        make:
+          getValue("sellMake") ||
+          getValue("listingMake"),
+
+        model:
+          getValue("sellModel") ||
+          getValue("listingModel"),
+
+        year:
+          getValue("sellYear") ||
+          getValue("listingYear"),
+
+        price:
+          getValue("sellPrice") ||
+          getValue("listingPrice"),
+
+        mileage:
+          getValue("sellMileage") ||
+          getValue("listingMileage"),
+
+        condition:
+          getValue("sellCondition") ||
+          getValue("listingCondition") ||
+          "Used",
+
+        transmission:
+          getValue("sellTransmission") ||
+          getValue("listingTransmission"),
+
+        fuel:
+          getValue("sellFuel") ||
+          getValue("listingFuel"),
+
+        location:
+          getValue("sellLocation") ||
+          getValue("listingLocation") ||
+          seller.location,
+
+        description:
+          getValue("sellDescription") ||
+          getValue("listingDescription"),
+
+        files:
+          fileInput
+          ?fileInput.files
+          :[]
+
+      };
+
+
+      const listing =
+        await createCarHubListing(
+          formData
+        );
+
+
+      if(listing){
+
+        if(
+          typeof closeModal ===
+          "function"
+        ){
+
+          closeModal();
+
+        }
+
+
+        refreshCarHubCatalogue();
+
+        renderMyVehicles();
+
+        if(
+          typeof go ===
+          "function"
+        ){
+
+          go(
+            "vehicle",
+            listing.id
+          );
+
+        }
+
+      }
+
+    },
+    true
+  );
+
+}
+
+
+/* ---------------------------------------------------------
+   SELLER PROFILE BEFORE BUYING
+   --------------------------------------------------------- */
+
+function requireSellerView(
+  carId,
+  nextAction
+){
+
+  const listing =
+    getListing(carId);
+
+  if(!listing){
+
+    return;
+
+  }
+
+
+  openModal(
+    "Seller information",
+    `
+
+      ${renderSellerCard(
+        listing
+      )}
+
+      <div
+        style="
+          margin-top:14px;
+          font-size:12px;
+          color:var(--muted)
+        "
+      >
+
+        Review the seller profile
+        before continuing with this
+        vehicle.
+
+      </div>
+
+    `
+  );
+
+}
+
+
+/* ---------------------------------------------------------
+   VIEW TRACKING
+   --------------------------------------------------------- */
+
+function registerCarView(id){
+
+  const current =
+    getAllCarHubListings();
+
+  const index =
+    current.findIndex(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+  if(index<0)return;
+
+  current[index].views =
+    Number(
+      current[index].views || 0
+    ) + 1;
+
+  saveAllCarHubListings(
+    current
+  );
+
+  sharedListings =
+    current;
+
+  listings =
+    current;
+
+}
+
+
+/* ---------------------------------------------------------
+   SAVE VEHICLE
+   --------------------------------------------------------- */
+
+function saveCarHubVehicle(id){
+
+  const session =
+    typeof getSession ===
+    "function"
+    ?getSession()
+    :null;
+
+  if(!session){
+
+    if(
+      typeof openLogin ===
+      "function"
+    ){
+
+      openLogin();
+
+    }
+
+    return;
+
+  }
+
+
+  const key =
+    "carhub_saved_"+session.id;
+
+  let saved=[];
+
+  try{
+
+    saved =
+      JSON.parse(
+        localStorage.getItem(key)
+      ) || [];
+
+  }catch(error){
+
+    saved=[];
+
+  }
+
+
+  const exists =
+    saved.includes(id);
+
+
+  if(exists){
+
+    saved =
+      saved.filter(
+        item => item!==id
+      );
+
+    toast(
+      "Vehicle removed from saved."
+    );
+
+  }else{
+
+    saved.push(id);
+
+    toast(
+      "Vehicle saved."
+    );
+
+  }
+
+
+  localStorage.setItem(
+    key,
+    JSON.stringify(saved)
+  );
+
+
+  const current =
+    getAllCarHubListings();
+
+  const index =
+    current.findIndex(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+  if(index>=0){
+
+    current[index].saves =
+      Math.max(
+        0,
+        Number(
+          current[index].saves || 0
+        ) +
+        (exists?-1:1)
+      );
+
+    saveAllCarHubListings(
+      current
+    );
+
+    sharedListings =
+      current;
+
+    listings =
+      current;
+
+  }
+
+}
+
+
+/* ---------------------------------------------------------
+   LISTING STATUS
+   --------------------------------------------------------- */
+
+function setCarHubListingStatus(
+  id,
+  status
+){
+
+  const seller =
+    getCurrentSeller();
+
+  if(!seller)return;
+
+
+  const current =
+    getAllCarHubListings();
+
+  const index =
+    current.findIndex(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+  if(index<0)return;
+
+
+  if(
+    String(
+      current[index].sellerId
+    ) !==
+    String(seller.id)
+  ){
+
+    toast(
+      "You can only manage your own listing."
+    );
+
+    return;
+
+  }
+
+
+  current[index].status =
+    status;
+
+  current[index].updatedAt =
+    new Date().toISOString();
+
+
+  saveAllCarHubListings(
+    current
+  );
+
+  sharedListings =
+    current;
+
+  listings =
+    current;
+
+
+  refreshCarHubCatalogue();
+
+}
+
+
+/* ---------------------------------------------------------
+   SELLER DASHBOARD STATISTICS
+   --------------------------------------------------------- */
+
+function getSellerStats(){
+
+  const seller =
+    getCurrentSeller();
+
+  if(!seller){
+
+    return {
+
+      listings:0,
+      active:0,
+      views:0,
+      saves:0
+
+    };
+
+  }
+
+
+  const mine =
+    getSellerListings(
+      seller.id
+    );
+
+
+  return {
+
+    listings:
+      mine.length,
+
+    active:
+      mine.filter(
+        item =>
+          item.status==="active"
+      ).length,
+
+    views:
+      mine.reduce(
+        (total,item)=>
+          total+
+          Number(
+            item.views||0
+          ),
+        0
+      ),
+
+    saves:
+      mine.reduce(
+        (total,item)=>
+          total+
+          Number(
+            item.saves||0
+          ),
+        0
+      )
+
+  };
+
+}
+
+
+/* ---------------------------------------------------------
+   SELLER DASHBOARD WIDGET
+   --------------------------------------------------------- */
+
+function renderSellerStats(){
+
+  const container =
+    document.getElementById(
+      "sellerStats"
+    );
+
+  if(!container){
+
+    return;
+
+  }
+
+
+  const stats =
+    getSellerStats();
+
+
+  container.innerHTML=`
+
+    <div class="stat-card">
+
+      <span>
+        My listings
+      </span>
+
+      <strong>
+        ${stats.listings}
+      </strong>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <span>
+        Active
+      </span>
+
+      <strong>
+        ${stats.active}
+      </strong>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <span>
+        Views
+      </span>
+
+      <strong>
+        ${stats.views}
+      </strong>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <span>
+        Saves
+      </span>
+
+      <strong>
+        ${stats.saves}
+      </strong>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ---------------------------------------------------------
+   LISTING SEARCH
+   --------------------------------------------------------- */
+
+function searchCarHubListings(query){
+
+  syncListings();
+
+  const q =
+    String(query || "")
+      .trim()
+      .toLowerCase();
+
+
+  if(!q){
+
+    return listings;
+
+  }
+
+
+  return listings.filter(
+    car =>{
+
+      const text =
+        [
+
+          car.make,
+          car.model,
+          car.year,
+          car.location,
+          car.condition,
+          car.transmission,
+          car.fuel,
+          car.sellerName
+
+        ]
+        .join(" ")
+        .toLowerCase();
+
+
+      return text.includes(q);
+
+    }
+  );
+
+}
+
+
+/* ---------------------------------------------------------
+   SEARCH HOOK
    --------------------------------------------------------- */
 
 document.addEventListener(
-  "click",
+  "input",
   event=>{
 
-    const button=
+    const input =
       event.target.closest(
-        ".profile-btn"
+        "#searchInput"
       );
 
-    if(!button)return;
+    if(!input)return;
 
-    event.preventDefault();
 
-    accountAction();
+    const results =
+      searchCarHubListings(
+        input.value
+      );
+
+
+    const catalogue =
+      document.getElementById(
+        "catalogue"
+      );
+
+    if(!catalogue)return;
+
+
+    if(!results.length){
+
+      catalogue.innerHTML=`
+
+        <div
+          class="empty"
+          style="grid-column:1/-1"
+        >
+
+          <strong>
+            No matching vehicles
+          </strong>
+
+          <p>
+            Try another make, model,
+            location or year.
+          </p>
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    /*
+      Use the same catalogue card
+      presentation as the main catalogue.
+    */
+
+    catalogue.innerHTML =
+      results.map(
+        car=>`
+
+          <article
+            class="
+              car-card
+              floating-car-card
+            "
+            onclick="
+              go('vehicle','${car.id}')
+            "
+          >
+
+            <div
+              class="car-card-image"
+            >
+
+              <img
+                src="${esc(
+                  car.images?.[0] ||
+                  (
+                    typeof demoImages !==
+                    "undefined"
+                    ?demoImages[0]
+                    :""
+                  )
+                )}"
+                alt=""
+                loading="lazy"
+              >
+
+            </div>
+
+            <div
+              class="car-card-body"
+            >
+
+              <div
+                class="car-card-title"
+              >
+
+                ${esc(car.year)}
+                ${esc(car.make)}
+                ${esc(car.model)}
+
+              </div>
+
+              <div
+                class="car-card-price"
+              >
+
+                ${money(car.price)}
+
+              </div>
+
+              <div
+                class="car-card-meta"
+              >
+
+                ${esc(
+                  car.mileage ||
+                  "Mileage N/A"
+                )}
+
+                ·
+
+                ${esc(
+                  car.location ||
+                  "Nigeria"
+                )}
+
+              </div>
+
+            </div>
+
+          </article>
+
+        `
+      ).join("");
 
   }
 );
 
 
 /* ---------------------------------------------------------
-   BACKEND CONFIG PLACEHOLDER
+   INITIALIZE
    --------------------------------------------------------- */
 
-window.CARHUB_BACKEND={
+function initializeCarHubListings(){
 
-  enabled:false,
+  syncListings();
 
-  provider:null,
+  refreshCarHubCatalogue();
 
-  apiBase:"",
+  renderMyVehicles();
+
+  renderSellerStats();
 
   /*
-    Future configuration:
-
-    provider:
-      "firebase"
-      "appwrite"
-      "custom"
-
-    apiBase:
-      "https://your-api.example.com"
-
-    This keeps the frontend ready for
-    the real shared marketplace backend.
+    Delay form binding slightly so that
+    existing page initialization finishes first.
   */
+
+  setTimeout(
+    setupCarHubSellForm,
+    300
+  );
+
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializeCarHubListings
+);
+
+
+/* ---------------------------------------------------------
+   BACKEND-READY API LAYER
+   --------------------------------------------------------- */
+
+window.CarHubAPI={
+
+  listings:{
+
+    all(){
+
+      return getAllCarHubListings();
+
+    },
+
+    find(id){
+
+      return getListing(id);
+
+    },
+
+    mine(){
+
+      const seller =
+        getCurrentSeller();
+
+      return seller
+        ?getSellerListings(
+          seller.id
+        )
+        :[];
+
+    },
+
+    search(query){
+
+      return searchCarHubListings(
+        query
+      );
+
+    },
+
+    create(data){
+
+      return createCarHubListing(
+        data
+      );
+
+    },
+
+    delete(id){
+
+      return deleteCarHubListing(
+        id
+      );
+
+    },
+
+    edit(id){
+
+      return editCarHubListing(
+        id
+      );
+
+    },
+
+    status(id,status){
+
+      return setCarHubListingStatus(
+        id,
+        status
+      );
+
+    }
+
+  },
+
+  seller:{
+
+    current(){
+
+      return getCurrentSeller();
+
+    },
+
+    listings(){
+
+      const seller =
+        getCurrentSeller();
+
+      return seller
+        ?getSellerListings(
+          seller.id
+        )
+        :[];
+
+    },
+
+    stats(){
+
+      return getSellerStats();
+
+    }
+
+  }
 
 };
 
 
-/* ---------------------------------------------------------
-   SECURITY NOTE
-   ---------------------------------------------------------
-
-   NEVER put real production secrets,
-   database admin keys or private API keys
-   inside this HTML file.
-
-   Production authentication and database
-   credentials belong on the server/backend.
-   --------------------------------------------------------- */
-
 console.log(
-  "CarHub Africa account foundation loaded."
+  "CarHub Africa listing engine loaded."
 );
 
 </script>
+
+
+<style>
+
+/* =========================================================
+   CARHUB LISTING UI
+   ========================================================= */
+
+.carhub-gallery{
+  width:100%;
+}
+
+.carhub-gallery-main{
+  width:100%;
+  aspect-ratio:16/10;
+  overflow:hidden;
+  border-radius:24px;
+  background:rgba(255,255,255,.04);
+}
+
+.carhub-gallery-main img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:
+    opacity .18s ease,
+    transform .45s cubic-bezier(.2,.8,.2,1);
+}
+
+.carhub-gallery-main:hover img{
+  transform:scale(1.025);
+}
+
+.carhub-gallery-thumbs{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+  overflow-x:auto;
+  padding-bottom:3px;
+}
+
+.carhub-gallery-thumb{
+  flex:0 0 72px;
+  width:72px;
+  height:54px;
+  padding:0;
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid transparent;
+  background:rgba(255,255,255,.05);
+  cursor:pointer;
+}
+
+.carhub-gallery-thumb.active{
+  border-color:var(--mint);
+}
+
+.carhub-gallery-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.vehicle-gallery-empty{
+  aspect-ratio:16/10;
+  border-radius:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:10px;
+  background:rgba(255,255,255,.04);
+  color:var(--muted);
+}
+
+.vehicle-gallery-empty span{
+  font-size:38px;
+}
+
+.seller-profile-card{
+  padding:20px;
+}
+
+.seller-profile-head{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.seller-avatar{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(168,239,209,.28),
+      rgba(120,218,183,.08)
+    );
+  border:1px solid
+    rgba(168,239,209,.28);
+  color:var(--mint);
+  font-weight:800;
+}
+
+.seller-name{
+  font-weight:800;
+}
+
+.seller-location{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:4px;
+}
+
+.verified-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  height:18px;
+  margin-left:4px;
+  border-radius:50%;
+  background:var(--mint);
+  color:#07100c;
+  font-size:11px;
+}
+
+.seller-stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:18px 0;
+}
+
+.seller-stats>div{
+  padding:12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.035);
+  text-align:center;
+}
+
+.seller-stats strong{
+  display:block;
+  font-size:15px;
+}
+
+.seller-stats span{
+  display:block;
+  margin-top:3px;
+  font-size:10px;
+  color:var(--muted);
+}
+
+.my-listing-card{
+  display:grid;
+  grid-template-columns:150px 1fr;
+  gap:16px;
+  padding:12px;
+  overflow:hidden;
+}
+
+.my-listing-image{
+  width:150px;
+  height:120px;
+  border-radius:18px;
+  overflow:hidden;
+  background:rgba(255,255,255,.04);
+}
+
+.my-listing-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.my-listing-content{
+  min-width:0;
+}
+
+.listing-status{
+  display:inline-flex;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:9px;
+  letter-spacing:.08em;
+  background:rgba(168,239,209,.1);
+  color:var(--mint);
+}
+
+.my-listing-content h3{
+  margin:7px 0 4px;
+  font-size:15px;
+}
+
+.listing-price{
+  display:block;
+  font-size:15px;
+}
+
+.listing-meta{
+  margin-top:5px;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.listing-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:12px;
+}
+
+.car-card-seller{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:10px;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.mini-avatar{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(168,239,209,.12);
+  color:var(--mint);
+  font-size:8px;
+  font-weight:800;
+}
+
+.floating-car-card{
+  transform:translateY(0);
+  transition:
+    transform .35s cubic-bezier(.2,.8,.2,1),
+    box-shadow .35s ease;
+}
+
+.floating-car-card:hover{
+  transform:translateY(-7px);
+}
+
+@media(max-width:650px){
+
+  .my-listing-card{
+    grid-template-columns:1fr;
+  }
+
+  .my-listing-image{
+    width:100%;
+    height:190px;
+  }
+
+  .carhub-gallery-main{
+    border-radius:18px;
+  }
+
+  .carhub-gallery-thumb{
+    flex-basis:64px;
+    width:64px;
+    height:48px;
+  }
+
+}
+
+</style>
